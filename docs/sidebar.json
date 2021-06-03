@@ -1,0 +1,8 @@
+{
+  "hki_ml_project_template": {
+    "Overview": "/",
+    "Data": "data.html",
+    "Hypotheses Space": "hypotheses_space.html",
+    "Loss": "loss.html"
+  }
+}
