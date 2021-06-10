@@ -2,3 +2,6 @@
 *
 # except this file
 !.gitignore
+# and .gitignore files in subfolders
+!raw_data/
+!preprocessed_data/
