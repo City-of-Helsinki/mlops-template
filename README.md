@@ -2,6 +2,12 @@
 > This template contains all necessary tools for a convenient ML DevOps pipeline, open source. You can use it as a template for your ML or analytics project
 
 
+```python
+#hide #
+#from your_lib.core import *
+#from ml-project-template.data import *
+```
+
 This file will become your README and also the index of your documentation.
 
 ## Installing the template
