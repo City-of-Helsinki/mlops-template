@@ -19,6 +19,6 @@ entries:
       title: Loss
       url: loss.html
     output: web
-    title: hki_ml_project_template
+    title: ml-project-template
   output: web
   title: Sidebar
