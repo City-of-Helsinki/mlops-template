@@ -84,39 +84,28 @@ python -m ipykernel install --user --name [your ipython kernel name] --display-n
 </div>
 </div>
 </div>
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="mi">1</span><span class="o">+</span><span class="mi">1</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>2</pre>
-</div>
-
-</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Creating-doc-pages">Creating doc pages<a class="anchor-link" href="#Creating-doc-pages"> </a></h2><ol>
+<li><p>Make sure everything runs smoothly</p>
+</li>
+<li><p>Make sure that settings.ini has correct information</p>
+</li>
+<li><p>You may have to manually edit repo name in <code>Makefile</code>, <code>docs/_config.yml</code> and <code>docs/_data/topnav.yml</code> to match your project</p>
+</li>
+<li><p>Run <code>nbdev_build_lib &amp; nbdev_build_doc</code></p>
+</li>
+<li><p>Push</p>
+</li>
+<li><p>Make your Git repository public</p>
+</li>
+<li><p>View the github pages <a href="https://city-of-helsinki.github.io/ml_project_template/">https://city-of-helsinki.github.io/ml_project_template/</a> (modify according to your project)</p>
+</li>
+</ol>
 
 </div>
 </div>
-
 </div>
-    {% endraw %}
-
 </div>
  
 

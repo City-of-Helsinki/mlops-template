@@ -31,13 +31,19 @@ T
 
 Fill me in please! Don't forget code examples:
 
-```python
-1+1
-```
+## Creating doc pages
 
+1. Make sure everything runs smoothly
 
+2. Make sure that settings.ini has correct information
 
+3. You may have to manually edit repo name in `Makefile`, `docs/_config.yml` and `docs/_data/topnav.yml` to match your project
 
-    2
+4. Run `nbdev_build_lib & nbdev_build_doc`
 
+5. Push
+
+6. Make your Git repository public
+
+7. View the github pages https://city-of-helsinki.github.io/ml_project_template/ (modify according to your project)
 
