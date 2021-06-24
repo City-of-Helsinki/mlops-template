@@ -2,10 +2,14 @@
 
 __all__ = ["index", "modules", "custom_doc_links", "git_url"]
 
-index = {"MachineLearningModel": "01_hypotheses_space.ipynb",
-         "LogisticRegressionClassifier": "01_hypotheses_space.ipynb"}
+index = {"plot_histogram": "00_data.ipynb",
+         "plot_trellis": "00_data.ipynb",
+         "MachineLearningModel": "01_model.ipynb",
+         "LogisticRegressionClassifier": "01_model.ipynb"}
 
-modules = ["data.py"]
+modules = ["data.py",
+           "plot.py",
+           "model.py"]
 
 doc_url = "https://NuuttiSten.github.io/ml-project-template/"
 
