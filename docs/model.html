@@ -31,6 +31,26 @@ nb_path: "01_model.ipynb"
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
+<p><strong><em>input</em></strong>: toy dataset from data-notebook</p>
+<p><strong><em>output</em></strong>: ML model / simulation / analytics python module</p>
+<p><strong><em>description:</em></strong></p>
+<p>A hypotheses space defines the possible machine learning models, simulations or analytics tools considered for a ML problem. 
+In this notebook you define the hypotheses space. This notebook contains an example ML model for classifying the heart disease dataset.</p>
+<p>If you are doing anyhting more complicated than just fitting existing well defined models such as defined in sklearn,
+it is recommended that you create a base class for the whole hypotheses space where you define core function handles,
+and implement the functions in subclasses that inherit from the base class.
+This is demonstrated in this notebook, even though it wouldn't be necessary for such a simple function.</p>
+<p>If the methods are complicated or you are comparing multiple methods that are inheritantly different by nature, 
+you can also separate models or subclasses to different notebooks similar to this.
+Adjust the running number in the beginning of the notebook name to your needs for retaining logical order.
+You should also unit test the classes created in this notebook with either toy data created in data notebook, or randomly generated test data.</p>
+<p>Remember to add <code># export</code> to top of all cells containing functions or classes that you have defined and want to use outside this notebook.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="Import-relevant-modules">Import relevant modules<a class="anchor-link" href="#Import-relevant-modules"> </a></h2>
 </div>
 </div>

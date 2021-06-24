@@ -6,8 +6,8 @@ title: Plot
 keywords: fastai
 sidebar: home_sidebar
 
-
-
+summary: "Each submodule requires it's own notebook. The title of the notebook must be the name of the submodule."
+description: "Each submodule requires it's own notebook. The title of the notebook must be the name of the submodule."
 nb_path: "plot.ipynb"
 ---
 <!--
@@ -29,6 +29,16 @@ nb_path: "plot.ipynb"
 </div>
     {% endraw %}
 
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>This notebook exists as an example of how to export generic alike functions from one notebook to under another part of the module and not the default exp.
+Now we can define generic plot functions in the other notebooks, and export them under a <code>plot</code> module.
+This makes more sense than to export plot functions under <code>data</code> module.</p>
+<p>Similarly, one could add other notebooks for generic helper functions.</p>
+
+</div>
+</div>
+</div>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">

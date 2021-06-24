@@ -1,5 +1,5 @@
 # Helsinki Machine Learning Project Template
-> This template contains all necessary tools for a convenient ML DevOps pipeline, open source. You can use it as a template for your ML or analytics project
+> This template contains all necessary tools for a convenient ML DevOps pipeline, open source. You can use it as a template for your ML or analytics project.
 
 
 ```python
