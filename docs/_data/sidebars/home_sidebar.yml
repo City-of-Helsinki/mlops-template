@@ -11,13 +11,16 @@ entries:
       url: /
     - output: web,pdf
       title: Data
-      url: plot.html
+      url: data.html
     - output: web,pdf
       title: Model
       url: model.html
     - output: web,pdf
       title: Loss
       url: loss.html
+    - output: web,pdf
+      title: Plot
+      url: plot.html
     output: web
     title: ml_project_template
   output: web

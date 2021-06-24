@@ -1,8 +1,9 @@
 {
   "ml_project_template": {
     "Overview": "/",
-    "Data": "plot.html",
+    "Data": "data.html",
     "Model": "model.html",
-    "Loss": "loss.html"
+    "Loss": "loss.html",
+    "Plot": "plot.html"
   }
 }
