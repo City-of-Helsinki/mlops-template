@@ -27,6 +27,8 @@ python -m ipykernel install --user --name [your ipython kernel name] --display-n
 
 ## How to use
 
+T
+
 Fill me in please! Don't forget code examples:
 
 ```python
