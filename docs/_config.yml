@@ -1,7 +1,7 @@
-repository: NuuttiSten/hki_ml_project_template
+repository: City-of-Helsinki/ml_project_template
 output: web
-topnav_title: hki_ml_project_template
-site_title: hki_ml_project_template
+topnav_title: ml_project_template
+site_title: ml_project_template
 company_name: City of Helsinki
 description: Template for reproducible and explainable ML projects.
 # Set to false to disable KaTeX math

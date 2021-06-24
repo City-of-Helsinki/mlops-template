@@ -6,7 +6,7 @@ all: ml_project_template docs
 
 ml_project_template: $(SRC)
 	nbdev_build_lib
-	touch hki_ml_project_template
+	touch ml_project_template
 
 sync:
 	nbdev_update_lib

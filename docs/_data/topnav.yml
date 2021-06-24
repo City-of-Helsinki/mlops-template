@@ -2,7 +2,7 @@ topnav:
 - title: Topnav
   items:
     - title: github
-      external_url: https://github.com/NuuttiSten/hki_ml_project_template/tree/master/
+      external_url: https://github.com/City-of-Helsinki/ml_project_template/tree/master/
 
 #Topnav dropdowns
 topnav_dropdowns:
