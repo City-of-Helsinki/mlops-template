@@ -63,4 +63,4 @@ plugins:
     - jekyll-remote-theme
     
 remote_theme: fastai/nbdev-jekyll-theme
-baseurl: /ml-project-template/
+baseurl: /ml_project_template/

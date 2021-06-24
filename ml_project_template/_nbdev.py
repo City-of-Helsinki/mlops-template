@@ -11,8 +11,8 @@ modules = ["data.py",
            "plot.py",
            "model.py"]
 
-doc_url = "https://NuuttiSten.github.io/ml-project-template/"
+doc_url = "https://NuuttiSten.github.io/ml_project_template/"
 
-git_url = "https://github.com/NuuttiSten/ml-project-template/tree/master/"
+git_url = "https://github.com/NuuttiSten/ml_project_template/tree/master/"
 
 def custom_doc_links(name): return None

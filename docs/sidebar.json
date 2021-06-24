@@ -1,8 +1,8 @@
 {
-  "ml-project-template": {
+  "ml_project_template": {
     "Overview": "/",
-    "Data": "data.html",
-    "Hypotheses Space": "hypotheses_space.html",
+    "Data": "plot.html",
+    "Model": "model.html",
     "Loss": "loss.html"
   }
 }

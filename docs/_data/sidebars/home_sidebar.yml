@@ -11,14 +11,14 @@ entries:
       url: /
     - output: web,pdf
       title: Data
-      url: data.html
+      url: plot.html
     - output: web,pdf
-      title: Hypotheses Space
-      url: hypotheses_space.html
+      title: Model
+      url: model.html
     - output: web,pdf
       title: Loss
       url: loss.html
     output: web
-    title: ml-project-template
+    title: ml_project_template
   output: web
   title: Sidebar
