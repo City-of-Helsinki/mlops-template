@@ -2,9 +2,9 @@
 SHELL := /bin/bash
 SRC = $(wildcard ./*.ipynb)
 
-all: hki_ml_project_template docs
+all: ml_project_template docs
 
-hki_ml_project_template: $(SRC)
+ml_project_template: $(SRC)
 	nbdev_build_lib
 	touch hki_ml_project_template
 
