@@ -22,9 +22,9 @@ class MachineLearningModel:
     Overly simplified example for a base class: basically just function handle definitions
     """
 
-    def __init__(self, X, y):
-        self.k = 5  # k-fold n_splits
-        self.seed = 0
+    def __init__(self, X, y, n_splits=5, seed=0):
+        self.n_splits = n_splits  # k-fold n_splits
+        self.seed = seed
         self.set_data(X, y)
 
     def set_data(self, X, y):
@@ -44,17 +44,17 @@ class MachineLearningModel:
         """
         return self.X.copy(), self.y.copy()
 
-    def __create_train_test_data(self, k=None, seed=None):
+    def __create_train_test_data(self, n_splits=None, seed=None):
         """
         Create training and testing data
         """
         if seed is None:
             seed = self.seed
-        if k is None:
-            k = self.k
+        if n_splits is None:
+            n_splits = self.n_splits
 
         self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(
-            self.X, self.y, test_size=(1 / k), random_state=seed, stratify=self.y
+            self.X, self.y, test_size=(1 / n_splits), random_state=seed, stratify=self.y
         )
 
         return self
@@ -86,9 +86,11 @@ class LogisticRegressionClassifier(MachineLearningModel):
     Logistic regression classifier
     """
 
-    def __init__(self, X, y):
+    def __init__(self, X, y, n_splits=5, seed=0):
 
-        super(LogisticRegressionClassifier, self).__init__(X, y)
+        super(LogisticRegressionClassifier, self).__init__(
+            X, y, n_splits=n_splits, seed=seed
+        )
 
         self.train_score = None
         self.test_score = None
@@ -97,7 +99,8 @@ class LogisticRegressionClassifier(MachineLearningModel):
         self.model = LogisticRegression()
         self.pipe = Pipeline([("scaler", self.scaler), ("estimator", self.model)])
 
-        self.cv = StratifiedKFold(n_splits=k)
+        # cross validation for optimization
+        self.cv = StratifiedKFold(n_splits=self.n_splits)
 
         # param grid for optimization
         self.param_grid = {
@@ -135,8 +138,8 @@ class LogisticRegressionClassifier(MachineLearningModel):
         Return score (evaluation metric) for train and test data
         """
 
-        self.train_score = pipe.score(self.X_train, self.y_train)
-        self.test_score = pipe.score(self.X_test, self.y_test)
+        self.train_score = self.pipe.score(self.X_train, self.y_train)
+        self.test_score = self.pipe.score(self.X_test, self.y_test)
 
         return {
             "train_score": self.train_score.copy(),
