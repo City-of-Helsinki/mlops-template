@@ -22,8 +22,13 @@ def plot_histogram(df):
         x = df[col_name]
         x.plot(ax=ax, kind="hist")
         xmin, xmax = min(x), max(x)
+    for i in range(n_cols):  # to have equal tick lines in each plot
+        ax = axs[i]
+        col_name = col_names[i]
+        x = df[col_name]
+        xmin, xmax = min(x), max(x)
         ax.hlines(
-            y=ax.get_yticks()[1:-1],
+            y=axs[df.apply(lambda x: x.max()).argmin()].get_yticks()[1:-1], # select ticks from the fig with smallest max value
             xmin=xmin,
             xmax=xmax,
             colors="white",
