@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
-from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import f1_score
 from sklearn.model_selection import (
     GridSearchCV,
     cross_val_score,
@@ -15,6 +15,7 @@ from sklearn.model_selection import (
     StratifiedKFold,
 )
 from sklearn.pipeline import Pipeline, make_pipeline
+from sklearn.preprocessing import StandardScaler
 
 # Cell
 class MachineLearningModel:
@@ -71,7 +72,13 @@ class MachineLearningModel:
     def predict(self, X):
         pass
 
-    def score(self):
+    def loss(self, X, y):
+        pass
+
+    def get_train_loss(self):
+        pass
+
+    def get_test_loss(self):
         pass
 
     def optimize(self):
@@ -91,9 +98,6 @@ class LogisticRegressionClassifier(MachineLearningModel):
         super(LogisticRegressionClassifier, self).__init__(
             X, y, n_splits=n_splits, seed=seed
         )
-
-        self.train_score = None
-        self.test_score = None
 
         self.scaler = StandardScaler()
         self.model = LogisticRegression()
@@ -133,18 +137,28 @@ class LogisticRegressionClassifier(MachineLearningModel):
         """
         return self.pipe.predict(X)
 
-    def score(self) -> dict:
+    def loss(self, X, y):
         """
-        Return score (evaluation metric) for train and test data
+        Return loss (model quality metric) [f1 score]
+
+        Note that this may be a different metric than the one that the model optimizer is using (scoring method).
+        For example for LogisticRegression the scoring method is mean accuracy,
+        but we want to track f1-score for loss because it is better balanced.
         """
 
-        self.train_score = self.pipe.score(self.X_train, self.y_train)
-        self.test_score = self.pipe.score(self.X_test, self.y_test)
+        return f1_score(y, self.predict(X))
 
-        return {
-            "train_score": self.train_score.copy(),
-            "test_score": self.test_score.copy(),
-        }
+    def get_train_loss(self):
+        """
+        Return loss for training data
+        """
+        return self.loss(self.X_train, self.y_train)
+
+    def get_test_loss(self):
+        """
+        Return loss for testing data
+        """
+        return self.loss(self.X_test, self.y_test)
 
     def optimize(self):
         """
