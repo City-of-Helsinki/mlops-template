@@ -28,7 +28,9 @@ def plot_histogram(df):
         x = df[col_name]
         xmin, xmax = min(x), max(x)
         ax.hlines(
-            y=axs[df.apply(lambda x: x.max()).argmin()].get_yticks()[1:-1], # select ticks from the fig with smallest max value
+            y=axs[df.apply(lambda x: x.max()).argmin()].get_yticks()[
+                1:-1
+            ],  # select ticks from the fig with smallest max value
             xmin=xmin,
             xmax=xmax,
             colors="white",

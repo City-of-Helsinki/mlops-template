@@ -1,11 +1,16 @@
 # Helsinki Machine Learning Project Template
-> This template contains all necessary tools for a convenient ML DevOps pipeline, open source. You can use it as a template for your ML or analytics project.
+> Template for 
 
 
 ```python
 #hide #
 #from your_lib.core import *
 #from ml-project-template.data import *
+```
+
+```python
+# default_exp data
+%load_ext lab_black
 ```
 
 This file will become your README and also the index of your documentation.
@@ -25,11 +30,35 @@ python -m ipykernel install --user --name [your ipython kernel name] --display-n
 
 ```
 
+## Basic principles
+
+Explorative coding: code, documentation and results as one
+
+CD/CT/CI
+
+Tidy
+
+Notebook structure: index, data, model, loss, other
+
+## Tools
+
+Black
+
+Sklearn, pandas, numpy, matplotlib, scipy, etc.
+
+Notebooks
+
+Nbdev
+
+
+
 ## How to use
 
-T
+edit the notebooks `data`, `model` and `loss` directly or replace them with empty templates found in `notebook_templates`
 
-Fill me in please! Don't forget code examples:
+edit `settings.ini` according to your project details
+
+
 
 ## Creating doc pages
 
@@ -43,7 +72,7 @@ Fill me in please! Don't forget code examples:
 
 5. Push
 
-6. Make your Git repository public
+6. Make your Git repository public (github doc pages are only available for public projects. You can also try to build the doc pages locally with jekyll)
 
 7. View the github pages https://city-of-helsinki.github.io/ml_project_template/ (modify according to your project)
 

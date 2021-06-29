@@ -64,6 +64,7 @@ You can also include unit tests for your own functions.</p>
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">output_clean_filepath</span> <span class="o">=</span> <span class="s2">&quot;data/preprocessed_data/dataset_clean_switzerland_cleveland.csv&quot;</span>
 <span class="n">output_toy_filepath</span> <span class="o">=</span> <span class="s2">&quot;data/preprocessed_data/dataset_toy_switzerland_cleveland.csv&quot;</span>
+<span class="n">seed</span> <span class="o">=</span> <span class="mi">0</span>
 </pre></div>
 
     </div>
@@ -80,7 +81,7 @@ You can also include unit tests for your own functions.</p>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -923,7 +924,7 @@ If you do imputing of missing data, please consider the effects on data quality.
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="plot_trellis" class="doc_header"><code>plot_trellis</code><a href="https://github.com/City-of-Helsinki/ml_project_template/tree/master/ml_project_template/plot.py#L48" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>plot_trellis</code>(<strong><code>df</code></strong>, <strong><code>legend_title</code></strong>=<em><code>'y'</code></em>, <strong><code>true_label</code></strong>=<em><code>'True'</code></em>, <strong><code>false_label</code></strong>=<em><code>'False'</code></em>)</p>
+<h4 id="plot_trellis" class="doc_header"><code>plot_trellis</code><a href="https://github.com/City-of-Helsinki/ml_project_template/tree/master/ml_project_template/plot.py#L50" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>plot_trellis</code>(<strong><code>df</code></strong>, <strong><code>legend_title</code></strong>=<em><code>'y'</code></em>, <strong><code>true_label</code></strong>=<em><code>'True'</code></em>, <strong><code>false_label</code></strong>=<em><code>'False'</code></em>)</p>
 </blockquote>
 <p>Make a trellis plot of a dataframe against a binary y value in last column</p>
 

@@ -6,8 +6,8 @@ title: Helsinki Machine Learning Project Template
 keywords: fastai
 sidebar: home_sidebar
 
-summary: "This template contains all necessary tools for a convenient ML DevOps pipeline, open source. You can use it as a template for your ML or analytics project."
-description: "This template contains all necessary tools for a convenient ML DevOps pipeline, open source. You can use it as a template for your ML or analytics project."
+summary: "Template for "
+description: "Template for "
 nb_path: "index.ipynb"
 ---
 <!--
@@ -47,6 +47,23 @@ nb_path: "index.ipynb"
 </div>
     {% endraw %}
 
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%</span><span class="k">load_ext</span> lab_black
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>This file will become your README and also the index of your documentation.</p>
@@ -72,14 +89,28 @@ python -m ipykernel install --user --name [your ipython kernel name] --display-n
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="How-to-use">How to use<a class="anchor-link" href="#How-to-use"> </a></h2><p>T</p>
+<h2 id="Basic-principles">Basic principles<a class="anchor-link" href="#Basic-principles"> </a></h2><p>Explorative coding: code, documentation and results as one</p>
+<p>CD/CT/CI</p>
+<p>Tidy</p>
+<p>Notebook structure: index, data, model, loss, other</p>
 
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Fill me in please! Don't forget code examples:</p>
+<h2 id="Tools">Tools<a class="anchor-link" href="#Tools"> </a></h2><p>Black</p>
+<p>Sklearn, pandas, numpy, matplotlib, scipy, etc.</p>
+<p>Notebooks</p>
+<p>Nbdev</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="How-to-use">How to use<a class="anchor-link" href="#How-to-use"> </a></h2><p>edit the notebooks <code>data</code>, <code>model</code> and <code>loss</code> directly or replace them with empty templates found in <code>notebook_templates</code></p>
+<p>edit <code>settings.ini</code> according to your project details</p>
 
 </div>
 </div>
@@ -97,7 +128,7 @@ python -m ipykernel install --user --name [your ipython kernel name] --display-n
 </li>
 <li><p>Push</p>
 </li>
-<li><p>Make your Git repository public</p>
+<li><p>Make your Git repository public (github doc pages are only available for public projects. You can also try to build the doc pages locally with jekyll)</p>
 </li>
 <li><p>View the github pages <a href="https://city-of-helsinki.github.io/ml_project_template/">https://city-of-helsinki.github.io/ml_project_template/</a> (modify according to your project)</p>
 </li>
