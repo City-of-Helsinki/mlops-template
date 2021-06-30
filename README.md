@@ -3,12 +3,6 @@
 
 
 ```python
-#hide #
-#from your_lib.core import *
-#from ml-project-template.data import *
-```
-
-```python
 # default_exp data
 %load_ext lab_black
 ```
@@ -20,10 +14,10 @@ This file will become your README and also the index of your documentation.
 This is a template for open source ML and analytics projects.
 It is best used as part of MLOps practices, for continuously exploring with data, developing, training and deploying your models.
 It ties together all components required for reproducible and explainable data science, CD/CT/CI tools, unit testing and more. 
+
 All you need to do for starting to work on your data project is to install the template and hook it to your data source and application.
 
 You are free to modify this teplate for the needs of your project.
-It is meant to get you started, and you are free to modify it to your needs. All feedback is wellcome!
 
 For general coding best practices, refer to [dev.hel.fi](https://dev.hel.fi/) where applicable.
 
@@ -34,7 +28,7 @@ In addition to those, the template follows four fundamental principles:
 We want to keep our code, documentation and results together, seamlessly.
 That's why we use jypyter notebooks as the core of our development.
 
-The notebooks are enhanced `nbdev` to export code to modules, create doc pages, run tests etc.
+The notebooks are enhanced `nbdev` to export code to modules, create doc pages, run tests, handle notebook version control etc.
 In addition, the notebooks can be parameterized with `papermill` and piped with `snakemake` for automated use.
 
 Some reasoning for those who are not yet convinced:
@@ -125,8 +119,16 @@ Each notebook is also a basis for a python module, including tests and documenta
 The `nbdev` tool constructs a python module of each of these notebooks, under the folder `[your git project name]` (`ml_project_template` in this template).
 This allows you to share code between your notebooks, or even publish a complete python module, while doing all your development in the notebooks. 
 
-To demonstrate the different parts of the template, the template is build around a demo ML project on heart disease dataset.
-This dataset was selected for the project, because it contained missing values and required cleanig before using it. 
+## Example Project
+
+We wanted to make this template easy to approach.
+That's why we included a demo, that it is built around.
+
+If you'd like to skip the demo, and get right into action, you can replace the notebooks `data`, `model` and `loss` with clean copies under `notebook_templates`.
+
+The demo is an example ML project on automating heart disease diagnosis with logistic regression [UCI heart disease dataset](https://archive.ics.uci.edu/ml/datasets/heart+disease).
+The dataset contains missing values, and is thus great for demonstrating light data wrangling.
+The demo is meant for solely demonstration purposes and no comes with no quarantees. 
 
 ## Installing the template
 
@@ -143,39 +145,29 @@ python -m ipykernel install --user --name [your ipython kernel name] --display-n
 
 ```
 
-## Tools
-
-Black
-
-Sklearn, pandas, numpy, matplotlib, scipy, etc.
-
-Notebooks
-
-Nbdev
-
-
-
 ## How to use
 
-edit the notebooks `data`, `model` and `loss` directly or replace them with empty templates found in `notebook_templates`
+1. Install this template as basis of your new project (see above)
 
-edit `settings.ini` according to your project details
+2. Check out the notebooks, and play around a bit to see that your installation works and you understand the template structure
+
+3. Edit `settings.ini`, `docs/_config.yml` and `docs/_data/topnav.yml` according to your project details
+
+4. Edit the notebooks `data`, `model` and `loss` directly or replace them with empty notebooks clean of the code examples found in the folder `notebook_templates`.
+This notebook (`index`) will become the README source of your project.
+
+5. You may delete `ml_project_template`, `notebook_templates` folders and the extra notebook `plot` if you no longer need them. 
+
+6. Save your notebooks and call `nbdev_build_lib` to build python modules of your notebooks - needed if you want to share code between notebooks or create a modules.
+Remember to do this if you want to rerun your workflow after making changes to exportables. 
+
+7. Save your notebooks and call `nbdev_build_docs` to create doc pages based on your notebooks (see below).
+This will also create README.md file based on this notebook.
+If you want to host your project pages on GitHub, you will have to make your project public.
+You can also build the pages locally with `jekyll`.
 
 
 
-## Creating doc pages
 
-1. Make sure everything runs smoothly
 
-2. Make sure that settings.ini has correct information
-
-3. You may have to manually edit repo name in `Makefile`, `docs/_config.yml` and `docs/_data/topnav.yml` to match your project
-
-4. Run `nbdev_build_lib & nbdev_build_doc`
-
-5. Push
-
-6. Make your Git repository public (github doc pages are only available for public projects. You can also try to build the doc pages locally with jekyll)
-
-7. View the github pages https://city-of-helsinki.github.io/ml_project_template/ (modify according to your project)
-
+## Contributing

@@ -36,24 +36,6 @@ nb_path: "index.ipynb"
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#from your_lib.core import *</span>
-<span class="c1">#from ml-project-template.data import *</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="o">%</span><span class="k">load_ext</span> lab_black
 </pre></div>
 
@@ -75,15 +57,14 @@ nb_path: "index.ipynb"
 <div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="About-This-Template">About This Template<a class="anchor-link" href="#About-This-Template"> </a></h2><p>This is a template for open source ML and analytics projects.
 It is best used as part of MLOps practices, for continuously exploring with data, developing, training and deploying your models.
-It ties together all components required for reproducible and explainable data science, CD/CT/CI tools, unit testing and more. 
-All you need to do for starting to work on your data project is to install the template and hook it to your data source and application.</p>
-<p>You are free to modify this teplate for the needs of your project.
-It is meant to get you started, and you are free to modify it to your needs. All feedback is wellcome!</p>
+It ties together all components required for reproducible and explainable data science, CD/CT/CI tools, unit testing and more.</p>
+<p>All you need to do for starting to work on your data project is to install the template and hook it to your data source and application.</p>
+<p>You are free to modify this teplate for the needs of your project.</p>
 <p>For general coding best practices, refer to <a href="https://dev.hel.fi/">dev.hel.fi</a> where applicable.</p>
 <p>In addition to those, the template follows four fundamental principles:</p>
 <h3 id="1.-Exploratory-Programming">1. Exploratory Programming<a class="anchor-link" href="#1.-Exploratory-Programming"> </a></h3><p>We want to keep our code, documentation and results together, seamlessly.
 That's why we use jypyter notebooks as the core of our development.</p>
-<p>The notebooks are enhanced <code>nbdev</code> to export code to modules, create doc pages, run tests etc.
+<p>The notebooks are enhanced <code>nbdev</code> to export code to modules, create doc pages, run tests, handle notebook version control etc.
 In addition, the notebooks can be parameterized with <code>papermill</code> and piped with <code>snakemake</code> for automated use.</p>
 <p>Some reasoning for those who are not yet convinced:</p>
 <ul>
@@ -151,8 +132,18 @@ and a third notebook <code>pipe</code> for automatical excecution of the workflo
 <p>Each notebook is also a basis for a python module, including tests and documentation.
 The <code>nbdev</code> tool constructs a python module of each of these notebooks, under the folder <code>[your git project name]</code> (<code>ml_project_template</code> in this template).
 This allows you to share code between your notebooks, or even publish a complete python module, while doing all your development in the notebooks.</p>
-<p>To demonstrate the different parts of the template, the template is build around a demo ML project on heart disease dataset.
-This dataset was selected for the project, because it contained missing values and required cleanig before using it.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Example-Project">Example Project<a class="anchor-link" href="#Example-Project"> </a></h2><p>We wanted to make this template easy to approach.
+That's why we included a demo, that it is built around.</p>
+<p>If you'd like to skip the demo, and get right into action, you can replace the notebooks <code>data</code>, <code>model</code> and <code>loss</code> with clean copies under <code>notebook_templates</code>.</p>
+<p>The demo is an example ML project on automating heart disease diagnosis with logistic regression <a href="https://archive.ics.uci.edu/ml/datasets/heart+disease">UCI heart disease dataset</a>.
+The dataset contains missing values, and is thus great for demonstrating light data wrangling.
+The demo is meant for solely demonstration purposes and no comes with no quarantees.</p>
 
 </div>
 </div>
@@ -175,41 +166,34 @@ python -m ipykernel install --user --name [your ipython kernel name] --display-n
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Tools">Tools<a class="anchor-link" href="#Tools"> </a></h2><p>Black</p>
-<p>Sklearn, pandas, numpy, matplotlib, scipy, etc.</p>
-<p>Notebooks</p>
-<p>Nbdev</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="How-to-use">How to use<a class="anchor-link" href="#How-to-use"> </a></h2><p>edit the notebooks <code>data</code>, <code>model</code> and <code>loss</code> directly or replace them with empty templates found in <code>notebook_templates</code></p>
-<p>edit <code>settings.ini</code> according to your project details</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Creating-doc-pages">Creating doc pages<a class="anchor-link" href="#Creating-doc-pages"> </a></h2><ol>
-<li><p>Make sure everything runs smoothly</p>
+<h2 id="How-to-use">How to use<a class="anchor-link" href="#How-to-use"> </a></h2><ol>
+<li><p>Install this template as basis of your new project (see above)</p>
 </li>
-<li><p>Make sure that settings.ini has correct information</p>
+<li><p>Check out the notebooks, and play around a bit to see that your installation works and you understand the template structure</p>
 </li>
-<li><p>You may have to manually edit repo name in <code>Makefile</code>, <code>docs/_config.yml</code> and <code>docs/_data/topnav.yml</code> to match your project</p>
+<li><p>Edit <code>settings.ini</code>, <code>docs/_config.yml</code> and <code>docs/_data/topnav.yml</code> according to your project details</p>
 </li>
-<li><p>Run <code>nbdev_build_lib &amp; nbdev_build_doc</code></p>
+<li><p>Edit the notebooks <code>data</code>, <code>model</code> and <code>loss</code> directly or replace them with empty notebooks clean of the code examples found in the folder <code>notebook_templates</code>.
+This notebook (<code>index</code>) will become the README source of your project.</p>
 </li>
-<li><p>Push</p>
+<li><p>You may delete <code>ml_project_template</code>, <code>notebook_templates</code> folders and the extra notebook <code>plot</code> if you no longer need them.</p>
 </li>
-<li><p>Make your Git repository public (github doc pages are only available for public projects. You can also try to build the doc pages locally with jekyll)</p>
+<li><p>Save your notebooks and call <code>nbdev_build_lib</code> to build python modules of your notebooks - needed if you want to share code between notebooks or create a modules.
+Remember to do this if you want to rerun your workflow after making changes to exportables.</p>
 </li>
-<li><p>View the github pages <a href="https://city-of-helsinki.github.io/ml_project_template/">https://city-of-helsinki.github.io/ml_project_template/</a> (modify according to your project)</p>
+<li><p>Save your notebooks and call <code>nbdev_build_docs</code> to create doc pages based on your notebooks (see below).
+This will also create README.md file based on this notebook.
+If you want to host your project pages on GitHub, you will have to make your project public.
+You can also build the pages locally with <code>jekyll</code>.</p>
 </li>
 </ol>
 
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Contributing">Contributing<a class="anchor-link" href="#Contributing"> </a></h2>
 </div>
 </div>
 </div>
