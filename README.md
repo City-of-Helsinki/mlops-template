@@ -2,11 +2,6 @@
 > Template for open source ML and analytics projects.
 
 
-```python
-# default_exp data
-%load_ext lab_black
-```
-
 This file will become your README and also the index of your documentation.
 
 ## About This Template
