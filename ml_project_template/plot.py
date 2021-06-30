@@ -51,7 +51,7 @@ def plot_trellis(df, legend_title="y", true_label="True", false_label="False"):
     """
     Make a trellis plot of a dataframe against a binary y value in last column
     """
-    n_cols = len(df.columns) - 1
+    n_cols = df.shape[1] - 1
     col_names = df.columns.values
 
     fig, axs = plt.subplots(
@@ -91,4 +91,4 @@ def plot_trellis(df, legend_title="y", true_label="True", false_label="False"):
             else:
                 ax.annotate(xy=(0, 0.5), text=col_names[i], fontsize=20)
                 ax.axis("off")  # hide the box
-    return fig, axs
+    return fig, ax
