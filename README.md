@@ -155,10 +155,11 @@ The demo is only meant for showcasing how the template joins together different 
 1. Sign into your GitHub account
 2. In the top right corner of the homepage, click the '+'-button
 3. Select 'Import repository'
-4. Under 'Your old repository's clone URL' copy the clone url of this repository: `git@github.com:City-of-Helsinki/ml_project_template.git`
-5. Select owner of the repo, if you want to use the template for your organization.
+4. Under 'Your old repository's clone URL' copy the clone url of this repository: `https://github.com/City-of-Helsinki/ml_project_template`
+5. Give your project a name. Do not use the dash symbol '-', but rather the underscore '_', because the name of the repo will become the name of your Python module.
+6. Select owner of the repo, if you want to use the template for your organization.
 Also define your project publicity (you can change this later, in most cases you'll want to begin with a private repo).
-6. Click 'Begin import'
+7. Click 'Begin import'
 
 This will create a new repository for you copying everything from this template, including the commit history.
 
@@ -167,13 +168,7 @@ This will create a new repository for you copying everything from this template,
 
 
 1. Clone the repository: `git clone git@github.com:City-of-Helsinki/ml_project_template.git`
-2. (Optional) Clear the commit history:
-```
-git -rf .git
-git init
-git remote add origin git@github.com:<YOUR ACCOUNT>/<YOUR REPOS>.git
-```
-3. Create virtual environment (You may change this according to your system and preferences, designed for Helsinki developers):
+2. Create virtual environment (You may change this according to your system and preferences, designed for Helsinki developers):
 ```
 conda create --name [your project env name]`
 conda activate [your project env name]
@@ -182,6 +177,7 @@ pip install -r requirements.txt
 nbdev_install_git_hooks
 python -m ipykernel install --user --name [your ipython kernel name] --display-name "Python [python version] ([your ipython kernel name])"
 ```
+3. Edit `settings.ini`, `docs/_config.yml` and `docs/_data/topnav.yml` according to your project details. You can continue editing them in the future.
 4. Configure your git user name and email adress (one of those added to your git account) if you haven't done it already:
 ```
 git config --global user.name "FIRST_NAME LAST_NAME"
@@ -192,7 +188,7 @@ git config --global user.email "MY_NAME@example.com"
 git add .
 git commit -m "Initial commit"
 ```
-6. Push (overwriting commit history if you deleted it): `git push -u --force origin master`
+6. Push: `git push -u origin master`
 
 
 
@@ -202,22 +198,20 @@ git commit -m "Initial commit"
 
 2. Check out the notebooks, and play around a bit to see that your installation works and you understand the template structure
 
-3. Edit `settings.ini`, `docs/_config.yml` and `docs/_data/topnav.yml` according to your project details
-
-4. Edit the notebooks `data`, `model` and `loss` directly or replace them with empty notebooks clean of the code examples found in the folder `notebook_templates`.
+3. Edit the notebooks `data`, `model` and `loss` directly or replace them with empty notebooks clean of the code examples found in the folder `notebook_templates`.
 This notebook (`index`) will become the README source of your project.
 
-5. You may delete `ml_project_template`, `notebook_templates` folders and the extra notebook `plot` if you no longer need them. 
+4. You may delete `ml_project_template`, `notebook_templates` folders and the extra notebook `plot` if you no longer need them. 
 
-6. Save your notebooks and call `nbdev_build_lib` to build python modules of your notebooks - needed if you want to share code between notebooks or create a modules.
+5. Save your notebooks and call `nbdev_build_lib` to build python modules of your notebooks - needed if you want to share code between notebooks or create a modules.
 Remember to do this if you want to rerun your workflow after making changes to exportables. 
 
-7. Save your notebooks and call `nbdev_build_docs` to create doc pages based on your notebooks (see below).
+6. Save your notebooks and call `nbdev_build_docs` to create doc pages based on your notebooks (see below).
 This will also create README.md file based on this notebook.
 If you want to host your project pages on GitHub, you will have to make your project public.
 You can also build the pages locally with `jekyll`.
 
-8. Remember to track your changes with git! Some useful commands:
+7. Remember to track your changes with git! Some useful commands:
 
 See which files have changes since the last commit: `git status` 
 

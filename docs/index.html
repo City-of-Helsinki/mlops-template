@@ -152,7 +152,8 @@ The demo is only meant for showcasing how the template joins together different 
 <li>Sign into your GitHub account</li>
 <li>In the top right corner of the homepage, click the '+'-button</li>
 <li>Select 'Import repository'</li>
-<li>Under 'Your old repository's clone URL' copy the clone url of this repository: <code>git@github.com:City-of-Helsinki/ml_project_template.git</code></li>
+<li>Under 'Your old repository's clone URL' copy the clone url of this repository: <code>https://github.com/City-of-Helsinki/ml_project_template</code></li>
+<li>Give your project a name. Do not use the dash symbol '-', but rather the underscore '_', because the name of the repo will become the name of your Python module.</li>
 <li>Select owner of the repo, if you want to use the template for your organization.
 Also define your project publicity (you can change this later, in most cases you'll want to begin with a private repo).</li>
 <li>Click 'Begin import'</li>
@@ -160,11 +161,6 @@ Also define your project publicity (you can change this later, in most cases you
 <p>This will create a new repository for you copying everything from this template, including the commit history.</p>
 <h3 id="On-your-computing-environment:">On your computing environment:<a class="anchor-link" href="#On-your-computing-environment:"> </a></h3><ol>
 <li>Clone the repository: <code>git clone git@github.com:City-of-Helsinki/ml_project_template.git</code></li>
-<li>(Optional) Clear the commit history:
-<pre><code>git -rf .git
-git init
-git remote add origin git@github.com:&lt;YOUR ACCOUNT&gt;/&lt;YOUR REPOS&gt;.git</code></pre>
-</li>
 <li>Create virtual environment (You may change this according to your system and preferences, designed for Helsinki developers):
 <pre><code>conda create --name [your project env name]`
 conda activate [your project env name]
@@ -173,6 +169,7 @@ pip install -r requirements.txt
 nbdev_install_git_hooks
 python -m ipykernel install --user --name [your ipython kernel name] --display-name "Python [python version] ([your ipython kernel name])"</code></pre>
 </li>
+<li>Edit <code>settings.ini</code>, <code>docs/_config.yml</code> and <code>docs/_data/topnav.yml</code> according to your project details. You can continue editing them in the future.</li>
 <li>Configure your git user name and email adress (one of those added to your git account) if you haven't done it already:
 <pre><code>git config --global user.name "FIRST_NAME LAST_NAME"
 git config --global user.email "MY_NAME@example.com"</code></pre>
@@ -181,7 +178,7 @@ git config --global user.email "MY_NAME@example.com"</code></pre>
 <pre><code>git add .
 git commit -m "Initial commit"</code></pre>
 </li>
-<li>Push (overwriting commit history if you deleted it): <code>git push -u --force origin master</code></li>
+<li>Push: <code>git push -u origin master</code></li>
 </ol>
 
 </div>
@@ -193,8 +190,6 @@ git commit -m "Initial commit"</code></pre>
 <li><p>Install this template as basis of your new project (see above)</p>
 </li>
 <li><p>Check out the notebooks, and play around a bit to see that your installation works and you understand the template structure</p>
-</li>
-<li><p>Edit <code>settings.ini</code>, <code>docs/_config.yml</code> and <code>docs/_data/topnav.yml</code> according to your project details</p>
 </li>
 <li><p>Edit the notebooks <code>data</code>, <code>model</code> and <code>loss</code> directly or replace them with empty notebooks clean of the code examples found in the folder <code>notebook_templates</code>.
 This notebook (<code>index</code>) will become the README source of your project.</p>
