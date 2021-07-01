@@ -160,16 +160,18 @@ Also define your project publicity (you can change this later, in most cases you
 </ol>
 <p>This will create a new repository for you copying everything from this template, including the commit history.</p>
 <h3 id="On-your-computing-environment:">On your computing environment:<a class="anchor-link" href="#On-your-computing-environment:"> </a></h3><ol>
-<li>Clone the repository: <code>git clone git@github.com:City-of-Helsinki/ml_project_template.git</code></li>
-<li>Create virtual environment (You may change this according to your system and preferences, designed for Helsinki developers):
-<pre><code>conda create --name [your project env name]`
+<li>Clone the repository you just imported: <code>git clone git@github.com:[repository owner]/[repository name]</code></li>
+<li>Create virtual environment (This is designed for Helsinki developers, you may change this according to your system and preferences):
+<pre><code>conda create --name [your project env name]
 conda activate [your project env name]
 conda install pip
 pip install -r requirements.txt
 nbdev_install_git_hooks
 python -m ipykernel install --user --name [your ipython kernel name] --display-name "Python [python version] ([your ipython kernel name])"</code></pre>
 </li>
-<li>Edit <code>settings.ini</code>, <code>docs/_config.yml</code> and <code>docs/_data/topnav.yml</code> according to your project details. You can continue editing them in the future.</li>
+<li>Edit <code>settings.ini</code>, <code>docs/_config.yml</code> and <code>docs/_data/topnav.yml</code> according to your project details.
+You can continue editing them in the future, so no need to worry about getting it right the first time.
+These are used for building the python modules and docs based on your notebooks, so if you get weird errors there, take a look again at these files.</li>
 <li>Configure your git user name and email adress (one of those added to your git account) if you haven't done it already:
 <pre><code>git config --global user.name "FIRST_NAME LAST_NAME"
 git config --global user.email "MY_NAME@example.com"</code></pre>
@@ -180,6 +182,9 @@ git commit -m "Initial commit"</code></pre>
 </li>
 <li>Push: <code>git push -u origin master</code></li>
 </ol>
+<p>To use git with remote repository, you must create an ssh key and upload it to your git profile settings.
+See <a href="https://docs.github.com/en/github/authenticating-to-github/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent">here</a> how to do it.
+Then, you can push the commits to remote repository, where they are safe and allow collaborative work on the project.</p>
 
 </div>
 </div>
@@ -210,9 +215,6 @@ You can also build the pages locally with <code>jekyll</code>.</p>
 <p>See which files have changes since the last commit: <code>git status</code></p>
 <p>Add files to a commit: <code>git add [file names/paths separated by whitespace ' ']</code></p>
 <p>Create commit: <code>git commit -m [short description of the changes you made]</code></p>
-<p>To use git with remote repository, you must create an ssh key and upload it to your git profile settings.
-See <a href="https://docs.github.com/en/github/authenticating-to-github/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent">here</a> how to do it.
-Then, you can push the commits to remote repository, where they are safe and allow collaborative work on the project:</p>
 <p>Push commit to remote repository (GitHub server): <code>git push origin -u</code></p>
 <p>In addition, there are many fancy features for git that enable comparing differences, collaborative work, debugging, automated testing and other crazy things.
 However, there are better sources for learning all that stuff.</p>

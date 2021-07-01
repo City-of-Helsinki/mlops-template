@@ -167,17 +167,19 @@ This will create a new repository for you copying everything from this template,
 
 
 
-1. Clone the repository: `git clone git@github.com:City-of-Helsinki/ml_project_template.git`
-2. Create virtual environment (You may change this according to your system and preferences, designed for Helsinki developers):
+1. Clone the repository you just imported: `git clone git@github.com:[repository owner]/[repository name]`
+2. Create virtual environment (This is designed for Helsinki developers, you may change this according to your system and preferences):
 ```
-conda create --name [your project env name]`
+conda create --name [your project env name]
 conda activate [your project env name]
 conda install pip
 pip install -r requirements.txt
 nbdev_install_git_hooks
 python -m ipykernel install --user --name [your ipython kernel name] --display-name "Python [python version] ([your ipython kernel name])"
 ```
-3. Edit `settings.ini`, `docs/_config.yml` and `docs/_data/topnav.yml` according to your project details. You can continue editing them in the future.
+3. Edit `settings.ini`, `docs/_config.yml` and `docs/_data/topnav.yml` according to your project details.
+You can continue editing them in the future, so no need to worry about getting it right the first time.
+These are used for building the python modules and docs based on your notebooks, so if you get weird errors there, take a look again at these files.
 4. Configure your git user name and email adress (one of those added to your git account) if you haven't done it already:
 ```
 git config --global user.name "FIRST_NAME LAST_NAME"
@@ -189,6 +191,10 @@ git add .
 git commit -m "Initial commit"
 ```
 6. Push: `git push -u origin master`
+
+To use git with remote repository, you must create an ssh key and upload it to your git profile settings.
+See [here](https://docs.github.com/en/github/authenticating-to-github/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent) how to do it.
+Then, you can push the commits to remote repository, where they are safe and allow collaborative work on the project.
 
 
 
@@ -218,10 +224,6 @@ See which files have changes since the last commit: `git status`
 Add files to a commit: `git add [file names/paths separated by whitespace ' ']`
 
 Create commit: `git commit -m [short description of the changes you made]`
-
-To use git with remote repository, you must create an ssh key and upload it to your git profile settings.
-See [here](https://docs.github.com/en/github/authenticating-to-github/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent) how to do it.
-Then, you can push the commits to remote repository, where they are safe and allow collaborative work on the project:
 
 Push commit to remote repository (GitHub server): `git push origin -u` 
 
