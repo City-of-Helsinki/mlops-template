@@ -16,12 +16,17 @@ You are free to modify this teplate for the needs of your project.
 
 For general coding best practices, refer to [dev.hel.fi](https://dev.hel.fi/) where applicable.
 
-In addition to those, the template follows four fundamental principles:
+In addition to those, the template follows four fundamental principles.
+Remember, none of these are strict and you are free to deviate for achieving the best results for you.
+
+##  Four Principles of the Template
 
 ### 1. Exploratory Programming
 
 We want to keep our code, documentation and results together, seamlessly.
 That's why we use jypyter notebooks as the core of our development.
+
+Actually, even this page was generated from a notebook!
 
 The notebooks are enhanced `nbdev` to export code to modules, create doc pages, run tests, handle notebook version control etc.
 In addition, the notebooks can be parameterized with `papermill` and piped with `snakemake` for automated use.
@@ -30,7 +35,7 @@ Some reasoning for those who are not yet convinced:
 
 - In data projects, the code efficiency is irrelevant. The thinking time is what matters.
 - It is simply impractical to create poorly documented notebook. With notebook development, your code is always well documented.
-- How many of you actually unit test your ML code? Clean, running notebooks **are** the tests. 
+- How many of you actually test your ML code? Clean, running notebooks are the tests, and with `nbdev` unit tests are easy to include. 
 - Most data science projects involve multiple stakeholders with various backgrounds and skillsets.
 Many of them do not understand code, and even those who do, can not if it is poorly documented, nor can they interpret the results alone.
 - If you need to smash your algorithm into a tiny IoT device or ship it to a network of space shuttles,
@@ -54,7 +59,7 @@ For ease of reproducibility we
 
 1. Document
 2. Seed
-3. Pipe
+3. Pipeline / orchestrate
 4. Version
 
 everything (Data version control is a topic we are still working on).
@@ -76,13 +81,25 @@ Tidy tools makes handling data, programming and creating explainable ML much eas
 Tidy tools:
 
 1. Reuse existing data structures
-2. Compose simple functions with the pipe
-3. Embrace functional programming
+2. Compose simple functions with the pipe \*
+3. Embrace functional programming \*\*
 4. Are designed for humans
+
+\* A pipe operator takes the expression before it and gives it as the first argument to the expression after it,
+assuming the expression on the right is a function call. In addition, pipe functions should perform a transformation or a side-effect to their input,
+but never both. This allows composition of simple functions, e.g.  `model >> fit >> predict`.
+Python does not have a native pipe operator such as `%>%` in R tidyverse,
+but Python class functions can be written in a pipe-like way.
+More on this in the `model` notebook.
 
 Read more on tidy tools from [tidy tools manifesto](https://cran.r-project.org/web/packages/tidyverse/vignettes/manifesto.html).
 
-### 4. Data/Model/Loss - The three components of machine learning
+\** Python is not a functional programming language, but it can be written in functional style.
+
+Read more on functional programming with python from this Stack Abuse [article](https://stackabuse.com/functional-programming-in-python).
+
+
+### 4. Data, Model & Loss - The Three Components of Machine Learning
 
 The core of this template constitutes of three notebooks: data, model and loss.
 These have a running number prefix to emphasize the running order and to improve readability.
@@ -122,23 +139,56 @@ That's why we included a demo, that it is built around.
 If you'd like to skip the demo, and get right into action, you can replace the notebooks `data`, `model` and `loss` with clean copies under `notebook_templates`.
 
 The demo is an example ML project on automating heart disease diagnosis with logistic regression [UCI heart disease dataset](https://archive.ics.uci.edu/ml/datasets/heart+disease).
-The dataset contains missing values, and is thus great for demonstrating light data wrangling.
-The demo is meant for solely demonstration purposes and no comes with no quarantees. 
+The dataset contains missing values, and is thus great for demonstrating some light data wrangling.
+The demo is only meant for showcasing how the template joins together different tools and steps.
 
 ## Installing the template
 
+### On your GitHub homepage:
+
+1. Sign into your GitHub account
+2. In the top right corner of the homepage, click the '+'-button
+3. Select 'Import repository'
+4. Under 'Your old repository's clone URL' copy the clone url of this repository: `git@github.com:City-of-Helsinki/ml_project_template.git`
+5. Select owner of the repo, if you want to use the template for your organization.
+Also define your project publicity (you can change this later, in most cases you'll want to begin with a private repo).
+6. Click 'Begin import'
+
+This will create a new repository for you copying everything from this template, including the commit history.
+
+### On your computing environment:
+
+
+
+1. Clone the repository: `git clone git@github.com:City-of-Helsinki/ml_project_template.git`
+2. (Optional) Clear the commit history:
 ```
-git clone [this environment]
-git rm -r .git # figure out how to use templates more conveniently
+git -rf .git
 git init
+git remote add origin git@github.com:<YOUR ACCOUNT>/<YOUR REPOS>.git
+```
+3. Create virtual environment (You may change this according to your system and preferences, designed for Helsinki developers):
+```
 conda create --name [your project env name]`
 conda activate [your project env name]
 conda install pip
 pip install -r requirements.txt
-nbdev_install_git_hooks # see if this is necessary
+nbdev_install_git_hooks
 python -m ipykernel install --user --name [your ipython kernel name] --display-name "Python [python version] ([your ipython kernel name])"
-
 ```
+4. Configure your git user name and email adress (one of those added to your git account) if you haven't done it already:
+```
+git config --global user.name "FIRST_NAME LAST_NAME"
+git config --global user.email "MY_NAME@example.com"
+```
+5. Make initial commit:
+```
+git add .
+git commit -m "Initial commit"
+```
+6. Push (overwriting commit history if you deleted it): `git push -u --force origin master`
+
+
 
 ## How to use
 
@@ -161,7 +211,23 @@ This will also create README.md file based on this notebook.
 If you want to host your project pages on GitHub, you will have to make your project public.
 You can also build the pages locally with `jekyll`.
 
+8. Remember to track your changes with git! Some useful commands:
 
+See which files have changes since the last commit: `git status` 
+
+Add files to a commit: `git add [file names/paths separated by whitespace ' ']`
+
+Create commit: `git commit -m [short description of the changes you made]`
+
+To use git with remote repository, you must create an ssh key and upload it to your git profile settings.
+See [here](https://docs.github.com/en/github/authenticating-to-github/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent) how to do it.
+Then, you can push the commits to remote repository, where they are safe and allow collaborative work on the project:
+
+Push commit to remote repository (GitHub server): `git push origin -u` 
+
+In addition, there are many fancy features for git that enable collaborative work, debugging, automated testing and other crazy things, but there are other sources for that.
+
+**Now, begin working with your ML project!**
 
 
 

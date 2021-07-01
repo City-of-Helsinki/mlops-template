@@ -44,16 +44,18 @@ It ties together all components required for reproducible and explainable data s
 <p>All you need to do for starting to work on your data project is to install the template and hook it to your data source and application.</p>
 <p>You are free to modify this teplate for the needs of your project.</p>
 <p>For general coding best practices, refer to <a href="https://dev.hel.fi/">dev.hel.fi</a> where applicable.</p>
-<p>In addition to those, the template follows four fundamental principles:</p>
-<h3 id="1.-Exploratory-Programming">1. Exploratory Programming<a class="anchor-link" href="#1.-Exploratory-Programming"> </a></h3><p>We want to keep our code, documentation and results together, seamlessly.
+<p>In addition to those, the template follows four fundamental principles.
+Remember, none of these are strict and you are free to deviate for achieving the best results for you.</p>
+<h2 id="Four-Principles-of-the-Template">Four Principles of the Template<a class="anchor-link" href="#Four-Principles-of-the-Template"> </a></h2><h3 id="1.-Exploratory-Programming">1. Exploratory Programming<a class="anchor-link" href="#1.-Exploratory-Programming"> </a></h3><p>We want to keep our code, documentation and results together, seamlessly.
 That's why we use jypyter notebooks as the core of our development.</p>
+<p>Actually, even this page was generated from a notebook!</p>
 <p>The notebooks are enhanced <code>nbdev</code> to export code to modules, create doc pages, run tests, handle notebook version control etc.
 In addition, the notebooks can be parameterized with <code>papermill</code> and piped with <code>snakemake</code> for automated use.</p>
 <p>Some reasoning for those who are not yet convinced:</p>
 <ul>
 <li>In data projects, the code efficiency is irrelevant. The thinking time is what matters.</li>
 <li>It is simply impractical to create poorly documented notebook. With notebook development, your code is always well documented.</li>
-<li>How many of you actually unit test your ML code? Clean, running notebooks <strong>are</strong> the tests. </li>
+<li>How many of you actually test your ML code? Clean, running notebooks are the tests, and with <code>nbdev</code> unit tests are easy to include. </li>
 <li>Most data science projects involve multiple stakeholders with various backgrounds and skillsets.
 Many of them do not understand code, and even those who do, can not if it is poorly documented, nor can they interpret the results alone.</li>
 <li>If you need to smash your algorithm into a tiny IoT device or ship it to a network of space shuttles,
@@ -71,7 +73,7 @@ Good reproducibility equals to ease of reproducibility.</p>
 <ol>
 <li>Document</li>
 <li>Seed</li>
-<li>Pipe</li>
+<li>Pipeline / orchestrate</li>
 <li>Version</li>
 </ol>
 <p>everything (Data version control is a topic we are still working on).</p>
@@ -87,12 +89,20 @@ Good reproducibility equals to ease of reproducibility.</p>
 <p>Tidy tools:</p>
 <ol>
 <li>Reuse existing data structures</li>
-<li>Compose simple functions with the pipe</li>
-<li>Embrace functional programming</li>
+<li>Compose simple functions with the pipe *</li>
+<li>Embrace functional programming **</li>
 <li>Are designed for humans</li>
 </ol>
+<p>* A pipe operator takes the expression before it and gives it as the first argument to the expression after it,
+assuming the expression on the right is a function call. In addition, pipe functions should perform a transformation or a side-effect to their input,
+but never both. This allows composition of simple functions, e.g.  <code>model &gt;&gt; fit &gt;&gt; predict</code>.
+Python does not have a native pipe operator such as <code>%&gt;%</code> in R tidyverse,
+but Python class functions can be written in a pipe-like way.
+More on this in the <code>model</code> notebook.</p>
 <p>Read more on tidy tools from <a href="https://cran.r-project.org/web/packages/tidyverse/vignettes/manifesto.html">tidy tools manifesto</a>.</p>
-<h3 id="4.-Data/Model/Loss---The-three-components-of-machine-learning">4. Data/Model/Loss - The three components of machine learning<a class="anchor-link" href="#4.-Data/Model/Loss---The-three-components-of-machine-learning"> </a></h3><p>The core of this template constitutes of three notebooks: data, model and loss.
+<p>** Python is not a functional programming language, but it can be written in functional style.</p>
+<p>Read more on functional programming with python from this Stack Abuse <a href="https://stackabuse.com/functional-programming-in-python">article</a>.</p>
+<h3 id="4.-Data,-Model-&amp;-Loss---The-Three-Components-of-Machine-Learning">4. Data, Model &amp; Loss - The Three Components of Machine Learning<a class="anchor-link" href="#4.-Data,-Model-&amp;-Loss---The-Three-Components-of-Machine-Learning"> </a></h3><p>The core of this template constitutes of three notebooks: data, model and loss.
 These have a running number prefix to emphasize the running order and to improve readability.
 Any data project can be resolved by defining these three things.</p>
 <p>You might be used to doing all of them in a single script,
@@ -125,24 +135,49 @@ This allows you to share code between your notebooks, or even publish a complete
 That's why we included a demo, that it is built around.</p>
 <p>If you'd like to skip the demo, and get right into action, you can replace the notebooks <code>data</code>, <code>model</code> and <code>loss</code> with clean copies under <code>notebook_templates</code>.</p>
 <p>The demo is an example ML project on automating heart disease diagnosis with logistic regression <a href="https://archive.ics.uci.edu/ml/datasets/heart+disease">UCI heart disease dataset</a>.
-The dataset contains missing values, and is thus great for demonstrating light data wrangling.
-The demo is meant for solely demonstration purposes and no comes with no quarantees.</p>
+The dataset contains missing values, and is thus great for demonstrating some light data wrangling.
+The demo is only meant for showcasing how the template joins together different tools and steps.</p>
 
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Installing-the-template">Installing the template<a class="anchor-link" href="#Installing-the-template"> </a></h2>
-<pre><code>git clone [this environment]
-git rm -r .git # figure out how to use templates more conveniently
+<h2 id="Installing-the-template">Installing the template<a class="anchor-link" href="#Installing-the-template"> </a></h2><h3 id="On-your-GitHub-homepage:">On your GitHub homepage:<a class="anchor-link" href="#On-your-GitHub-homepage:"> </a></h3><ol>
+<li>Sign into your GitHub account</li>
+<li>In the top right corner of the homepage, click the '+'-button</li>
+<li>Select 'Import repository'</li>
+<li>Under 'Your old repository's clone URL' copy the clone url of this repository: <code>git@github.com:City-of-Helsinki/ml_project_template.git</code></li>
+<li>Select owner of the repo, if you want to use the template for your organization.
+Also define your project publicity (you can change this later, in most cases you'll want to begin with a private repo).</li>
+<li>Click 'Begin import'</li>
+</ol>
+<p>This will create a new repository for you copying everything from this template, including the commit history.</p>
+<h3 id="On-your-computing-environment:">On your computing environment:<a class="anchor-link" href="#On-your-computing-environment:"> </a></h3><ol>
+<li>Clone the repository: <code>git clone git@github.com:City-of-Helsinki/ml_project_template.git</code></li>
+<li>(Optional) Clear the commit history:
+<pre><code>git -rf .git
 git init
-conda create --name [your project env name]`
+git remote add origin git@github.com:&lt;YOUR ACCOUNT&gt;/&lt;YOUR REPOS&gt;.git</code></pre>
+</li>
+<li>Create virtual environment (You may change this according to your system and preferences, designed for Helsinki developers):
+<pre><code>conda create --name [your project env name]`
 conda activate [your project env name]
 conda install pip
 pip install -r requirements.txt
-nbdev_install_git_hooks # see if this is necessary
+nbdev_install_git_hooks
 python -m ipykernel install --user --name [your ipython kernel name] --display-name "Python [python version] ([your ipython kernel name])"</code></pre>
+</li>
+<li>Configure your git user name and email adress (one of those added to your git account) if you haven't done it already:
+<pre><code>git config --global user.name "FIRST_NAME LAST_NAME"
+git config --global user.email "MY_NAME@example.com"</code></pre>
+</li>
+<li>Make initial commit:
+<pre><code>git add .
+git commit -m "Initial commit"</code></pre>
+</li>
+<li>Push (overwriting commit history if you deleted it): <code>git push -u --force origin master</code></li>
+</ol>
 
 </div>
 </div>
@@ -169,7 +204,18 @@ This will also create README.md file based on this notebook.
 If you want to host your project pages on GitHub, you will have to make your project public.
 You can also build the pages locally with <code>jekyll</code>.</p>
 </li>
+<li><p>Remember to track your changes with git! Some useful commands:</p>
+</li>
 </ol>
+<p>See which files have changes since the last commit: <code>git status</code></p>
+<p>Add files to a commit: <code>git add [file names/paths separated by whitespace ' ']</code></p>
+<p>Create commit: <code>git commit -m [short description of the changes you made]</code></p>
+<p>To use git with remote repository, you must create an ssh key and upload it to your git profile settings.
+See <a href="https://docs.github.com/en/github/authenticating-to-github/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent">here</a> how to do it.
+Then, you can push the commits to remote repository, where they are safe and allow collaborative work on the project:</p>
+<p>Push commit to remote repository (GitHub server): <code>git push origin -u</code></p>
+<p>In addition, there are many fancy features for git that enable collaborative work, debugging, automated testing and other crazy things, but there are other sources for that.</p>
+<p><strong>Now, begin working with your ML project!</strong></p>
 
 </div>
 </div>
