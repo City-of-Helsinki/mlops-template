@@ -28,8 +28,7 @@ That's why we use jypyter notebooks as the core of our development.
 
 Actually, even this page was generated from a notebook!
 
-The notebooks are enhanced `nbdev` to export code to modules, create doc pages, run tests, handle notebook version control etc.
-In addition, the notebooks can be parameterized with `papermill` and piped with `snakemake` for automated use.
+The notebooks are enhanced with `nbdev` tool to export code to modules, create doc pages, run tests, handle notebook version control etc.
 
 Some reasoning for those who are not yet convinced:
 
@@ -38,6 +37,7 @@ Some reasoning for those who are not yet convinced:
 - How many of you actually test your ML code? Clean, running notebooks are the tests, and with `nbdev` unit tests are easy to include. 
 - Most data science projects involve multiple stakeholders with various backgrounds and skillsets.
 Many of them do not understand code, and even those who do, can not if it is poorly documented, nor can they interpret the results alone.
+Notebook development can be used to improve explainability.
 - If you need to smash your algorithm into a tiny IoT device or ship it to a network of space shuttles,
 the work is much easier to accomplish following a well documented demo - built on top of this template
 
@@ -50,8 +50,8 @@ Read more on nbdev on their [project pages](https://nbdev.fast.ai/).
 ### 2. Ease of Reproducibility
 
 Poor reproducibility is a major issue in data science projects, both in the industry and academia, but is often overlooked at.
-For the city of Helsinki as a public sector operator, it is unacceptable, although we believe that everyone would benefit from it. 
-Each state and decision of a ML model should be reproducible.
+We at the city of Helsinki, as a public sector operators, value it highly, and believe that everyone will benefit from it.
+Our goal is, that each state and decision of our ML models are reproducible.
 A theoretical possibility of recreating a particular result is not enough, if it takes unreasonable efforts to do it.
 Good reproducibility equals to ease of reproducibility.
 
@@ -59,10 +59,10 @@ For ease of reproducibility we
 
 1. Document
 2. Seed
-3. Pipeline / orchestrate
+3. Orchestrate (pipeline)
 4. Version
 
-everything (Data version control is a topic we are still working on).
+everything. Orchestration and data version control are still topics we are working on.
 
 ### 3. Tidy Data & Tools
 
@@ -95,6 +95,7 @@ More on this in the `model` notebook.
 Read more on tidy tools from [tidy tools manifesto](https://cran.r-project.org/web/packages/tidyverse/vignettes/manifesto.html).
 
 \** Python is not a functional programming language, but it can be written in functional style.
+Many of the concepts can be used to write cleaner data code with Python.
 
 Read more on functional programming with python from this Stack Abuse [article](https://stackabuse.com/functional-programming-in-python).
 
@@ -114,14 +115,17 @@ You should also create a small toy dataset to develop and test your algorithm wi
 trust me, your code won't work for the first n+1 times, and running it with the whole dataset will waste so much time!
 This is also why we separate between the model and loss notebooks.
 
-In the **model** notebook, the machine learning model (or analytics or simulation) is idealized, defined and tested.
+In the **model** notebook, the machine learning model (or analytics or simulation) is explored, defined and tested.
 You can begin with scripting, but based on the script you should develop real generalizable and tested code.
-This part of the notebooks is the closest to traditional software development it gets: you create clean python code. 
+This part of the notebooks is the closest to traditional software development it gets: the output is a clean Python module. 
 
 In the **loss** notebook, you will finally fit your model to the whole dataset and evaluate it in action.
-Some call might call this step *inference*, others *evaluation*. No matter the name, you evaluate the performance of your model to see if it is ready for production.
-If the results are satisfactory, you can then use your code as is, or ship your code to it's destination
-(this part depends a lot on the project, so we'll leave it to you to figure it out).
+Some might call this step *inference*, others *evaluation*.
+No matter the name, you evaluate the performance of your model to see if it is ready for production.
+If the results are satisfactory, you can ship your code to it's destination.
+For example Azure SDK allows you to define your code in Python and then excecute it in the cloud, seamlessly.
+However, this part depends a lot on the project, so we'll leave it to you to figure it out.
+If your are doing research, having the results in the notebooks might be enough for you.
 
 Currently, these notebooks will have to be run manually.
 In the next release, we will include additional tools `papermill` and `snakemake`,
@@ -138,7 +142,9 @@ That's why we included a demo, that it is built around.
 
 If you'd like to skip the demo, and get right into action, you can replace the notebooks `data`, `model` and `loss` with clean copies under `notebook_templates`.
 
-The demo is an example ML project on automating heart disease diagnosis with logistic regression [UCI heart disease dataset](https://archive.ics.uci.edu/ml/datasets/heart+disease).
+This notebook will become the `README` of your project, so edit it accordingly.
+
+The demo is an example ML project on automating heart disease diagnosis with logistic regression on [UCI heart disease open dataset](https://archive.ics.uci.edu/ml/datasets/heart+disease).
 The dataset contains missing values, and is thus great for demonstrating some light data wrangling.
 The demo is only meant for showcasing how the template joins together different tools and steps.
 
@@ -225,9 +231,10 @@ Then, you can push the commits to remote repository, where they are safe and all
 
 Push commit to remote repository (GitHub server): `git push origin -u` 
 
-In addition, there are many fancy features for git that enable collaborative work, debugging, automated testing and other crazy things, but there are other sources for that.
+In addition, there are many fancy features for git that enable comparing differences, collaborative work, debugging, automated testing and other crazy things.
+However, there are better sources for learning all that stuff.
 
-**Now, begin working with your ML project!**
+**Now, begin working on your ML project!**
 
 
 

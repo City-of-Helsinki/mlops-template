@@ -49,15 +49,15 @@ Remember, none of these are strict and you are free to deviate for achieving the
 <h2 id="Four-Principles-of-the-Template">Four Principles of the Template<a class="anchor-link" href="#Four-Principles-of-the-Template"> </a></h2><h3 id="1.-Exploratory-Programming">1. Exploratory Programming<a class="anchor-link" href="#1.-Exploratory-Programming"> </a></h3><p>We want to keep our code, documentation and results together, seamlessly.
 That's why we use jypyter notebooks as the core of our development.</p>
 <p>Actually, even this page was generated from a notebook!</p>
-<p>The notebooks are enhanced <code>nbdev</code> to export code to modules, create doc pages, run tests, handle notebook version control etc.
-In addition, the notebooks can be parameterized with <code>papermill</code> and piped with <code>snakemake</code> for automated use.</p>
+<p>The notebooks are enhanced with <code>nbdev</code> tool to export code to modules, create doc pages, run tests, handle notebook version control etc.</p>
 <p>Some reasoning for those who are not yet convinced:</p>
 <ul>
 <li>In data projects, the code efficiency is irrelevant. The thinking time is what matters.</li>
 <li>It is simply impractical to create poorly documented notebook. With notebook development, your code is always well documented.</li>
 <li>How many of you actually test your ML code? Clean, running notebooks are the tests, and with <code>nbdev</code> unit tests are easy to include. </li>
 <li>Most data science projects involve multiple stakeholders with various backgrounds and skillsets.
-Many of them do not understand code, and even those who do, can not if it is poorly documented, nor can they interpret the results alone.</li>
+Many of them do not understand code, and even those who do, can not if it is poorly documented, nor can they interpret the results alone.
+Notebook development can be used to improve explainability.</li>
 <li>If you need to smash your algorithm into a tiny IoT device or ship it to a network of space shuttles,
 the work is much easier to accomplish following a well documented demo - built on top of this template</li>
 </ul>
@@ -65,18 +65,18 @@ the work is much easier to accomplish following a well documented demo - built o
 <p>Read more on exploratory programming with notebooks from <a href="https://www.fast.ai/2019/12/02/nbdev/">this blog post</a>.</p>
 <p>Read more on nbdev on their <a href="https://nbdev.fast.ai/">project pages</a>.</p>
 <h3 id="2.-Ease-of-Reproducibility">2. Ease of Reproducibility<a class="anchor-link" href="#2.-Ease-of-Reproducibility"> </a></h3><p>Poor reproducibility is a major issue in data science projects, both in the industry and academia, but is often overlooked at.
-For the city of Helsinki as a public sector operator, it is unacceptable, although we believe that everyone would benefit from it. 
-Each state and decision of a ML model should be reproducible.
+We at the city of Helsinki, as a public sector operators, value it highly, and believe that everyone will benefit from it.
+Our goal is, that each state and decision of our ML models are reproducible.
 A theoretical possibility of recreating a particular result is not enough, if it takes unreasonable efforts to do it.
 Good reproducibility equals to ease of reproducibility.</p>
 <p>For ease of reproducibility we</p>
 <ol>
 <li>Document</li>
 <li>Seed</li>
-<li>Pipeline / orchestrate</li>
+<li>Orchestrate (pipeline)</li>
 <li>Version</li>
 </ol>
-<p>everything (Data version control is a topic we are still working on).</p>
+<p>everything. Orchestration and data version control are still topics we are working on.</p>
 <h3 id="3.-Tidy-Data-&amp;-Tools">3. Tidy Data &amp; Tools<a class="anchor-link" href="#3.-Tidy-Data-&amp;-Tools"> </a></h3><p>Tidy data is easy to handle and understand.</p>
 <p>Data is tidy, when:</p>
 <ol>
@@ -100,7 +100,8 @@ Python does not have a native pipe operator such as <code>%&gt;%</code> in R tid
 but Python class functions can be written in a pipe-like way.
 More on this in the <code>model</code> notebook.</p>
 <p>Read more on tidy tools from <a href="https://cran.r-project.org/web/packages/tidyverse/vignettes/manifesto.html">tidy tools manifesto</a>.</p>
-<p>** Python is not a functional programming language, but it can be written in functional style.</p>
+<p>** Python is not a functional programming language, but it can be written in functional style.
+Many of the concepts can be used to write cleaner data code with Python.</p>
 <p>Read more on functional programming with python from this Stack Abuse <a href="https://stackabuse.com/functional-programming-in-python">article</a>.</p>
 <h3 id="4.-Data,-Model-&amp;-Loss---The-Three-Components-of-Machine-Learning">4. Data, Model &amp; Loss - The Three Components of Machine Learning<a class="anchor-link" href="#4.-Data,-Model-&amp;-Loss---The-Three-Components-of-Machine-Learning"> </a></h3><p>The core of this template constitutes of three notebooks: data, model and loss.
 These have a running number prefix to emphasize the running order and to improve readability.
@@ -112,13 +113,16 @@ Related functions may also be defined for later use, such as functions for frequ
 You should also create a small toy dataset to develop and test your algorithm with - no,
 trust me, your code won't work for the first n+1 times, and running it with the whole dataset will waste so much time!
 This is also why we separate between the model and loss notebooks.</p>
-<p>In the <strong>model</strong> notebook, the machine learning model (or analytics or simulation) is idealized, defined and tested.
+<p>In the <strong>model</strong> notebook, the machine learning model (or analytics or simulation) is explored, defined and tested.
 You can begin with scripting, but based on the script you should develop real generalizable and tested code.
-This part of the notebooks is the closest to traditional software development it gets: you create clean python code.</p>
+This part of the notebooks is the closest to traditional software development it gets: the output is a clean Python module.</p>
 <p>In the <strong>loss</strong> notebook, you will finally fit your model to the whole dataset and evaluate it in action.
-Some call might call this step <em>inference</em>, others <em>evaluation</em>. No matter the name, you evaluate the performance of your model to see if it is ready for production.
-If the results are satisfactory, you can then use your code as is, or ship your code to it's destination
-(this part depends a lot on the project, so we'll leave it to you to figure it out).</p>
+Some might call this step <em>inference</em>, others <em>evaluation</em>.
+No matter the name, you evaluate the performance of your model to see if it is ready for production.
+If the results are satisfactory, you can ship your code to it's destination.
+For example Azure SDK allows you to define your code in Python and then excecute it in the cloud, seamlessly.
+However, this part depends a lot on the project, so we'll leave it to you to figure it out.
+If your are doing research, having the results in the notebooks might be enough for you.</p>
 <p>Currently, these notebooks will have to be run manually.
 In the next release, we will include additional tools <code>papermill</code> and <code>snakemake</code>,
 and a third notebook <code>pipe</code> for automatical excecution of the workflow.</p>
@@ -134,7 +138,8 @@ This allows you to share code between your notebooks, or even publish a complete
 <h2 id="Example-Project">Example Project<a class="anchor-link" href="#Example-Project"> </a></h2><p>We wanted to make this template easy to approach.
 That's why we included a demo, that it is built around.</p>
 <p>If you'd like to skip the demo, and get right into action, you can replace the notebooks <code>data</code>, <code>model</code> and <code>loss</code> with clean copies under <code>notebook_templates</code>.</p>
-<p>The demo is an example ML project on automating heart disease diagnosis with logistic regression <a href="https://archive.ics.uci.edu/ml/datasets/heart+disease">UCI heart disease dataset</a>.
+<p>This notebook will become the <code>README</code> of your project, so edit it accordingly.</p>
+<p>The demo is an example ML project on automating heart disease diagnosis with logistic regression on <a href="https://archive.ics.uci.edu/ml/datasets/heart+disease">UCI heart disease open dataset</a>.
 The dataset contains missing values, and is thus great for demonstrating some light data wrangling.
 The demo is only meant for showcasing how the template joins together different tools and steps.</p>
 
@@ -214,8 +219,9 @@ You can also build the pages locally with <code>jekyll</code>.</p>
 See <a href="https://docs.github.com/en/github/authenticating-to-github/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent">here</a> how to do it.
 Then, you can push the commits to remote repository, where they are safe and allow collaborative work on the project:</p>
 <p>Push commit to remote repository (GitHub server): <code>git push origin -u</code></p>
-<p>In addition, there are many fancy features for git that enable collaborative work, debugging, automated testing and other crazy things, but there are other sources for that.</p>
-<p><strong>Now, begin working with your ML project!</strong></p>
+<p>In addition, there are many fancy features for git that enable comparing differences, collaborative work, debugging, automated testing and other crazy things.
+However, there are better sources for learning all that stuff.</p>
+<p><strong>Now, begin working on your ML project!</strong></p>
 
 </div>
 </div>
