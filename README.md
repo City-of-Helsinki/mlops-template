@@ -281,7 +281,7 @@ and instructions for contributing.
 {% include note.html content='if you are doing a project on personal or sensitive data for the City of Helsinki, contact the data and analytics team of the city before proceeding!' %}
 ### On your GitHub homepage:
 
-1. Sign into your GitHub account
+1. Sign into your [GitHub account](https://github.com/) (or create one if you don't already have)
 2. In the top right corner of the homepage, click the '+'-button
 3. Select 'Import repository'
 4. Under 'Your old repository's clone URL' copy the clone url of this repository: `https://github.com/City-of-Helsinki/ml_project_template`
@@ -296,39 +296,76 @@ This will create a new repository for you copying everything from this template,
 
 **Put all the highlited **(`this is command`) ** commands to shell (replace the parts with square brackets with your own information '[]')**
 
-0. Open shell, and move to the folder you want to work in: `cd [path to your programming projects folder]`.
+0. Create an SSH key and add it to your github profile. SSH is a protocol for secure communication over the internet. 
+    A ssh key is unique to a computing unit, and you must recreate this step every time you are using a new unit,
+    be it a personal computer, server or a cloud computing instance. You can read more on SSH from [Wikipedia](https://fi.wikipedia.org/wiki/SSH) or 
+    from [GitHub docs](https://docs.github.com/en/github/authenticating-to-github/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent).
+    * Create SSH key with `ssh-keygen -t ed25519 -C "[your email]"
+    * You can leave the name empty (just press enter), but **always create keys with a secure password that you remember**.
+    This password can not be reset. You have to create new key if you forget it.
+    * Now among other lines, there should be a text displayed saying `Your public key has been saved in /Users/[user]/.ssh/id_ed25519.pub.`
+    * Copy the public key adress (see above, ends with `.pub`), and call `cat /Users/[user]/.ssh/id_ed25519.pub`
+    * Now the key has been copied to clipboard and displayed on your shell. It begins with 'ssh' and ends with your email.
+    Depending on your system, you may also have to manually copy it from the shell output.
+    * Go to your GitHub homepage > progile picture in top right corner > settings > SSH and GPG keys > new ssh key
+    * Paste the public key to the key part, and give the key a name that describes the computing environment it belongs to.
+    * If you permanently stop using this computing environment, remove the public key from your github profile.
+    
+1. In your shell, move to the folder you want to work in: `cd [path to your programming projects folder]`.
 (If you get lost, `cd ..` moves you one folder towards root, and `cd` gets you to root.)
-1. Clone the repository you just imported: `git clone git@github.com:[repository owner]/[repository name]`.
+2. Clone the repository you just imported: `git clone git@github.com:[repository owner]/[repository name]`.
+If the repository is private, you'll be asked the password of the ssh key you just generated. 
 This will copy all the files and folders that you imported to your new repository in the github website, to your computing environment.
-2. Go inside the repository: `cd [repository name]`
-3. Create virtual environment with dependencies, activate it, and create a ipython kernel for running the notebooks (This is designed for Helsinki developers, you may change this according to your system and preferences):
+3. Go inside the repository folder: `cd [repository name]`
+4. Create virtual environment.  Virtual environments allow you to install project specific python versions and track dependencies.
+Read more on virtual environments from [this blog post](https://realpython.com/python-virtual-environments-a-primer/).
+
+Using conda (Azure ML only supports conda virtual environments):
+
 ```
-conda create --name [your project env name]
-conda activate [your project env name]
+conda create --name [environment name] python=3.8
+conda activate [environment name]
 conda install pip
-pip install -r requirements.txt
-nbdev_install_git_hooks
-python -m ipykernel install --user --name [your ipython kernel name] --display-name "Python [python version] ([your ipython kernel name])"
 ```
-5. Edit `settings.ini`, `docs/_config.yml` and `docs/_data/topnav.yml` according to your project details.
+You can deactivate the environment with `conda deactivate` when done working.
+
+Using virtualenv (preferred way if not working in Azure):
+
+```
+pip install virtualenv
+python3.8 -m virtualenv [environment name]
+source [environment name]/bin/activate
+```
+You can deactivate the environment with `deactivate` when done working. 
+
+5. Install dependencies (versions of python packages that work well together):
+```
+pip install -r requirements.txt # install required versions of python packages with pip
+nbdev_install_git_hooks # install nbdev git additions
+```
+6. Create an ipython kernel for running the notebooks
+```
+python -m ipykernel install --user --name [your ipython kernel name] --display-name "Python 3.8 ([your ipython kernel name])"
+```
+7. Check that you can run the notebooks `00_data.ipynb`, `01_model.ipynb` and `02_loss.ipynb`.
+    You may have to change the kernel your notebook interpreter is using to the one you just created.
+    This can be done drop down bar in top of the notebook.
+8. Edit `settings.ini`, `docs/_config.yml` and `docs/_data/topnav.yml` according to your project details.
+The files contain instructions for minimum required edits.
 You can continue editing them in the future, so no need to worry about getting it right the first time.
-These are used for building the python modules and docs based on your notebooks, so if you get weird errors there, take a look again at these files.
-4. Configure your git user name and email adress (one of those added to your git account) if you haven't done it already:
+These are used for building the python modules and docs based on your notebooks.
+If you get errors when building a module or docs, take a look again at these files.
+9. Configure your git user name and email adress (one of those added to your git account) if you haven't done it already:
 ```
 git config --global user.name "FIRST_NAME LAST_NAME"
 git config --global user.email "MY_NAME@example.com"
 ```
-5. Make initial commit:
+10. Make initial commit (snapshot of the code as it is when you begin the work):
 ```
 git add .
 git commit -m "Initial commit"
 ```
-6. Push: `git push -u origin master`
-
-To use git with remote repository, you must create an ssh key and upload it to your git profile settings.
-See [here](https://docs.github.com/en/github/authenticating-to-github/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent) how to do it.
-Then, you can push the commits to remote repository, where they are safe and allow collaborative work on the project.
-
+11. Push (save changes to remote repository): `git push -u origin master`. You will be asked to log in with your SSH key and password, again.
 
 
 ## How to use
@@ -348,9 +385,12 @@ Remember to do this if you want to rerun your workflow after making changes to e
 6. Save your notebooks and call `nbdev_build_docs` to create doc pages based on your notebooks (see below).
 This will also create README.md file based on this notebook.
 If you want to host your project pages on GitHub, you will have to make your project public.
-You can also build the pages locally with `jekyll`.
+You can also build the pages locally with jekyll.
 
-7. Remember to track your changes with git! 
+7. You can install new packages with `pip install [package name]`.
+If you install new packages, remember to update the requirements for dependency management: `pip freeze > requirements.txt`.
+
+8. Remember to track your changes with git! 
 
 ---
 
@@ -364,7 +404,14 @@ Create commit: `git commit -m "[short description of the changes you made]"`
 
 Push commit to remote repository (GitHub server): `git push origin -u` 
 
-Remove files so that git will also stop tracking them `git rm [file name]`
+Load changes that someone else has made: `git pull`
+
+If you are working with a team of people, you will most likely run into conflicts when pushing or pulling code.
+This means, that there are overlapping changes in the code. Read more from [Stack Overflow](https://stackoverflow.com/questions/161813/how-to-resolve-merge-conflicts-in-a-git-repository)
+or [GitHub docs](https://docs.github.com/en/github/collaborating-with-pull-requests/addressing-merge-conflicts/resolving-a-merge-conflict-on-github)
+on how to resolve conflicts.
+
+Remove files so that git will also stop tracking them `git rm [file name]` (`rm -r` for folders)
 
 To ignore files or folders from being tracked by git, add them to `.gitignore` file.
 In this template the `data` and `results` folders have been added to the `.gitignore`.

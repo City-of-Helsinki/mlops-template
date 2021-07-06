@@ -1,9 +1,12 @@
+## EDIT AT LEAST THESE ACCORDING TO YOUR PROJECT:
 repository: City-of-Helsinki/ml_project_template
-output: web
 topnav_title: ml_project_template
 site_title: ml_project_template
 company_name: City of Helsinki
 description: Template for reproducible and explainable ML projects.
+##
+
+output: web
 # Set to false to disable KaTeX math
 use_math: true
 # Add Google analytics id if you have one and want to use it here
