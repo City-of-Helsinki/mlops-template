@@ -91,7 +91,7 @@ Read more on nbdev on their [project pages](https://nbdev.fast.ai/).
 ---
 INFO BOX: How nbdev exports code from notebooks?
 
-![`nbdev_build_lib`](visuals/nbdev_build_lib.png)
+![Exporting code from notebooks with nbdev](visuals/nbdev_build_lib.png)
 
 ---
 
