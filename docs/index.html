@@ -107,6 +107,7 @@ setup.py                                     </code></pre>
 Remember, none of these are strict and you are free to deviate for achieving the best results for you.
 Also, it is better to get started with the work than to perfect it from the beginning.
 You may return to these concepts when you want to improve your project or get stuck, iteratively!</p>
+<p>For general coding best practices, refer to <a href="https://dev.hel.fi/">dev.hel.fi</a> where applicable.</p>
 
 </div>
 </div>
@@ -295,12 +296,15 @@ If the results are satisfactory, you can ship your code to it's destination.
 For example Azure SDK allows you to define your code in Python and then excecute it in the cloud, seamlessly.
 However, this part depends a lot on the project, so we'll leave it to you to figure it out.
 If your are doing research, having the results in the notebooks might be enough for you.</p>
-<p>Currently, these notebooks will have to be run manually.
-We will soon include additional tools <code>papermill</code> and <code>snakemake</code>,
-and a third notebook <code>pipe</code> for automatical excecution of the workflow.</p>
+<p><strong>Workflow</strong></p>
+<p>We added the fourth notebook to enable automatic workflow control of the notebooks.
+With the help of this notebook, you can create workflows to automatically update, train and deploy your ML model.
+The workflows can either be static or dynamic, and you can even parameterize them to automatically update your workflow definition.
+Usually this notebook is the last one you need to touch, so you don't need to mind it in the beginning.
+However, if you have multiple or varying number of data sources, or a very complex workflow,
+you might want to define a dynamic workflow already in the early development phase.</p>
 <p>You can also create new notebooks to your liking. For example, if you want to create and create many algorithms that are inheritantly different
 it might be better to separate them in their own notebooks <code>02a_model1.ipynb</code> and <code>02b_model2.ipynb</code>.</p>
-<p>For general coding best practices, refer to <a href="https://dev.hel.fi/">dev.hel.fi</a> where applicable.</p>
 
 </div>
 </div>

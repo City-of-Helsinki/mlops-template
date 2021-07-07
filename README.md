@@ -84,6 +84,8 @@ Remember, none of these are strict and you are free to deviate for achieving the
 Also, it is better to get started with the work than to perfect it from the beginning.
 You may return to these concepts when you want to improve your project or get stuck, iteratively!
 
+For general coding best practices, refer to [dev.hel.fi](https://dev.hel.fi/) where applicable.
+
 ### 1. Exploratory Programming - Use Jupyter Notebooks
 
 We want to keep our code, documentation and results together, seamlessly.
@@ -297,14 +299,17 @@ For example Azure SDK allows you to define your code in Python and then excecute
 However, this part depends a lot on the project, so we'll leave it to you to figure it out.
 If your are doing research, having the results in the notebooks might be enough for you.
 
-Currently, these notebooks will have to be run manually.
-We will soon include additional tools `papermill` and `snakemake`,
-and a third notebook `pipe` for automatical excecution of the workflow.
+**Workflow**
+
+We added the fourth notebook to enable automatic workflow control of the notebooks.
+With the help of this notebook, you can create workflows to automatically update, train and deploy your ML model.
+The workflows can either be static or dynamic, and you can even parameterize them to automatically update your workflow definition.
+Usually this notebook is the last one you need to touch, so you don't need to mind it in the beginning.
+However, if you have multiple or varying number of data sources, or a very complex workflow,
+you might want to define a dynamic workflow already in the early development phase.
 
 You can also create new notebooks to your liking. For example, if you want to create and create many algorithms that are inheritantly different
 it might be better to separate them in their own notebooks `02a_model1.ipynb` and `02b_model2.ipynb`.
-
-For general coding best practices, refer to [dev.hel.fi](https://dev.hel.fi/) where applicable.
 
 ## Example Project
 
