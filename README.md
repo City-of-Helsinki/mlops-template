@@ -2,7 +2,7 @@
 > Template for open source ML and analytics projects.
 
 
-## About This Template
+## About
 
 This is a git repository\* template for Python-based open source ML and analytics projects.
 
@@ -40,7 +40,36 @@ so the maintainers can help. [Stack Overflow](https://stackoverflow.com/) is the
 All you need to do for starting to work on your data project is to install the template following the instructions below.
 
 
-## Principles of the Template
+## Contents
+
+The repository contains the following files and folders:
+
+    ## EDITABLES:
+    data/               # Folder for storing data files. Contents are ignored by git.
+    results/            # Runned notebooks, figures, trained models etc. Ignored by git.
+    notebook_templates/ # Notebook templates with usage instructions, but without code examples
+    .gitignore          # Filetypes, files and folders to be ignored by git.
+    00_data.ipynb       # Data loading, cleaning and preprocessing with examples
+    01_model.ipynb      # ML Model scripting, class creation and testing with examples
+    02_loss.ipynb       # ML Evaluation with examples
+    04_workflow.ipynb   # ML workflow definition with examples
+    requirements.txt    # Required python packages and versions
+    CONTRIBUTING.md     # Instructions for contributing
+    settings.ini        # Project specific settings. Build instructions for lib and docs.
+
+    ## AUTOMATICALLY GENERATED: (Do not edit unless otherwise specified!)
+    docs/               # Project documentation (html)
+    [your_repo_name]/   # Python module built from the notebooks. (ml_project_template/ before completing installation of the template)
+    Makefile
+    README.md 
+
+    ## STATIC NON-EDITABLES: (Do not edit unless you really know what you're doing!)
+    LISENCE
+    MANIFEST.in
+    docker-compose.yml   
+    setup.py                                     
+
+## Guiding Principles
 
 The template follows four guiding principles.
 Remember, none of these are strict and you are free to deviate for achieving the best results for you.
@@ -51,11 +80,13 @@ You may return to these concepts when you want to improve your project or get st
 
 We want to keep our code, documentation and results together, seamlessly.
 We also want to see what's going on as we create the software, immediately.
+Create code where we first need it, without the need of copy-pasting it around.
 That's why we use jypyter notebooks as the core of our development.
 
 Actually, even this page was generated from a notebook!
 
 The notebooks are enhanced with `nbdev` tool to export code to modules, create doc pages, run tests, handle notebook version control etc.
+Read more on nbdev on their [project pages](https://nbdev.fast.ai/).
 
 Some reasoning for those who are not yet convinced:
 
@@ -71,8 +102,6 @@ you can still use this for planning and creating documentation. Clean code is ea
 With notebook development you get the right results much faster, and everyone involved can actually understand what is happening.
 
 Read more on exploratory programming with notebooks from [this blog post](https://www.fast.ai/2019/12/02/nbdev/).
-
-Read more on nbdev on their [project pages](https://nbdev.fast.ai/).
 
 ### 2. Ease of Reproducibility
 
@@ -277,30 +306,32 @@ You should at least have a general description of the project,
 instructions on how to install and use it,
 and instructions for contributing.
 
-## Installing the template
+## Installing the Template
 {% include note.html content='if you are doing a project on personal or sensitive data for the City of Helsinki, contact the data and analytics team of the city before proceeding!' %}
 ### On your GitHub homepage:
 
-1. Sign into your [GitHub account](https://github.com/) (or create one if you don't already have)
+0. (Create [GitHub account](https://github.com/) if you do not have one already. 
+1. Sign into your GitHub homepage
 2. In the top right corner of the homepage, click the '+'-button
 3. Select 'Import repository'
 4. Under 'Your old repository's clone URL' copy the clone url of this repository: `https://github.com/City-of-Helsinki/ml_project_template`
 5. Give your project a name. Do not use the dash symbol '-', but rather the underscore '_', because the name of the repo will become the name of your Python module.
-6. Select owner of the repo, if you want to use the template for your organization.
-Also define your project publicity (you can change this later, in most cases you'll want to begin with a private repo).
-7. Click 'Begin import'
+6. If you are creating a project for your organization, change owner of the repo from the drop down bar (it's you by default).
+You need to be included as a team member to the GitHub of the organization.
+7. Define your project publicity (you can change this later, in most cases you'll want to begin with a private repo).
+8. Click 'Begin import'
 
 This will create a new repository for you copying everything from this template, including the commit history.
 
 ### On your computing environment:
 
-**Put all the highlited **(`this is command`) ** commands to shell (replace the parts with square brackets with your own information '[]')**
+**Put all the highlited ** `commands` ** to shell one ate a time and press enter (replace the parts with square brackets with your own information '[]')**
 
 0. Create an SSH key and add it to your github profile. SSH is a protocol for secure communication over the internet. 
     A ssh key is unique to a computing unit, and you must recreate this step every time you are using a new unit,
     be it a personal computer, server or a cloud computing instance. You can read more on SSH from [Wikipedia](https://fi.wikipedia.org/wiki/SSH) or 
     from [GitHub docs](https://docs.github.com/en/github/authenticating-to-github/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent).
-    * Create SSH key with `ssh-keygen -t ed25519 -C "[your email]"
+    * Create SSH key with `ssh-keygen -t ed25519 -C "[your email]"`
     * You can leave the name empty (just press enter), but **always create keys with a secure password that you remember**.
     This password can not be reset. You have to create new key if you forget it.
     * Now among other lines, there should be a text displayed saying `Your public key has been saved in /Users/[user]/.ssh/id_ed25519.pub.`
@@ -347,40 +378,55 @@ nbdev_install_git_hooks # install nbdev git additions
 ```
 python -m ipykernel install --user --name [your ipython kernel name] --display-name "Python 3.8 ([your ipython kernel name])"
 ```
-7. Check that you can run the notebooks `00_data.ipynb`, `01_model.ipynb` and `02_loss.ipynb`.
+7. With your team, decide which notebook editor are you using. There are two common editors: Jupyter and JupyterLab, but both run the same notebooks.
+Depending on the selection, you'll have to edit the top cell of each notebook where black formatter extension is activated for the notebook cells.
+You can change this later, but it is convenient to only develop with one type of an editor.
+Black is a code formatting tool used to unify code style regardless of who is writing it.
+You may notice, that the structure of your code changes a bit from what you have written after you run the cells of a notebook.
+This is the formatter restructuring your code.
+There are other formats and tools, and even more opinions on them, but black is used in the city of Helsinki projects.
+So, after deciding which editor you are working with (Azure ML default notebook view is based on JupyterLab), edit the top cell of all notebooks:
+    
+    `%load_ext nb_black` if using Jupyter
+    `%load_ext lab_black` if using JupyterLab
+8. Check that you can run the notebooks `00_data.ipynb`, `01_model.ipynb` and `02_loss.ipynb`.
     You may have to change the kernel your notebook interpreter is using to the one you just created.
-    This can be done drop down bar in top of the notebook.
-8. Edit `settings.ini`, `docs/_config.yml` and `docs/_data/topnav.yml` according to your project details.
+    This can be done drop down bar in top of the notebook editor.
+9. Edit `settings.ini`, `docs/_config.yml` and `docs/_data/topnav.yml` according to your project details.
 The files contain instructions for minimum required edits.
 You can continue editing them in the future, so no need to worry about getting it right the first time.
 These are used for building the python modules and docs based on your notebooks.
 If you get errors when building a module or docs, take a look again at these files.
-9. Configure your git user name and email adress (one of those added to your git account) if you haven't done it already:
+10. Configure your git user name and email adress (one of those added to your git account) if you haven't done it already:
 ```
 git config --global user.name "FIRST_NAME LAST_NAME"
 git config --global user.email "MY_NAME@example.com"
 ```
-10. Make initial commit (snapshot of the code as it is when you begin the work):
+11. Make initial commit (snapshot of the code as it is when you begin the work):
 ```
 git add .
 git commit -m "Initial commit"
 ```
-11. Push (save changes to remote repository): `git push -u origin master`. You will be asked to log in with your SSH key and password, again.
+12. Push (save changes to remote repository): `git push -u origin master`. You will be asked to log in with your SSH key and password, again.
 
 
 ## How to use
 
 1. Install this template as basis of your new project (see above)
 
+2. Remember to always activate your virtual environment before you start working: `conda activate [environment name]` with anaconda or `source [environment name]/bin/activate` with virtualenv
+
 2. Check out the notebooks, and play around a bit to see that your installation works (notebooks run smoothly) and you understand the template structure
 
 3. Edit the notebooks `index`, `data`, `model` and `loss` directly or replace them with empty notebooks clean of the code examples found in the folder `notebook_templates`.
 
 4. You may delete `ml_project_template`, `notebook_templates` folders and the extra notebook `plot` if you no longer need them.
-Use `git rm -r [folder name]` to also remove the folders and git tracking.
+Remove files with `git rm -r [folder or filename]` so the change is added to your next git commit and the repository is updated accordingly.
 
 5. Save your notebooks and call `nbdev_build_lib` to build python modules of your notebooks - needed if you want to share code between notebooks or create a modules.
 Remember to do this if you want to rerun your workflow after making changes to exportables. 
+
+![How `nbdev_build_lib` works.](visuals/nbdev_build_lib.png)
 
 6. Save your notebooks and call `nbdev_build_docs` to create doc pages based on your notebooks (see below).
 This will also create README.md file based on this notebook.
@@ -403,6 +449,8 @@ Add files to a commit: `git add [file names/paths separated by whitespace ' ']`
 Create commit: `git commit -m "[short description of the changes you made]"`
 
 Push commit to remote repository (GitHub server): `git push origin -u` 
+
+*A good rule of thumb is to commit every change you make, and push at the end of the day when you stop working!*
 
 Load changes that someone else has made: `git pull`
 
