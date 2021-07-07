@@ -44,10 +44,17 @@ Git is often used with GitHub, a free online service for storing and sharing rep
 GitHub allows collaborative work, automated testing, hosting project doc pages and other fancy features.
 Read more on GitHub on their <a href="https://github.com/City-of-Helsinki/ml_project_template">homepage</a>.</p>
 <hr>
-<p>This template helps you to develop, test, share and update ML applications.
+<p>This template helps you to develop, test, share and update ML applications, in a collaborative way.
 It defines steps and tools of a ML project and helps you to tie them together for easy to use, explainable and reproducible workflow.
 You can just replace the examples with your own code, or start from scratch with clean notebooks.
 Instructions for using the template are given below, so just keep reading!</p>
+<p>ML requires team effort. When working with data, we have three kinds of people.
+We havepeople who know code, people who know data, and people who know a problem to solve.
+Those who know two of these are rare, not to mention owning all three.
+Working with the template enables joint work of application field specialists 
+(e.g. healthcare, city planning, finance), researchers, data analysts, engineers &amp; scientists, programmers and other stakeholders.
+In essence, the template is a tool for teamwork - <em>a single person does not have to, and most likely does not even know how to complete all of the steps defined!</em>.
+With code, documentation and results as one, each team member can understand what is going on, and contribute on their behalf.</p>
 <p>The template is completely open source and environment agnostic.
 It contains examples and instructions to help you through the whole project.
 However, we try to keep it light and easy to maintain, and thus the documentation is not exhaustive.
@@ -112,9 +119,9 @@ Create code where we first need it, without the need of copy-pasting it around.
 That's why we use jypyter notebooks as the core of our development.</p>
 <p>Actually, even this page was generated from a notebook!</p>
 <p>The notebooks are enhanced with <code>nbdev</code> tool to export code to modules, create doc pages, run tests, handle notebook version control etc.
-Read more on nbdev on their <a href="https://nbdev.fast.ai/">project pages</a>.</p>
+Read more on nbdev on their <a href="https://nbdev.fast.ai/">project pages</a>. This template is largely based on <a href="https://github.com/fastai/nbdev_template">nbdev template</a>.</p>
 <hr>
-<p>INFO BOX: How nbdev exports code from notebooks?</p>
+<p><strong>INFO BOX: How nbdev exports code from notebooks?</strong></p>
 <p><img src="/ml_project_template/./visuals/nbdev_build_lib.png" alt="Exporting code from notebooks with nbdev"></p>
 <hr>
 <p>Some reasoning for those who are not yet convinced:</p>
@@ -226,7 +233,7 @@ In a side effect a reference to the directly modified input is returned.</p>
 In pseudocode, it looks something like this</p>
 
 <pre><code>model() &gt;&gt; init(X_train, y_train) &gt;&gt; fit(hyperparam) &gt;&gt; predict(X_test) &gt;&gt; mean()</code></pre>
-<p>instead of multiple lines of code</p>
+<p>instead of multiple or nested lines of code</p>
 
 <pre><code>m = model()
 m&gt;init(X_train, y_train)
@@ -304,7 +311,7 @@ That's why we included a demo, that it is built around.</p>
 <p>The demo is an example ML project on automating heart disease diagnosis with logistic regression on <a href="https://archive.ics.uci.edu/ml/datasets/heart+disease">UCI heart disease open dataset</a>.
 The dataset contains missing values, and is thus great for demonstrating some light data wrangling.
 The demo is only meant for showcasing how the template joins together different tools and steps.</p>
-<p><strong>If you'd like to skip the demo</strong>, and get right into action, you can replace the notebooks <code>index</code>, <code>data</code>, <code>model</code> and <code>loss</code> with clean copies under <code>notebook_templates</code>.</p>
+<p><strong>If you'd like to skip the demo</strong>, and get right into action, you can replace the notebooks <code>index</code>, <code>data</code>, <code>model</code>, <code>loss</code> and <code>workflow</code> with clean copies under <code>notebook_templates</code>.</p>
 <p>The <code>index</code> notebook (this notebook or the empty copy) will become the <code>README</code> of your project and frontpage of your documentation, so edit it accordingly.
 You should at least have a general description of the project,
 instructions on how to install and use it,
@@ -387,8 +394,8 @@ You may notice, that the structure of your code changes a bit from what you have
 This is the formatter restructuring your code.
 There are other formats and tools, and even more opinions on them, but black is used in the city of Helsinki projects.
 So, after deciding which editor you are working with (Azure ML default notebook view is based on JupyterLab), edit the top cell of all notebooks:</p>
-<p><code>%load_ext nb_black</code> if using Jupyter
- <code>%load_ext lab_black</code> if using JupyterLab</p>
+<p><code>%load_ext nb_black</code> if using Jupyter</p>
+<p><code>%load_ext lab_black</code> if using JupyterLab</p>
 </li>
 <li>Check that you can run the notebooks <code>00_data.ipynb</code>, <code>01_model.ipynb</code> and <code>02_loss.ipynb</code>.
  You may have to change the kernel your notebook interpreter is using to the one you just created.
@@ -421,10 +428,14 @@ git commit -m "Initial commit"</code></pre>
 </li>
 <li><p>Check out the notebooks, and play around a bit to see that your installation works (notebooks run smoothly) and you understand the template structure</p>
 </li>
-<li><p>Edit the notebooks <code>index</code>, <code>data</code>, <code>model</code> and <code>loss</code> directly or replace them with empty notebooks clean of the code examples found in the folder <code>notebook_templates</code>.</p>
+<li><p>Replace the notebooks <code>index</code>, <code>data</code>, <code>model</code>, <code>loss</code> and <code>workflow</code> with copies without the code examples:</p>
+
+<pre><code>git rm index.ipynb 00_data.ipynb 01_model.ipynb 02_loss.ipynb 03_workflow.ipynb
+git mv notebook_templates/* ./</code></pre>
 </li>
-<li><p>You may delete <code>ml_project_template</code>, <code>notebook_templates</code> folders and the extra notebook <code>plot</code> if you no longer need them.
-Remove files with <code>git rm -r [folder or filename]</code> so the change is added to your next git commit and the repository is updated accordingly.</p>
+<li><p>You may delete the folders <code>ml_project_template</code> and <code>notebook_templates</code>.</p>
+
+<pre><code>git rm -r ml_project_template notebook_templates</code></pre>
 </li>
 <li><p>Save your notebooks and call <code>nbdev_build_lib</code> to build python modules of your notebooks - needed if you want to share code between notebooks or create a modules.
 Remember to do this if you want to rerun your workflow after making changes to exportables.</p>

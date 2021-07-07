@@ -20,10 +20,18 @@ Read more on GitHub on their [homepage](https://github.com/City-of-Helsinki/ml_p
 
 ---
 
-This template helps you to develop, test, share and update ML applications.
+This template helps you to develop, test, share and update ML applications, in a collaborative way.
 It defines steps and tools of a ML project and helps you to tie them together for easy to use, explainable and reproducible workflow.
 You can just replace the examples with your own code, or start from scratch with clean notebooks.
 Instructions for using the template are given below, so just keep reading!
+
+ML requires team effort. When working with data, we have three kinds of people.
+We havepeople who know code, people who know data, and people who know a problem to solve.
+Those who know two of these are rare, not to mention owning all three.
+Working with the template enables joint work of application field specialists 
+(e.g. healthcare, city planning, finance), researchers, data analysts, engineers & scientists, programmers and other stakeholders.
+In essence, the template is a tool for teamwork - *a single person does not have to, and most likely does not even know how to complete all of the steps defined!*.
+With code, documentation and results as one, each team member can understand what is going on, and contribute on their behalf.
 
 The template is completely open source and environment agnostic.
 It contains examples and instructions to help you through the whole project.
@@ -86,10 +94,10 @@ That's why we use jypyter notebooks as the core of our development.
 Actually, even this page was generated from a notebook!
 
 The notebooks are enhanced with `nbdev` tool to export code to modules, create doc pages, run tests, handle notebook version control etc.
-Read more on nbdev on their [project pages](https://nbdev.fast.ai/).
+Read more on nbdev on their [project pages](https://nbdev.fast.ai/). This template is largely based on [nbdev template](https://github.com/fastai/nbdev_template).
 
 ---
-INFO BOX: How nbdev exports code from notebooks?
+**INFO BOX: How nbdev exports code from notebooks?**
 
 ![Exporting code from notebooks with nbdev](visuals/nbdev_build_lib.png)
 
@@ -215,7 +223,7 @@ In pseudocode, it looks something like this
 model() >> init(X_train, y_train) >> fit(hyperparam) >> predict(X_test) >> mean()
 ```
 
-instead of multiple lines of code
+instead of multiple or nested lines of code
 
 ```
 m = model()
@@ -306,7 +314,7 @@ The demo is an example ML project on automating heart disease diagnosis with log
 The dataset contains missing values, and is thus great for demonstrating some light data wrangling.
 The demo is only meant for showcasing how the template joins together different tools and steps.
 
-**If you'd like to skip the demo**, and get right into action, you can replace the notebooks `index`, `data`, `model` and `loss` with clean copies under `notebook_templates`.
+**If you'd like to skip the demo**, and get right into action, you can replace the notebooks `index`, `data`, `model`, `loss` and `workflow` with clean copies under `notebook_templates`.
 
 The `index` notebook (this notebook or the empty copy) will become the `README` of your project and frontpage of your documentation, so edit it accordingly.
 You should at least have a general description of the project,
@@ -395,6 +403,7 @@ There are other formats and tools, and even more opinions on them, but black is 
 So, after deciding which editor you are working with (Azure ML default notebook view is based on JupyterLab), edit the top cell of all notebooks:
     
     `%load_ext nb_black` if using Jupyter
+    
     `%load_ext lab_black` if using JupyterLab
 8. Check that you can run the notebooks `00_data.ipynb`, `01_model.ipynb` and `02_loss.ipynb`.
     You may have to change the kernel your notebook interpreter is using to the one you just created.
@@ -425,10 +434,16 @@ git commit -m "Initial commit"
 
 2. Check out the notebooks, and play around a bit to see that your installation works (notebooks run smoothly) and you understand the template structure
 
-3. Edit the notebooks `index`, `data`, `model` and `loss` directly or replace them with empty notebooks clean of the code examples found in the folder `notebook_templates`.
+3. Replace the notebooks `index`, `data`, `model`, `loss` and `workflow` with copies without the code examples:
+```
+git rm index.ipynb 00_data.ipynb 01_model.ipynb 02_loss.ipynb 03_workflow.ipynb
+git mv notebook_templates/* ./
+```
 
-4. You may delete `ml_project_template`, `notebook_templates` folders and the extra notebook `plot` if you no longer need them.
-Remove files with `git rm -r [folder or filename]` so the change is added to your next git commit and the repository is updated accordingly.
+4. You may delete the folders `ml_project_template` and `notebook_templates`.
+```
+git rm -r ml_project_template notebook_templates
+```
 
 5. Save your notebooks and call `nbdev_build_lib` to build python modules of your notebooks - needed if you want to share code between notebooks or create a modules.
 Remember to do this if you want to rerun your workflow after making changes to exportables. 
