@@ -88,6 +88,13 @@ Actually, even this page was generated from a notebook!
 The notebooks are enhanced with `nbdev` tool to export code to modules, create doc pages, run tests, handle notebook version control etc.
 Read more on nbdev on their [project pages](https://nbdev.fast.ai/).
 
+---
+INFO BOX: How nbdev exports code from notebooks?
+
+![`nbdev_build_lib`](visuals/nbdev_build_lib.png)
+
+---
+
 Some reasoning for those who are not yet convinced:
 
 - In data projects, the code efficiency is irrelevant. The thinking time is what matters.
@@ -426,8 +433,6 @@ Remove files with `git rm -r [folder or filename]` so the change is added to you
 5. Save your notebooks and call `nbdev_build_lib` to build python modules of your notebooks - needed if you want to share code between notebooks or create a modules.
 Remember to do this if you want to rerun your workflow after making changes to exportables. 
 
-![How `nbdev_build_lib` works.](visuals/nbdev_build_lib.png)
-
 6. Save your notebooks and call `nbdev_build_docs` to create doc pages based on your notebooks (see below).
 This will also create README.md file based on this notebook.
 If you want to host your project pages on GitHub, you will have to make your project public.
@@ -471,7 +476,5 @@ However, there are better sources for learning all that stuff.
 ---
 
 
-
-## Contributing
 
 ## Now you are all set up and ready to begin you ML project!

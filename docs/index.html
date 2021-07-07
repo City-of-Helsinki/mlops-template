@@ -113,6 +113,10 @@ That's why we use jypyter notebooks as the core of our development.</p>
 <p>Actually, even this page was generated from a notebook!</p>
 <p>The notebooks are enhanced with <code>nbdev</code> tool to export code to modules, create doc pages, run tests, handle notebook version control etc.
 Read more on nbdev on their <a href="https://nbdev.fast.ai/">project pages</a>.</p>
+<hr>
+<p>INFO BOX: How nbdev exports code from notebooks?</p>
+<p>!<code>nbdev_build_lib</code></p>
+<hr>
 <p>Some reasoning for those who are not yet convinced:</p>
 <ul>
 <li>In data projects, the code efficiency is irrelevant. The thinking time is what matters.</li>
@@ -425,9 +429,6 @@ Remove files with <code>git rm -r [folder or filename]</code> so the change is a
 <li><p>Save your notebooks and call <code>nbdev_build_lib</code> to build python modules of your notebooks - needed if you want to share code between notebooks or create a modules.
 Remember to do this if you want to rerun your workflow after making changes to exportables.</p>
 </li>
-</ol>
-<p><img src="/ml_project_template/./visuals/nbdev_build_lib.png" alt="How `nbdev_build_lib` works."></p>
-<ol>
 <li><p>Save your notebooks and call <code>nbdev_build_docs</code> to create doc pages based on your notebooks (see below).
 This will also create README.md file based on this notebook.
 If you want to host your project pages on GitHub, you will have to make your project public.
@@ -459,12 +460,6 @@ We do not want to version them with git, as it will explode the size of the repo
 However, there are better sources for learning all that stuff.</p>
 <hr>
 
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Contributing">Contributing<a class="anchor-link" href="#Contributing"> </a></h2>
 </div>
 </div>
 </div>
