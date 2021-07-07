@@ -8,7 +8,6 @@ index = {"plot_histogram": "00_data.ipynb",
          "LogisticRegressionClassifier": "01_model.ipynb"}
 
 modules = ["data.py",
-           "plot.py",
            "model.py"]
 
 doc_url = "https://City-of-Helsinki.github.io/ml_project_template/"

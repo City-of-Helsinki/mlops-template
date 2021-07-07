@@ -301,7 +301,8 @@ Currently, these notebooks will have to be run manually.
 We will soon include additional tools `papermill` and `snakemake`,
 and a third notebook `pipe` for automatical excecution of the workflow.
 
-You can also create new notebooks to your liking. We added one example: `plot`, where we can define general functions for plotting.
+You can also create new notebooks to your liking. For example, if you want to create and create many algorithms that are inheritantly different
+it might be better to separate them in their own notebooks `02a_model1.ipynb` and `02b_model2.ipynb`.
 
 For general coding best practices, refer to [dev.hel.fi](https://dev.hel.fi/) where applicable.
 

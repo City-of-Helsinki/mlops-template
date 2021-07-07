@@ -18,9 +18,6 @@ entries:
     - output: web,pdf
       title: Loss
       url: loss.html
-    - output: web,pdf
-      title: Plot
-      url: plot.html
     output: web
     title: ml_project_template
   output: web
