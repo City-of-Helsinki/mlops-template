@@ -175,7 +175,7 @@ that are affected by the changes that happened since the last trigger event.
 This change can either be in the code or in the data.
 For example if you may have a varying number of input sources to read data from at each training round of the algorithm.
 Depending on your ML application, you should consider if you want to use static or dynamic orchestration.
-We will add examples of both in the `pipe` notebook.
+We will add examples of both in the `workflow` notebook.
 
 *Version control*
 
