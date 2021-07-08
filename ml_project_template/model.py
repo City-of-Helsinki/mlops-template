@@ -18,6 +18,8 @@ from sklearn.pipeline import Pipeline, make_pipeline
 from sklearn.preprocessing import StandardScaler
 
 # Cell
+
+# Define base class for our classifier
 class MachineLearningModel:
     """
     Overly simplified example for a base class: basically just function handle definitions
@@ -88,6 +90,12 @@ class MachineLearningModel:
         pass
 
 # Cell
+
+# Create subclass
+# now you see, that the subclass inherits data handling functions from the base class,
+# and we do not need to redefine them (although we could if we wanted to!
+
+
 class LogisticRegressionClassifier(MachineLearningModel):
     """
     Logistic regression classifier
@@ -175,6 +183,6 @@ class LogisticRegressionClassifier(MachineLearningModel):
 
     def get_params(self):
         """
-        Return params
+        Return parameters
         """
         return self.pipe.get_params()

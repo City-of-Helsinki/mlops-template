@@ -34,16 +34,18 @@ nb_path: "01_model.ipynb"
 <p><strong><em>input</em></strong>: toy dataset from data-notebook</p>
 <p><strong><em>output</em></strong>: ML model / simulation / analytics python module</p>
 <p><strong><em>description:</em></strong></p>
-<p>A hypotheses space defines the possible machine learning models, simulations or analytics tools considered for a ML problem. 
-In this notebook you define the hypotheses space. This notebook contains an example ML model for classifying the heart disease dataset.</p>
-<p>If you are doing anyhting more complicated than just fitting existing well defined models such as defined in sklearn,
-it is recommended that you create a base class for the whole hypotheses space where you define core function handles,
-and implement the functions in subclasses that inherit from the base class.
-This is demonstrated in this notebook, even though it wouldn't be necessary for such a simple function.</p>
+<p>In this notebook you hypothetize, explain and explore machine learning models to solve your problem.</p>
+<p>Then, you should encapsulate the model inside a Python class to be exported into <code>your_repo_name/model.py</code>,
+so that it can be evaluated in the loss notebook, and intergrated with your target application.
+You should also unit test the classes created in this notebook with the toy data created in data notebook.</p>
+<p>You should probably have a person in your team familiar with object oriented programming with python and unit testing, but if not, don't worry.
+If you can draft the model function in a script format, any programmer can easily do it for you.
+However, we encourage you to learn more on <a href="https://realpython.com/python3-object-oriented-programming/">object oriented programming with Python</a>
+and <a href="https://realpython.com/python-testing/">getting started with unit testing in Python</a>.</p>
+<p>This notebook contains an example ML model for classifying the heart disease dataset with linearregression.</p>
 <p>If the methods are complicated or you are comparing multiple methods that are inheritantly different by nature, 
 you can also separate models or subclasses to different notebooks similar to this.
-Adjust the running number in the beginning of the notebook name to your needs for retaining logical order.
-You should also unit test the classes created in this notebook with either toy data created in data notebook, or randomly generated test data.</p>
+Adjust the running number, name, header and top cell <code>#default_exp module_name</code> of the notebooks accordingly.</p>
 <p>Remember to add <code># export</code> to top of all cells containing functions or classes that you have defined and want to use outside this notebook.</p>
 
 </div>
@@ -79,6 +81,13 @@ You should also unit test the classes created in this notebook with either toy d
 </div>
     {% endraw %}
 
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Define-parameters">Define parameters<a class="anchor-link" href="#Define-parameters"> </a></h2><p>Remember, only simple assignments here!</p>
+
+</div>
+</div>
+</div>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -96,6 +105,13 @@ You should also unit test the classes created in this notebook with either toy d
 </div>
     {% endraw %}
 
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Make immediate derivations from the parameters:</p>
+
+</div>
+</div>
+</div>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -171,42 +187,42 @@ You should also unit test the classes created in this notebook with either toy d
   <tbody>
     <tr>
       <th>0</th>
-      <td>67.0</td>
-      <td>106.0</td>
+      <td>53.0</td>
       <td>142.0</td>
-      <td>0.3</td>
+      <td>111.0</td>
+      <td>0.0</td>
       <td>0</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>57.0</td>
-      <td>110.0</td>
-      <td>143.0</td>
-      <td>3.0</td>
+      <td>56.0</td>
+      <td>200.0</td>
+      <td>133.0</td>
+      <td>4.0</td>
       <td>1</td>
     </tr>
     <tr>
       <th>2</th>
-      <td>61.0</td>
-      <td>130.0</td>
-      <td>77.0</td>
-      <td>2.5</td>
+      <td>62.0</td>
+      <td>140.0</td>
+      <td>143.0</td>
+      <td>0.0</td>
       <td>1</td>
     </tr>
     <tr>
       <th>3</th>
-      <td>68.0</td>
-      <td>180.0</td>
-      <td>150.0</td>
-      <td>1.6</td>
+      <td>53.0</td>
+      <td>160.0</td>
+      <td>122.0</td>
+      <td>0.0</td>
       <td>1</td>
     </tr>
     <tr>
       <th>4</th>
-      <td>50.0</td>
-      <td>120.0</td>
-      <td>158.0</td>
-      <td>1.6</td>
+      <td>54.0</td>
+      <td>160.0</td>
+      <td>163.0</td>
+      <td>0.0</td>
       <td>0</td>
     </tr>
   </tbody>
@@ -224,7 +240,22 @@ You should also unit test the classes created in this notebook with either toy d
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Begin-with-a-simple-script-before-constructing-the-model-class">Begin with a simple script before constructing the model class<a class="anchor-link" href="#Begin-with-a-simple-script-before-constructing-the-model-class"> </a></h2>
+<h2 id="Begin-with-a-simple-script-before-constructing-the-model-class">Begin with a simple script before constructing the model class<a class="anchor-link" href="#Begin-with-a-simple-script-before-constructing-the-model-class"> </a></h2><p>Scripting is a way of programming most people doing research are used to.
+In a script, everything a code does is written in a file (or for example notebook cell),
+and the rows are executed in order.</p>
+<p>Of course you can define complicated objects and functions in a script,
+and in fact most modern programming languages are written in a script like way.
+So you are used to this, and there is nothing new here!</p>
+<p>Here we define the following steps</p>
+<ol>
+<li>Splitting data into training and testing data</li>
+<li>Preprocess the data (e.g. scale, dimension reduction)</li>
+<li>Fit a model</li>
+<li>Turn steps 2 and 3 into a pipe</li>
+<li>Optimize hyperparameters</li>
+</ol>
+<p>By defining these, we get a pretty good picture of required properties of our ML model class!</p>
+
 </div>
 </div>
 </div>
@@ -244,8 +275,23 @@ You should also unit test the classes created in this notebook with either toy d
 <span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span>
     <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mi">1</span> <span class="o">/</span> <span class="mi">5</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">seed</span><span class="p">,</span> <span class="n">stratify</span><span class="o">=</span><span class="n">y</span>
 <span class="p">)</span>
+</pre></div>
 
-<span class="n">scaler</span> <span class="o">=</span> <span class="n">StandardScaler</span><span class="p">()</span>
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">scaler</span> <span class="o">=</span> <span class="n">StandardScaler</span><span class="p">()</span>
 <span class="n">lgr</span> <span class="o">=</span> <span class="n">LogisticRegression</span><span class="p">()</span>
 <span class="n">pipe</span> <span class="o">=</span> <span class="n">Pipeline</span><span class="p">([(</span><span class="s2">&quot;scaler&quot;</span><span class="p">,</span> <span class="n">scaler</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;estimator&quot;</span><span class="p">,</span> <span class="n">lgr</span><span class="p">)])</span>
 <span class="n">pipe</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
@@ -253,8 +299,37 @@ You should also unit test the classes created in this notebook with either toy d
     <span class="n">y_train</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">pipe</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">))</span>
+</pre></div>
 
-<span class="n">cv</span> <span class="o">=</span> <span class="n">StratifiedKFold</span><span class="p">(</span><span class="n">n_splits</span><span class="o">=</span><span class="n">k</span><span class="p">)</span>
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>0.4
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">cv</span> <span class="o">=</span> <span class="n">StratifiedKFold</span><span class="p">(</span><span class="n">n_splits</span><span class="o">=</span><span class="n">k</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">cross_val_score</span><span class="p">(</span><span class="n">pipe</span><span class="p">,</span> <span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="n">cv</span><span class="p">))</span>
 
 <span class="c1">## optimize</span>
@@ -304,29 +379,28 @@ You should also unit test the classes created in this notebook with either toy d
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>1.0
-[0.4 0.5]
+<pre>[0.7 0.8]
 Best Estimator: 
 Pipeline(steps=[(&#39;scaler&#39;, StandardScaler()),
-                (&#39;estimator&#39;, LogisticRegression(C=0.0001))])
+                (&#39;estimator&#39;, LogisticRegression(C=2.782559402207126))])
 
 Best Parameters: 
-{&#39;estimator__C&#39;: 0.0001}
+{&#39;estimator__C&#39;: 2.782559402207126}
 
 Best Test Score: 
-0.6
+0.65
 
 Best Training Score: 
-0.6
+0.9
 
 All Training Scores: 
-[0.6  0.6  0.6  0.6  0.65 0.9  0.85 0.85 0.85 0.85]
+[0.6 0.6 0.6 0.6 0.9 0.9 1.  1.  1.  1. ]
 
 All Test Scores: 
-[0.6  0.6  0.6  0.55 0.5  0.45 0.35 0.35 0.35 0.35]
+[0.6  0.6  0.6  0.6  0.65 0.65 0.5  0.5  0.5  0.5 ]
 
 Test score with best params (should equal to Best Test Score above)
-0.6
+0.4
 </pre>
 </div>
 </div>
@@ -339,13 +413,29 @@ Test score with best params (should equal to Best Test Score above)
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Define-base-class-for-hypotheses-space-/-simulations-/-analytics">Define base class for hypotheses space / simulations / analytics<a class="anchor-link" href="#Define-base-class-for-hypotheses-space-/-simulations-/-analytics"> </a></h2><blockquote><p>How to create tidy class functions?</p>
+<p>Ok, so we can fit a model to the data and it appears to do something (with the small test data we can not necessarily say if it's meaningful).</p>
+<p>However, how would you take this script into production?
+How would you scale it, or use it with completely different setup of data and parameters?
+(well, this is a tiny example, so we could actually easily parameterize a script, but that's rarely the case in real world applications)</p>
+<p>This is why we need to construct a model class, to hold all of the steps required in separate, tidy functions.
+Then we can recreate the model and the steps with different data, without copy-pasting or manually editing all the tiny details.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Define-base-class-for-your-ML-model">Define base class for your ML model<a class="anchor-link" href="#Define-base-class-for-your-ML-model"> </a></h2><p>You will probably do just fine creating a one simple class that does not inherit much.
+However, this is not always the case, and class inheritance is one of the most useful features of Python.
+This is why we wanted to demonstrate a base class - subclass division.</p>
+<hr>
+<p>REMINDER: How to create tidy class functions?</p>
 <ul>
 <li>If the function performs a transformation on data, it should return the transformation. A transformation does not make changes to the model attributes.</li>
 <li>If the function performs a side-effect, it should return reference to self, so that the functions can be piped. A side effect makes changes to the model attributes.</li>
 <li>Transformations and side effects should not be mixed. A function should only perform one.</li>
 </ul>
-</blockquote>
+<hr>
 <p>For example the pipe <code>model.optimize().predict(X, y)</code> first performs a side effect <code>.optimize()</code> and then a transformation <code>.predict(X, y)</code>.
 The optimization function changes model parameters permanently, and the predict function only makes a transformation on the input data.
 However, a side effect may require input and a transformation does not always require input.</p>
@@ -369,7 +459,7 @@ Instead, in most applications the model should be routed to query the data when 
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="MachineLearningModel" class="doc_header"><code>class</code> <code>MachineLearningModel</code><a href="https://github.com/City-of-Helsinki/ml_project_template/tree/master/ml_project_template/model.py#L21" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>MachineLearningModel</code>(<strong><code>X</code></strong>, <strong><code>y</code></strong>, <strong><code>n_splits</code></strong>=<em><code>5</code></em>, <strong><code>seed</code></strong>=<em><code>0</code></em>)</p>
+<h2 id="MachineLearningModel" class="doc_header"><code>class</code> <code>MachineLearningModel</code><a href="https://github.com/City-of-Helsinki/ml_project_template/tree/master/ml_project_template/model.py#L23" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>MachineLearningModel</code>(<strong><code>X</code></strong>, <strong><code>y</code></strong>, <strong><code>n_splits</code></strong>=<em><code>5</code></em>, <strong><code>seed</code></strong>=<em><code>0</code></em>)</p>
 </blockquote>
 <p>Overly simplified example for a base class: basically just function handle definitions</p>
 
@@ -459,7 +549,7 @@ Nbdev allows marking slow cells with <code># slow</code> tag so that they can be
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="LogisticRegressionClassifier" class="doc_header"><code>class</code> <code>LogisticRegressionClassifier</code><a href="https://github.com/City-of-Helsinki/ml_project_template/tree/master/ml_project_template/model.py#L91" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>LogisticRegressionClassifier</code>(<strong><code>X</code></strong>, <strong><code>y</code></strong>, <strong><code>n_splits</code></strong>=<em><code>5</code></em>, <strong><code>seed</code></strong>=<em><code>0</code></em>) :: <a href="/ml_project_template/model.html#MachineLearningModel"><code>MachineLearningModel</code></a></p>
+<h2 id="LogisticRegressionClassifier" class="doc_header"><code>class</code> <code>LogisticRegressionClassifier</code><a href="https://github.com/City-of-Helsinki/ml_project_template/tree/master/ml_project_template/model.py#L99" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>LogisticRegressionClassifier</code>(<strong><code>X</code></strong>, <strong><code>y</code></strong>, <strong><code>n_splits</code></strong>=<em><code>5</code></em>, <strong><code>seed</code></strong>=<em><code>0</code></em>) :: <a href="/ml_project_template/model.html#MachineLearningModel"><code>MachineLearningModel</code></a></p>
 </blockquote>
 <p>Logistic regression classifier</p>
 
@@ -480,37 +570,14 @@ Nbdev allows marking slow cells with <code># slow</code> tag so that they can be
 </div>
     {% endraw %}
 
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># print(&quot;Best Estimator: \n{}\n&quot;.format(gs.best_estimator_))</span>
-<span class="c1"># print(&quot;Best Parameters: \n{}\n&quot;.format(gs.best_params_))</span>
-<span class="c1"># print(&quot;Best Test Score: \n{}\n&quot;.format(gs.best_score_))</span>
-<span class="c1"># print(</span>
-<span class="c1">#    &quot;Best Training Score: \n{}\n&quot;.format(</span>
-<span class="c1">#        gs.cv_results_[&quot;mean_train_score&quot;][gs.best_index_]</span>
-<span class="c1">#    )</span>
-<span class="c1"># )</span>
-<span class="c1"># print(&quot;All Training Scores: \n{}\n&quot;.format(gs.cv_results_[&quot;mean_train_score&quot;]))</span>
-<span class="c1"># print(&quot;All Test Scores: \n{}\n&quot;.format(gs.cv_results_[&quot;mean_test_score&quot;]))</span>
-<span class="c1"># # This prints out all results during Cross-Validation in details</span>
-<span class="c1"># print(&quot;All Meta Results During CV Search: \n{}\n&quot;.format(gs.cv_results_))</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Unit-test-subclasses">Unit test subclasses<a class="anchor-link" href="#Unit-test-subclasses"> </a></h2>
+<h2 id="Unit-test-subclasses">Unit test subclasses<a class="anchor-link" href="#Unit-test-subclasses"> </a></h2><p>To unit test the class, we want to try and call every function of it and execute every different possible execution path.
+Complete coverage is rarely possible,
+but it would be good to try and test the functions with good and bad input,
+and with possible limit values (min, max, zero, None).</p>
+<p>However, a few simple tests are easier to maintain (and to actually get done) than exhaustive unit testing, so don't worry about coverage too much!</p>
+
 </div>
 </div>
 </div>
@@ -525,9 +592,9 @@ Nbdev allows marking slow cells with <code># slow</code> tag so that they can be
 
 <span class="c1"># test fit</span>
 <span class="k">try</span><span class="p">:</span>  <span class="c1"># fit should be called before predict or score</span>
-    <span class="n">lgr_model</span><span class="o">.</span><span class="n">predict</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
-<span class="k">except</span><span class="p">:</span>  <span class="c1"># yes, you can also test what should not work!</span>
-    <span class="k">pass</span>
+    <span class="n">lgr_model</span><span class="o">.</span><span class="n">predict</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>  <span class="c1"># this will cause an error</span>
+<span class="k">except</span><span class="p">:</span>  <span class="c1"># but the except statement catches the error</span>
+    <span class="k">pass</span>  <span class="c1"># yes, you can also test what should not work!</span>
 <span class="k">try</span><span class="p">:</span>
     <span class="n">lgr_model</span><span class="o">.</span><span class="n">get_train_loss</span><span class="p">()</span>
 <span class="k">except</span><span class="p">:</span>
@@ -572,71 +639,15 @@ Nbdev allows marking slow cells with <code># slow</code> tag so that they can be
 
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>Before optimization
-predicted: [0 1 1 1 1 1 1 1 1 1 1 0 1 0 1 0 1 0 1 0 0 1 0 1 1]
+predicted: [1 1 0 1 0 1 1 0 0 1 1 0 1 1 0 0 1 0 1 1 0 1 1 1 0]
 true     : [0 1 1 1 0 1 0 0 1 1 1 0 1 0 0 0 1 0 1 1 0 1 1 1 1]
-train_loss: 0.7692307692307692	test_loss: 1.0
+train_loss: 0.8695652173913043	test_loss: 0.5714285714285715
 After optimization:
-predicted: [0 1 1 1 1 1 1 1 1 1 1 0 1 0 1 0 1 0 1 0 0 1 0 1 1]
+predicted: [1 1 0 1 0 1 1 0 0 1 1 0 1 1 0 0 1 0 1 1 0 1 1 1 0]
 true     : [0 1 1 1 0 1 0 0 1 1 1 0 1 0 0 0 1 0 1 1 0 1 1 1 1]
-train_loss: 0.7692307692307692	test_loss: 1.0
+train_loss: 0.8695652173913043	test_loss: 0.5714285714285715
 </pre>
 </div>
-</div>
-
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">lgr_model</span><span class="o">.</span><span class="n">get_params</span><span class="p">()</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>{&#39;memory&#39;: None,
- &#39;steps&#39;: [(&#39;scaler&#39;, StandardScaler()),
-  (&#39;estimator&#39;, LogisticRegression(C=1.388888888888889))],
- &#39;verbose&#39;: False,
- &#39;scaler&#39;: StandardScaler(),
- &#39;estimator&#39;: LogisticRegression(C=1.388888888888889),
- &#39;scaler__copy&#39;: True,
- &#39;scaler__with_mean&#39;: True,
- &#39;scaler__with_std&#39;: True,
- &#39;estimator__C&#39;: 1.388888888888889,
- &#39;estimator__class_weight&#39;: None,
- &#39;estimator__dual&#39;: False,
- &#39;estimator__fit_intercept&#39;: True,
- &#39;estimator__intercept_scaling&#39;: 1,
- &#39;estimator__l1_ratio&#39;: None,
- &#39;estimator__max_iter&#39;: 100,
- &#39;estimator__multi_class&#39;: &#39;auto&#39;,
- &#39;estimator__n_jobs&#39;: None,
- &#39;estimator__penalty&#39;: &#39;l2&#39;,
- &#39;estimator__random_state&#39;: None,
- &#39;estimator__solver&#39;: &#39;lbfgs&#39;,
- &#39;estimator__tol&#39;: 0.0001,
- &#39;estimator__verbose&#39;: 0,
- &#39;estimator__warm_start&#39;: False}</pre>
-</div>
-
 </div>
 
 </div>
