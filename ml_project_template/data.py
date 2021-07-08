@@ -3,12 +3,8 @@
 __all__ = ['plot_histogram', 'plot_trellis']
 
 # Cell
-import matplotlib.pyplot as plt
-import numpy as np
-import pandas as pd
-from sklearn import datasets
 
-# Cell
+# function for drawing histograms of a dataframe
 import matplotlib.pyplot as plt
 import pandas as pd
 
@@ -52,7 +48,7 @@ def plot_histogram(df):
 
 # Cell
 
-
+# Make a multiple of scatter plots
 def plot_trellis(df, legend_title="y", true_label="True", false_label="False"):
     """
     Make a trellis plot of a dataframe against a binary y value in last column
@@ -73,7 +69,7 @@ def plot_trellis(df, legend_title="y", true_label="True", false_label="False"):
                     x=col_names[j],
                     y=col_names[i],
                     kind="scatter",
-                    color="r",
+                    color="b",
                     marker="o",
                     alpha=0.5,
                     label=false_label,
@@ -84,7 +80,7 @@ def plot_trellis(df, legend_title="y", true_label="True", false_label="False"):
                     x=col_names[j],
                     y=col_names[i],
                     kind="scatter",
-                    color="b",
+                    color="r",
                     marker="x",
                     alpha=0.5,
                     label=true_label,
