@@ -22,13 +22,18 @@ from sklearn.preprocessing import StandardScaler
 # Define base class for our classifier
 class MachineLearningModel:
     """
-    Overly simplified example for a base class: basically just function handle definitions
+    Overly simplified example for a base class:
+
+    data handling operations
+
+    handle definitions of other functions
     """
 
     def __init__(self, X, y, n_splits=5, seed=0):
         self.n_splits = n_splits  # k-fold n_splits
-        self.seed = seed
-        self.set_data(X, y)
+        self.seed = seed  # random state
+
+        self.set_data(X, y)  # init model data (see below)
 
     def set_data(self, X, y):
         """
@@ -37,7 +42,8 @@ class MachineLearningModel:
         self.X = X.copy()
         self.y = y.copy()
 
-        self.__create_train_test_data()
+        # in addition we separate train and test data:
+        self.__create_train_test_data()  # see below
 
         return self
 
@@ -51,11 +57,15 @@ class MachineLearningModel:
         """
         Create training and testing data
         """
+        # you might want to control the seed:
         if seed is None:
             seed = self.seed
+
+        # you might want to control the number of splits
         if n_splits is None:
             n_splits = self.n_splits
 
+        # split train and test data
         self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(
             self.X, self.y, test_size=(1 / n_splits), random_state=seed, stratify=self.y
         )
@@ -69,24 +79,45 @@ class MachineLearningModel:
         return self.X_train, self.X_test, self.y_train, self.y_test
 
     def fit(self, X=None, y=None, **fit_params):
+        """
+        To be defined in the subclass
+        """
         pass
 
     def predict(self, X):
+        """
+        To be defined in the subclass
+        """
         pass
 
     def loss(self, X, y):
+        """
+        To be defined in the subclass
+        """
         pass
 
     def get_train_loss(self):
+        """
+        To be defined in the subclass
+        """
         pass
 
     def get_test_loss(self):
+        """
+        To be defined in the subclass
+        """
         pass
 
     def optimize(self):
+        """
+        To be defined in the subclass
+        """
         pass
 
     def get_params(self):
+        """
+        To be defined in the subclass
+        """
         pass
 
 # Cell
@@ -103,10 +134,12 @@ class LogisticRegressionClassifier(MachineLearningModel):
 
     def __init__(self, X, y, n_splits=5, seed=0):
 
+        # we need to initialize the parent class with super.init:
         super(LogisticRegressionClassifier, self).__init__(
             X, y, n_splits=n_splits, seed=seed
         )
 
+        # define preprocessing, algorithm and pipe
         self.scaler = StandardScaler()
         self.model = LogisticRegression()
         self.pipe = Pipeline([("scaler", self.scaler), ("estimator", self.model)])
