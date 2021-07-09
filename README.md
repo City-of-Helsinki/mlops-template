@@ -67,7 +67,7 @@ The repository contains the following files and folders:
 
     ## AUTOMATICALLY GENERATED: (Do not edit unless otherwise specified!)
     docs/               # Project documentation (html)
-    [your_repo_name]/   # Python module built from the notebooks. (ml_project_template/ before completing installation of the template)
+    [your_module]/      # Python module built from the notebooks. The name of the module is the name of the repository (after installation).
     Makefile
     README.md 
 
@@ -272,7 +272,9 @@ You might be used to doing all of them in a single script (multiple lines of cod
 but separating makes development, explaining the results and debugging much more efficient. 
 
 Each notebook is also a basis for a python module, including tests and documentation.
-The `nbdev` tool constructs a python module of each of these notebooks, under the folder `[your git project name]` (`ml_project_template` in this template).
+The `nbdev` tool constructs a python module of each of these notebooks, under the folder `[your_repository]/[your_module]/`
+(`ml_project_template/ml_project_template/` in this template).
+The name of the module becomes the name of your repository after installing the template following the instructions below
 This allows you to share code between your notebooks, or even publish a complete python module, while doing all your development in the notebooks.
 
 **Data**
@@ -320,7 +322,7 @@ The demo is an example ML project on automating heart disease diagnosis with log
 The dataset contains missing values, and is thus great for demonstrating some light data wrangling.
 The demo is only meant for showcasing how the template joins together different tools and steps.
 
-**If you'd like to skip the demo**, and get right into action, you can replace the notebooks `index`, `data`, `model`, `loss` and `workflow` with clean copies under `notebook_templates`.
+**If you'd like to skip the demo**, and get right into action, you can replace the notebooks `index`, `data`, `model`, `loss` and `workflow` with clean copies under the folder `notebook_templates/`.
 
 The `index` notebook (this notebook or the empty copy) will become the `README` of your project and frontpage of your documentation, so edit it accordingly.
 You should at least have a general description of the project,
@@ -346,17 +348,19 @@ This will create a new repository for you copying everything from this template,
 
 ### On your computing environment:
 
-**Put all the highlited ** `commands` ** to shell one ate a time and press enter (replace the parts with square brackets with your own information '[]')**
+**Put all the highlited ** `commands` ** to shell one ate a time and press enter**
+**(replace the parts with square brackets with your own information '[replace this with your info]')**
+(remove the brackets)
 
 0. Create an SSH key and add it to your github profile. SSH is a protocol for secure communication over the internet. 
     A ssh key is unique to a computing unit, and you must recreate this step every time you are using a new unit,
     be it a personal computer, server or a cloud computing instance. You can read more on SSH from [Wikipedia](https://fi.wikipedia.org/wiki/SSH) or 
     from [GitHub docs](https://docs.github.com/en/github/authenticating-to-github/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent).
-    * Create SSH key with `ssh-keygen -t ed25519 -C "[your email]"`
+    * Create SSH key with `ssh-keygen -t ed25519 -C "[your_email]"`
     * You can leave the name empty (just press enter), but **always create keys with a secure password that you remember**.
     This password can not be reset. You have to create new key if you forget it.
-    * Now among other lines, there should be a text displayed saying `Your public key has been saved in /Users/[user]/.ssh/id_ed25519.pub.`
-    * Copy the public key adress (see above, ends with `.pub`), and call `cat /Users/[user]/.ssh/id_ed25519.pub`
+    * Now among other lines, there should be a text displayed saying `Your public key has been saved in [public_key_path]/id_ed25519.pub`.
+    * Copy the public key adress and call `cat [public_key_path]/id_ed25519.pub]`
     * Now the key has been copied to clipboard and displayed on your shell. It begins with 'ssh' and ends with your email.
     Depending on your system, you may also have to manually copy it from the shell output.
     * Go to your GitHub homepage > progile picture in top right corner > settings > SSH and GPG keys > new ssh key
@@ -365,40 +369,41 @@ This will create a new repository for you copying everything from this template,
     
 1. In your shell, move to the folder you want to work in: `cd [path to your programming projects folder]`.
 (If you get lost, `cd ..` moves you one folder towards root, and `cd` gets you to root.)
-2. Clone the repository you just imported: `git clone git@github.com:[repository owner]/[repository name]`.
+2. Clone the repository you just imported: `git clone git@github.com:[repository_owner]/[your_repository]`.
 If the repository is private, you'll be asked the password of the ssh key you just generated. 
 This will copy all the files and folders that you imported to your new repository in the github website, to your computing environment.
-3. Go inside the repository folder: `cd [repository name]`
+3. Go inside the repository folder: `cd [your_repository]`
 4. Create virtual environment.  Virtual environments allow you to install project specific python versions and track dependencies.
 Read more on virtual environments from [this blog post](https://realpython.com/python-virtual-environments-a-primer/).
 
-Using conda (Azure ML only supports conda virtual environments):
 
-```
-conda create --name [environment name] python=3.8
-conda activate [environment name]
-conda install pip
-```
-You can deactivate the environment with `conda deactivate` when done working.
+    # Using conda (Azure ML only supports conda virtual environments):
 
-Using virtualenv (preferred way if not working in Azure):
+    conda create --name [environment_name] python=3.8
+    conda activate [environment_name] # every time you start working
+    conda install pip
 
-```
-pip install virtualenv
-python3.8 -m virtualenv [environment name]
-source [environment name]/bin/activate
-```
-You can deactivate the environment with `deactivate` when done working. 
+    conda deactivate # when you stop working
+
+    # Using virtualenv (preferred way if not working in Azure):
+
+    pip install virtualenv
+    python3.8 -m virtualenv [environment_name]
+    source [environment_name]/bin/activate # every time you start working
+    
+    deactivate # when you stop working
 
 5. Install dependencies (versions of python packages that work well together):
-```
-pip install -r requirements.txt # install required versions of python packages with pip
-nbdev_install_git_hooks # install nbdev git additions
-```
-6. Create an ipython kernel for running the notebooks
-```
-python -m ipykernel install --user --name [your ipython kernel name] --display-name "Python 3.8 ([your ipython kernel name])"
-```
+
+
+    pip install -r requirements.txt # install required versions of python packages with pip
+    nbdev_install_git_hooks # install nbdev git additions
+
+6. Create an ipython kernel for running the notebooks. Good practice is to name the kernel with your virtual environment name.
+
+
+    python -m ipykernel install --user --name [ipython_kernel_name] --display-name "Python 3.8 ([ipython_kernel_name])"
+
 7. With your team, decide which notebook editor are you using. There are two common editors: Jupyter and JupyterLab, but both run the same notebooks.
 Depending on the selection, you'll have to edit the top cell of each notebook where black formatter extension is activated for the notebook cells.
 You can change this later, but it is convenient to only develop with one type of an editor.
@@ -408,48 +413,61 @@ This is the formatter restructuring your code.
 There are other formats and tools, and even more opinions on them, but black is used in the city of Helsinki projects.
 So, after deciding which editor you are working with (Azure ML default notebook view is based on JupyterLab), edit the top cell of all notebooks:
     
-    `%load_ext nb_black` if using Jupyter
     
-    `%load_ext lab_black` if using JupyterLab
+    # if using Jupyter:
+    %load_ext nb_black
+    
+    # if using JupyterLab:
+    %load_ext lab_black
+
+    # do not add comment to same line with a magic command:
+    %load_ext nb_black #this comment breaks the magic command
+
 8. Check that you can run the notebooks `00_data.ipynb`, `01_model.ipynb` and `02_loss.ipynb`.
-    You may have to change the kernel your notebook interpreter is using to the one you just created.
-    This can be done drop down bar in top of the notebook editor.
+You may have to change the kernel your notebook interpreter is using to the one you just created.
+This can be done drop down bar in top of the notebook editor.
 9. Edit `settings.ini`, `docs/_config.yml` and `docs/_data/topnav.yml` according to your project details.
 The files contain instructions for minimum required edits.
 You can continue editing them in the future, so no need to worry about getting it right the first time.
 These are used for building the python modules and docs based on your notebooks.
 If you get errors when building a module or docs, take a look again at these files.
 10. Configure your git user name and email adress (one of those added to your git account) if you haven't done it already:
-```
-git config --global user.name "FIRST_NAME LAST_NAME"
-git config --global user.email "MY_NAME@example.com"
-```
+
+
+    git config --global user.name "FIRST_NAME LAST_NAME"
+    git config --global user.email "MY_NAME@example.com"
+
 11. Make initial commit (snapshot of the code as it is when you begin the work):
-```
-git add .
-git commit -m "Initial commit"
-```
+
+
+    git add .
+    git commit -m "Initial commit"
+
 12. Push (save changes to remote repository): `git push -u origin master`. You will be asked to log in with your SSH key and password, again.
 
 
 ## How to use
 
-1. Install this template as basis of your new project (see above)
+1. Install this template as basis of your new project (see above).
 
 2. Remember to always activate your virtual environment before you start working: `conda activate [environment name]` with anaconda or `source [environment name]/bin/activate` with virtualenv
 
 2. Check out the notebooks, and play around a bit to see that your installation works (notebooks run smoothly) and you understand the template structure
 
 3. Replace the notebooks `index`, `data`, `model`, `loss` and `workflow` with copies without the code examples:
-```
-git rm index.ipynb 00_data.ipynb 01_model.ipynb 02_loss.ipynb 03_workflow.ipynb
-git mv notebook_templates/* ./
-```
+
+
+    git rm index.ipynb 00_data.ipynb 01_model.ipynb 02_loss.ipynb 03_workflow.ipynb
+    git mv notebook_templates/index.ipynb ./
+    git mv notebook_templates/00_data.ipynb ./
+    git mv notebook_templates/01_model.ipynb ./
+    git mv notebook_templates/02_loss.ipynb ./
+    git mv notebook_templates/03_workflow.ipynb ./
 
 4. You may delete the folders `ml_project_template` and `notebook_templates`.
-```
-git rm -r ml_project_template notebook_templates
-```
+
+
+    git rm -r ml_project_template notebook_templates
 
 5. Save your notebooks and call `nbdev_build_lib` to build python modules of your notebooks - needed if you want to share code between notebooks or create a modules.
 Remember to do this if you want to rerun your workflow after making changes to exportables. 
@@ -460,6 +478,7 @@ If you want to host your project pages on GitHub, you will have to make your pro
 You can also build the pages locally with jekyll.
 
 7. You can install new packages with `pip install [package name]`.
+Check out what packages are installed with the template from `requirements.txt`, or check if a specific package is installed with `pip show [package_name]`.
 If you install new packages, remember to update the requirements for dependency management: `pip freeze > requirements.txt`.
 
 8. Remember to track your changes with git! 
@@ -468,31 +487,45 @@ If you install new packages, remember to update the requirements for dependency 
 
 **INFO BOX: Some useful commands with git**
 
-See which files have changes since the last commit: `git status` 
 
-Add files to a commit: `git add [file names/paths separated by whitespace ' ']`
+    git status #See which files have changes since the last commit: `git status` 
 
-Create commit: `git commit -m "[short description of the changes you made]"`
+    git add [filenames separated by whitespace ' '] # Add files to a commit. * will add all files, and . will add everythin in a directory 
 
-Push commit to remote repository (GitHub server): `git push origin -u` 
+    git commit -m "[short description of the changes you made]" # Create commit and explain what you changed
+
+    git push origin -u # Push commit to remote repository (GitHub server) 
 
 *A good rule of thumb is to commit every change you make, and push at the end of the day when you stop working!*
 
-Load changes that someone else has made: `git pull`
+
+    git pull # Load changes that someone else has made
 
 If you are working with a team of people, you will most likely run into conflicts when pushing or pulling code.
 This means, that there are overlapping changes in the code. Read more from [Stack Overflow](https://stackoverflow.com/questions/161813/how-to-resolve-merge-conflicts-in-a-git-repository)
 or [GitHub docs](https://docs.github.com/en/github/collaborating-with-pull-requests/addressing-merge-conflicts/resolving-a-merge-conflict-on-github)
 on how to resolve conflicts.
 
-Remove files so that git will also stop tracking them `git rm [file name]` (`rm -r` for folders)
+
+    git rm [file name] # Remove files so that git will also stop tracking them  (`git rm -r [folder]` for folders)
 
 To ignore files or folders from being tracked by git, add them to `.gitignore` file.
 In this template the `data` and `results` folders have been added to the `.gitignore`.
 We do not want to version them with git, as it will explode the size of the repository. 
 
+Branches are like alternative timelines in your commit history.
+They allow you to test out things that radically change the code.
+
+
+    git branch # Check out current branch
+
+    git branch [branch_name] # Make a new branch
+
+    git checkout [branch name] # Change to another branch
+
+
 In addition, there are many fancy features for git that enable comparing differences, collaborative work, debugging, automated testing and other crazy things.
-However, there are better sources for learning all that stuff.
+However, there are better sources for learning all that stuff, like this [free ebook](https://git-scm.com/book/en/v2).
 
 ---
 

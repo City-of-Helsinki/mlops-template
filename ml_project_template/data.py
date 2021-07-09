@@ -4,6 +4,10 @@ __all__ = ['plot_histogram', 'plot_trellis']
 
 # Cell
 
+# ^(this cell is exported to ml_project_template/ml_project_template/data.py)
+# you could also define another module to export to.
+# however, all modules that you export to, must have a notebook with the same name and header!
+
 # function for drawing histograms of a dataframe
 import matplotlib.pyplot as plt
 import pandas as pd
