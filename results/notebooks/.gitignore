@@ -2,4 +2,3 @@
 *
 # except this file
 !.gitignore
-!notebooks/
