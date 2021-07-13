@@ -34,7 +34,12 @@ nb_path: "03_workflow.ipynb"
 <p><strong><em>input:</em></strong> Workflow definition parameters</p>
 <p><strong><em>output:</em></strong> python or snakemake script for running the workflow</p>
 <p><strong><em>description:</em></strong></p>
-<p>In this notebook you define a workflow for automatically updating, training and deploying your ML project</p>
+<p>While you are developing your ML application, you might prefer running the notebooks manually again and again.
+However, once you have deployed your model into production it becomes unpractical and compromizes the principle of ease of reproducibility.
+This happens regardless of what 'production' means to you - it might well be that you are just running the notebooks and viewing the results directly from them.
+We want to automate the workflow, and in this notebook we explain two alternatives for doing it, either as a static or dynamic workflow. 
+By following these examples you can parameterize your notebooks, run them automatically in a workflow, and even parameterize and automate the workflow definition.
+With this template, you can easily define very complex and versatile workflows, that are well documented in a notebook.</p>
 
 </div>
 </div>
@@ -64,9 +69,15 @@ nb_path: "03_workflow.ipynb"
 </div>
     {% endraw %}
 
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Define-notebook-parameters">Define notebook parameters<a class="anchor-link" href="#Define-notebook-parameters"> </a></h2>
+</div>
+</div>
+</div>
     {% raw %}
     
-<div class="cell border-box-sizing code_cell rendered">
+<div class="cell border-box-sizing code_cell rendered celltag_parameters">
 <div class="input">
 
 <div class="inner_cell">
@@ -81,6 +92,13 @@ nb_path: "03_workflow.ipynb"
 </div>
     {% endraw %}
 
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>make direct derivations from the paramerters:</p>
+
+</div>
+</div>
+</div>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -159,21 +177,21 @@ nb_path: "03_workflow.ipynb"
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Example:-running-static-workflow-from-this-notebook">Example: running static workflow from this notebook<a class="anchor-link" href="#Example:-running-static-workflow-from-this-notebook"> </a></h2><p>(Snakemake-based dynamic workflow can not be run from inside a notebook)</p>
+<h2 id="How-to-run-parameterized-notebooks-with-papermill">How to run parameterized notebooks with papermill<a class="anchor-link" href="#How-to-run-parameterized-notebooks-with-papermill"> </a></h2><p>(Snakemake-based dynamic workflow can not be run from inside a notebook)</p>
 
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Alternative-1:-Static-Executable-Workflow-with-papermill">Alternative 1: Static Executable Workflow with papermill<a class="anchor-link" href="#Alternative-1:-Static-Executable-Workflow-with-papermill"> </a></h2><p>The following script will be written into a python file, that you can run to execute the workflow.</p>
+<h2 id="Static-executable-workflow-with-papermill">Static executable workflow with papermill<a class="anchor-link" href="#Static-executable-workflow-with-papermill"> </a></h2><p>The following script will be written into a python file, that you can run to execute the workflow.</p>
 
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Alternative-2:-Dynamic-Executable-Workflow-with-Snakemake">Alternative 2: Dynamic Executable Workflow with Snakemake<a class="anchor-link" href="#Alternative-2:-Dynamic-Executable-Workflow-with-Snakemake"> </a></h2><p>The following script will be written into a Snakefile, that you can run to execute the workflow.</p>
+<h2 id="Dynamic-executable-workflow-with-Snakemake">Dynamic executable workflow with Snakemake<a class="anchor-link" href="#Dynamic-executable-workflow-with-Snakemake"> </a></h2><p>The following script will be written into a Snakefile, that you can run to execute the workflow.</p>
 
 </div>
 </div>
