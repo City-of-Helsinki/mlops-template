@@ -1512,6 +1512,24 @@ This is only applicable if the label is categorical, and useful if there are man
 </div>
 </div>
 
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>ERROR:root:Cannot parse: 13:0: toy_df.head()
+Traceback (most recent call last):
+  File &#34;/anaconda/envs/templateenv/lib/python3.8/site-packages/lab_black.py&#34;, line 218, in format_cell
+    formatted_code = _format_code(cell)
+  File &#34;/anaconda/envs/templateenv/lib/python3.8/site-packages/lab_black.py&#34;, line 29, in _format_code
+    return format_str(src_contents=code, mode=FileMode())
+  File &#34;/anaconda/envs/templateenv/lib/python3.8/site-packages/black/__init__.py&#34;, line 819, in format_str
+    src_node = lib2to3_parse(src_contents.lstrip(), mode.target_versions)
+  File &#34;/anaconda/envs/templateenv/lib/python3.8/site-packages/black/parsing.py&#34;, line 96, in lib2to3_parse
+    raise exc from None
+black.parsing.InvalidInput: Cannot parse: 13:0: toy_df.head()
+</pre>
+</div>
+</div>
+
 </div>
 </div>
 
