@@ -38,6 +38,8 @@ nb_path: "03_workflow.ipynb"
 However, once you have deployed your model into production it becomes unpractical and compromizes scalability, modularity and the principle of ease of reproducibility.
 This happens regardless of what 'production' means to you - it might well be that you are just running the notebooks and viewing the results directly from them.
 Whatever you are doing, having a single command to run the whole workflow makes things so much easier.</p>
+<p>Workflow automation is also the part of the work where you'll probably notice a lot of bugs and nonrobustness in your notebooks.
+Probably a lot more than you anticipated, but try not to get frustrated! Debugging is big and important part of the work.</p>
 <p>In this notebook we explain alternatives for automating workflows, either as a static or dynamic. 
 By following these examples (and further documentation on <a href="https://papermill.readthedocs.io/">papermill</a> and <a href="https://snakemake.readthedocs.io/">Snakemake</a>) you can parameterize your notebooks,
 run them automatically in a workflow, and even parameterize and automate the workflow definition.
@@ -88,7 +90,9 @@ For more information, see for example this
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">save_notebooks_to</span> <span class="o">=</span> <span class="p">(</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># This cell is tagged with &#39;parameters&#39; - IS IT? WE ACTUALLY DON&#39;T PROBABLY WANT TO PARAMETERIZE IT LIKE THIS</span>
+
+<span class="n">save_notebooks_to</span> <span class="o">=</span> <span class="p">(</span>
     <span class="s2">&quot;results/.notebooks/&quot;</span>  <span class="c1"># TODO: make example of timestamping notebook runs</span>
 <span class="p">)</span>
 
@@ -98,15 +102,38 @@ For more information, see for example this
 <span class="c1">## See more: https://github.com/fastai/nbdev/issues/357</span>
 <span class="c1">## TODO: follow updates on nbdev, see if there is a cleaner fix to this!</span>
 
-<span class="c1"># notebook names</span>
+<span class="c1"># notebook names, inputs, outputs and parameters</span>
+<span class="n">index</span> <span class="o">=</span> <span class="s2">&quot;index.ipynb&quot;</span>
+<span class="n">index_params</span> <span class="o">=</span> <span class="p">{}</span>
+
 <span class="n">data</span> <span class="o">=</span> <span class="s2">&quot;00_data.ipynb&quot;</span>
 <span class="n">data_params</span> <span class="o">=</span> <span class="p">{}</span>
 
 <span class="n">model</span> <span class="o">=</span> <span class="s2">&quot;01_model.ipynb&quot;</span>
-<span class="n">model_params</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;seed&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+<span class="n">model_params</span> <span class="o">=</span> <span class="p">{}</span>
 
 <span class="n">loss</span> <span class="o">=</span> <span class="s2">&quot;02_loss.ipynb&quot;</span>
 <span class="n">loss_params</span> <span class="o">=</span> <span class="p">{}</span>
+
+<span class="n">workflow</span> <span class="o">=</span> <span class="s2">&quot;03_workflow.ipynb&quot;</span>
+<span class="n">workflow_params</span> <span class="o">=</span> <span class="p">{}</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span> 
 </pre></div>
 
     </div>
@@ -125,8 +152,7 @@ For more information, see for example this
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Custom-magic-function-to-write-code-cell-contents-to-a-file-with-global-variables-formatted:">Custom magic function to write code cell contents to a file with global variables formatted:<a class="anchor-link" href="#Custom-magic-function-to-write-code-cell-contents-to-a-file-with-global-variables-formatted:"> </a></h2><p>This is needed so that we can create parameterizable non-python scripts from inside a notebook.</p>
-
+<h2 id="Define-workflow-setup-config-file">Define workflow setup config file<a class="anchor-link" href="#Define-workflow-setup-config-file"> </a></h2>
 </div>
 </div>
 </div>
@@ -137,46 +163,29 @@ For more information, see for example this
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">IPython.core.magic</span> <span class="kn">import</span> <span class="n">register_line_cell_magic</span>
-
-
-<span class="nd">@register_line_cell_magic</span>
-<span class="k">def</span> <span class="nf">writefile_format_globals</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">cell</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This is a function to write contents of a notebook cell to a file.</span>
-<span class="sd">    To use it, call &#39;%%writefile_format_globals filename&#39; in the first row of</span>
-<span class="sd">    the cell the contents of which you want to write into a file.</span>
-<span class="sd">    The code written in this cell is not run in the notebook.</span>
-<span class="sd">    This means that you can also write and define non-python scripts and</span>
-<span class="sd">    execute them from a notebook.</span>
-
-<span class="sd">    You can format in global variables by placing them inside curly</span>
-<span class="sd">    brackets &#39;{variable name}&#39;.</span>
-
-<span class="sd">    Note, that your code should not include curly brackets.</span>
-<span class="sd">    If curly brackets need to be written in the file, you can include</span>
-<span class="sd">    them through the variable insertion:</span>
-
-<span class="sd">    ## CELL 1:</span>
-<span class="sd">    bracket_open_string = &#39;{&#39;</span>
-<span class="sd">    bracket_close_string = &#39;}&#39;</span>
-
-<span class="sd">    ## CELL 2:</span>
-<span class="sd">    %write_format_globals myscriptname</span>
-<span class="sd">    {bracket_open_string}</span>
-<span class="sd">        # I want this part inside curly brackets!</span>
-<span class="sd">    {bracket_close_string}</span>
-
-<span class="sd">    ## file &#39;myscriptname&#39; after running the cells 1 and 2:</span>
-<span class="sd">    {</span>
-<span class="sd">        # I want this part inside curly brackets!</span>
-<span class="sd">    }</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">cell</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="nb">globals</span><span class="p">()))</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%writefile</span> workflow_setup.yaml
+<span class="o">---</span>
+<span class="n">notebooks</span><span class="p">:</span>
+    <span class="n">index</span><span class="p">:</span>
+        <span class="n">file</span><span class="p">:</span> <span class="s2">&quot;index.ipynb&quot;</span>
+        <span class="n">params</span><span class="p">:</span> <span class="p">{}</span>
 </pre></div>
 
     </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Writing workflow_setup.yaml
+</pre>
+</div>
+</div>
+
 </div>
 </div>
 
@@ -210,7 +219,8 @@ You can then compare the resulting notebooks in <code>results/notebooks</code>.<
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># run model notebook with default parameters</span>
 <span class="n">_</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">execute_notebook</span><span class="p">(</span>
-    <span class="s2">&quot;02_loss.ipynb&quot;</span><span class="p">,</span> <span class="s2">&quot;results/.notebooks/02_loss_default_params.ipynb&quot;</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="p">{}</span>
+    <span class="s2">&quot;02_loss.ipynb&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;results/.notebooks/02_loss_default_params.ipynb&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 
@@ -245,35 +255,175 @@ You can then compare the resulting notebooks in <code>results/notebooks</code>.<
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>You can now compare the results.</p>
 <p>Copies of the executed notebooks are saved in a hidden folder, so that they don't confuse nbdev.
-Notebooks can not be viewed from hidden folders, so you have to move (or copy) them to the results folder to view them.
+Notebooks can not be viewed from hidden folders, so you have to make a visible copy of the folder.
 This may appear a bit unpractical, and we hope to find a more convenient solution in the future (without making custom edits to nbdev).
 However, in practice this rarely matters since the location where you save the notebooks can be outside the project folder, and it only serves as a backup
 so you probably don't need to view the automatically executed notebooks that often.</p>
 <p>How to move the notebooks from one folder to another in shell:</p>
 
-<pre><code># replace mv with cp if you want to copy the files instead of moving
-mv results/.notebooks/02_loss_default_params.ipynb results/02_loss_default_params.ipynb
-mv results/.notebooks/02_loss_default_params.ipynb results/02_loss_default_params.ipynb
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
 
-</code></pre>
-<p>You can then open the notebooks as usual in your editor. See how changing the seed changes the results?</p>
-<p>Now, before you build the modules and docs with <code>nbdev_build_lib &amp;&amp; nbdev_build_docs</code>, remember to delete the notebook files from under results folder:</p>
-
-<pre><code>rm results/02_loss_default_params.ipynb results/02_loss_default_params.ipynb</code></pre>
+<pre><code>cp -r results/.notebooks/ results/notebooks</code></pre>
 
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Static-executable-workflow-with-papermill">Static executable workflow with papermill<a class="anchor-link" href="#Static-executable-workflow-with-papermill"> </a></h2><p>The following script will be written into a python file, that you can run to execute the workflow.</p>
+<p>You can then open the notebooks as usual in your editor. See how changing the seed changes the results?
+Now, before you build the modules and docs with <code>nbdev_build_lib &amp;&amp; nbdev_build_docs</code>, remember to delete the notebook files from under results folder:</p>
 
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Dynamic-executable-workflow-with-Snakemake">Dynamic executable workflow with Snakemake<a class="anchor-link" href="#Dynamic-executable-workflow-with-Snakemake"> </a></h2><p>The following script will be written into a Snakefile, that you can run to execute the workflow.</p>
+
+<pre><code>rm -r results/notebooks</code></pre>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Static-executable-workflow-with-papermill">Static executable workflow with papermill<a class="anchor-link" href="#Static-executable-workflow-with-papermill"> </a></h2><p>Now we can define a simple static parameterizable workflow. The workflow is a Python script, completely defined in this notebook for consistent of documentation (everything is defined in notebooks). We then export the script into a file, so that it can be executed outside this notebook. We added the script file to gitignore, because it is defined in this notebook and will be recreated every time this notebook is run. We define the script parameterization so, that the parameters are hard coded into the script file when it is generated, based on this notebook. So, to change the setup, you should run this notebook with different parameters. You may make different choises, but consider ease of reproducibility and be sure to document your work well.</p>
+<p>Now run the cell below to create the execution script (the code is not run in this notebook):</p>
+
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%writefile</span> static_workflow.py
+<span class="c1"># execute workflow of the example notebooks</span>
+<span class="c1"># to run the script, call python static_workflow.py</span>
+<span class="c1"># this file has been added to .gitignore</span>
+<span class="c1"># NOTE: use curly brackets only to format in global variables!</span>
+<span class="c1"># hint: you can include additional parameters with sys.argv</span>
+
+<span class="c1"># import relevant libraries</span>
+<span class="kn">import</span> <span class="nn">papermill</span> <span class="k">as</span> <span class="nn">pm</span>
+
+<span class="c1">## parse arguments from workflow_setup.yaml!!!!</span>
+
+<span class="c1"># update modules</span>
+
+<span class="c1"># optional (uncomment): make backup of index:</span>
+<span class="c1"># _ = pm.execute_notebook(&quot;{index}&quot;, &quot;{save_notebooks_to}{index}&quot;)</span>
+
+<span class="c1"># run data notebook</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">execute_notebook</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{data}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{save_notebooks_to}{data}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="c1"># remember that you can change the notebook parameters by giving </span>
+<span class="c1"># the execute_notebook function parameter dict:</span>
+<span class="c1"># parameters = dict(parameter_name_string:parameter_value, ...)</span>
+
+<span class="c1"># run model notebook</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">execute_notebook</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{model}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{save_notebooks_to}{model}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="c1"># run loss notebook</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">execute_notebook</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{loss}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{save_notebooks_to}{loss}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># optional (uncomment): make backup of the workflow notebook:</span>
+<span class="c1"># import os</span>
+<span class="c1"># os.system(&#39;cp {workflow} {save_notebooks_to}{workflow}&#39;)</span>
+<span class="c1"># (a recursive call with pm could also work,</span>
+<span class="c1"># but only do it if you known what you are doing)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Overwriting static_workflow.py
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>If you open the file <code>static_workflow.py</code>, you notice that the contents of curly brackets were replaced with the parameters of this notebook.</p>
+<p>Now, you can run the workflow:</p>
+
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">!</span>python static_workflow.py
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Executing:   0%|                                       | 0/57 [00:00&lt;?, ?cell/s][IPKernelApp] WARNING | Unknown error in handling startup files:
+Executing: 100%|██████████████████████████████| 57/57 [00:21&lt;00:00,  2.86cell/s]
+Executing:   0%|                                       | 0/44 [00:00&lt;?, ?cell/s][IPKernelApp] WARNING | Unknown error in handling startup files:
+Executing: 100%|██████████████████████████████| 44/44 [00:22&lt;00:00,  2.02cell/s]
+Executing:   0%|                                       | 0/43 [00:00&lt;?, ?cell/s][IPKernelApp] WARNING | Unknown error in handling startup files:
+Executing: 100%|██████████████████████████████| 43/43 [00:17&lt;00:00,  2.98cell/s]
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>You can again make a visible copy of the hidden notebooks folder just like above (remember to delete it afterwards) and view the notebooks.
+You can change some of the notebook parameters and rerun the workflow to see how it effects the results.</p>
+<p>You see that static workflow definition is quite simple. In the script above, 
+we did not define any inputs, outputs or the relation of the different steps.
+It's good to keep things that way, unless there is a reason not to.
+It might be that we have multiple, changing data sources, complex workflow structure,
+need for parallelization or other issues making it either difficult to hard-code
+the steps required in your workflow. Then, you might need a dynamic workflow.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Dynamic-executable-workflow-with-Snakemake">Dynamic executable workflow with Snakemake<a class="anchor-link" href="#Dynamic-executable-workflow-with-Snakemake"> </a></h2><p>Snakemake is a tool that will automatically determine which steps to run based on inputs and outputs.
+It's like gnu make, but for Python: easy to read and write, but powerful.
+Here we only cover a tiny portion of the possibilities of snakemake, but it can do very complex things.
+One thing to notice is that Snakemake must be the root runtime of Python - you can not lauch it from inside a Python script (at least with the current version).</p>
+<p>The following script will be written into a Snakefile, that you can run to execute the workflow.</p>
 
 </div>
 </div>
