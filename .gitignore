@@ -148,3 +148,5 @@ checklink/cookies.txt
 # Snakemake
 Snakefile
 
+# static workflow script example (see 03_workflow.ipynb)
+static_workflow.py

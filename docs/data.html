@@ -1479,17 +1479,17 @@ This is only applicable if the label is categorical, and useful if there are man
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">n_toy</span> <span class="o">=</span> <span class="mi">25</span> <span class="c1"># number of samples</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">n_toy</span> <span class="o">=</span> <span class="mi">30</span>  <span class="c1"># number of samples</span>
 <span class="n">toy_df</span> <span class="o">=</span> <span class="p">(</span>
     <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;y1num&quot;</span><span class="p">,</span> <span class="n">group_keys</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">rint</span><span class="p">(</span><span class="n">n_toy</span> <span class="o">*</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])))</span>
+    <span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">rint</span><span class="p">(</span><span class="n">n_toy</span> <span class="o">*</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]))))</span>
     <span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">frac</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="p">)</span>
+
 <span class="c1"># alternatively:</span>
 <span class="c1"># toy_df = df.sample(frac = n_toy/df.shape[0]) # if simple stratification is not applicable</span>
-<span class="c1"># toy_df = df.iloc[:n_toy,:] # with time series data. consider the size of n_toy.</span>
-
+<span class="c1"># toy_df = df.iloc[:n_toy,:] # with time series data. consider the size of n_toy</span>
 <span class="n">toy_df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </pre></div>
 
@@ -1502,32 +1502,79 @@ This is only applicable if the label is categorical, and useful if there are man
 
 <div class="output_area">
 
-<div class="output_subarea output_text output_error">
-<pre>
-<span class="ansi-cyan-fg">  File </span><span class="ansi-green-fg">&#34;&lt;ipython-input-27-d24817905550&gt;&#34;</span><span class="ansi-cyan-fg">, line </span><span class="ansi-green-fg">13</span>
-<span class="ansi-red-fg">    toy_df.head()</span>
-    ^
-<span class="ansi-red-fg">SyntaxError</span><span class="ansi-red-fg">:</span> invalid syntax
-</pre>
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>x1age</th>
+      <th>x4trestbps</th>
+      <th>x8thalach</th>
+      <th>x10oldpeak</th>
+      <th>y1num</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>60.0</td>
+      <td>160.0</td>
+      <td>99.0</td>
+      <td>0.5</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>59.0</td>
+      <td>125.0</td>
+      <td>175.0</td>
+      <td>2.6</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>53.0</td>
+      <td>80.0</td>
+      <td>141.0</td>
+      <td>2.0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>67.0</td>
+      <td>152.0</td>
+      <td>172.0</td>
+      <td>0.0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>47.0</td>
+      <td>112.0</td>
+      <td>143.0</td>
+      <td>0.1</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
 </div>
 </div>
 
-<div class="output_area">
-
-<div class="output_subarea output_stream output_stderr output_text">
-<pre>ERROR:root:Cannot parse: 13:0: toy_df.head()
-Traceback (most recent call last):
-  File &#34;/anaconda/envs/templateenv/lib/python3.8/site-packages/lab_black.py&#34;, line 218, in format_cell
-    formatted_code = _format_code(cell)
-  File &#34;/anaconda/envs/templateenv/lib/python3.8/site-packages/lab_black.py&#34;, line 29, in _format_code
-    return format_str(src_contents=code, mode=FileMode())
-  File &#34;/anaconda/envs/templateenv/lib/python3.8/site-packages/black/__init__.py&#34;, line 819, in format_str
-    src_node = lib2to3_parse(src_contents.lstrip(), mode.target_versions)
-  File &#34;/anaconda/envs/templateenv/lib/python3.8/site-packages/black/parsing.py&#34;, line 96, in lib2to3_parse
-    raise exc from None
-black.parsing.InvalidInput: Cannot parse: 13:0: toy_df.head()
-</pre>
-</div>
 </div>
 
 </div>
