@@ -145,6 +145,9 @@ checklink/cookies.txt
 .devcontainer.json
 *tmp*
 
+# workflow config
+workflow_setup.yml
+
 # Snakemake
 Snakefile
 
