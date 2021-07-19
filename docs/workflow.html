@@ -158,15 +158,117 @@ Then just run this notebook and the workflow is executed.
 We could even go further and parameterize this notebook to get parameterizable workflow execution.
 Then, we could use papermill in another application to run this notebook to execute the rest of the workflow.
 However, this approach has two main restrictions. The workflow execution script would not be included in this documentation, and it does not allow dynamic workflows because launching Snakemake from inside a Python runtime will cause all sorts of problems.</p>
-<p>Alternative approach is then to use this notebook to define a execution script and a configuration file.
-This has the advantages of including everything in your project documentation, and allowing very complex workflows.</p>
 
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Define-configuration-file">Define configuration file<a class="anchor-link" href="#Define-configuration-file"> </a></h2>
+<h2 id="Static-executable-workflow-with-papermill">Static executable workflow with papermill<a class="anchor-link" href="#Static-executable-workflow-with-papermill"> </a></h2><p>If we want to automatically run the workflow, we need to create and executable script to run it.
+We can define it in this notebook to include it in our documentation:</p>
+
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">dict</span><span class="p">(</span><span class="n">seed</span> <span class="o">=</span> <span class="mi">3</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>{&#39;seed&#39;: 3}</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%writefile</span> static_workflow.py
+<span class="c1"># execute workflow of the example notebooks</span>
+<span class="c1"># to run the script, call python static_workflow.py workflow_setup.yaml</span>
+<span class="c1"># this file has been added to .gitignore</span>
+<span class="c1"># NOTE: use curly brackets only to format in global variables!</span>
+<span class="c1"># hint: you can include additional parameters with sys.argv</span>
+
+<span class="c1"># import relevant libraries</span>
+<span class="kn">import</span> <span class="nn">papermill</span> <span class="k">as</span> <span class="nn">pm</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">yaml</span>
+
+<span class="c1"># update modules before running just to be sure</span>
+<span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s1">&#39;nbdev_build_lib&#39;</span><span class="p">)</span>
+
+<span class="c1"># run data notebook</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">execute_notebook</span><span class="p">(</span><span class="s1">&#39;00_data.ipynb&#39;</span><span class="p">,</span> <span class="c1"># input</span>
+                        <span class="s1">&#39;results/notebooks/_00_data.ipynb&#39;</span><span class="p">,</span> <span class="c1"># output</span>
+                       <span class="n">parameters</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">seed</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="c1"># params (optional)</span>
+                       <span class="p">)</span>
+<span class="c1"># run model notebook</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">execute_notebook</span><span class="p">(</span><span class="s1">&#39;01_model.ipynb&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;results/notebooks/_01_model.ipynb&#39;</span><span class="p">)</span>
+<span class="c1"># run loss notebook</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">execute_notebook</span><span class="p">(</span><span class="s1">&#39;02_loss.ipynb&#39;</span><span class="p">,</span>
+                       <span class="s1">&#39;results/_02_loss.ipynb&#39;</span><span class="p">)</span>
+
+<span class="c1"># optional (uncomment): make backup of the index and workflow notebooks:</span>
+<span class="c1"># os.system(&#39;cp {workflow} {save_notebooks_to}{workflow}&#39;)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Overwriting static_workflow.py
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Parameterized-static-executable-workflow-with-papermill">Parameterized static executable workflow with papermill<a class="anchor-link" href="#Parameterized-static-executable-workflow-with-papermill"> </a></h2><p>What if some of your input files change, or you would like to run your workflow with a slighly different setup?
+Alternative approach is then to use this notebook to define a execution script and a configuration file.
+This has the advantages of including everything in your project documentation, and allowing very complex workflows.</p>
+
 </div>
 </div>
 </div>
@@ -272,7 +374,8 @@ This has the advantages of including everything in your project documentation, a
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Static-executable-workflow-with-papermill">Static executable workflow with papermill<a class="anchor-link" href="#Static-executable-workflow-with-papermill"> </a></h2><p>Now we can define a simple static parameterizable workflow. The workflow is a Python script, completely defined in this notebook for consistent of documentation (everything is defined in notebooks). We then export the script into a file, so that it can be executed outside this notebook. We added the script file to gitignore, because it is defined in this notebook and will be recreated every time this notebook is run. We define the script parameterization so, that the parameters are hard coded into the script file when it is generated, based on this notebook. So, to change the setup, you should run this notebook with different parameters. You may make different choises, but consider ease of reproducibility and be sure to document your work well.</p>
+<h2 id="Parameterized-static-executable-workflow-with-papermill">Parameterized static executable workflow with papermill<a class="anchor-link" href="#Parameterized-static-executable-workflow-with-papermill"> </a></h2><p>You can either read parameters directly form sys.argv, python argparser or, as we recommend, from a configuration file.</p>
+<p>Now we can define a simple static parameterizable workflow. The workflow is a Python script, completely defined in this notebook for consistent of documentation (everything is defined in notebooks). We then export the script into a file, so that it can be executed outside this notebook. We added the script file to gitignore, because it is defined in this notebook and will be recreated every time this notebook is run. We define the script parameterization so, that the parameters are hard coded into the script file when it is generated, based on this notebook. So, to change the setup, you should run this notebook with different parameters. You may make different choises, but consider ease of reproducibility and be sure to document your work well.</p>
 <p>Now run the cell below to create the execution script (the code is not run in this notebook):</p>
 
 </div>
@@ -315,11 +418,12 @@ This has the advantages of including everything in your project documentation, a
 <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s1">&#39;nbdev_build_lib&#39;</span><span class="p">)</span>
 
 <span class="c1"># run data notebook</span>
-<span class="n">_</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">execute_notebook</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;notebook&#39;</span><span class="p">],</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">execute_notebook</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;notebook&#39;</span><span class="p">],</span> <span class="c1"># input</span>
                         <span class="n">utils</span><span class="p">[</span><span class="s1">&#39;save_notebooks_to&#39;</span><span class="p">]</span> \
                         <span class="o">+</span> <span class="n">utils</span><span class="p">[</span><span class="s1">&#39;notebook_save_prefix&#39;</span><span class="p">]</span> \
-                        <span class="o">+</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;notebook&#39;</span><span class="p">],</span>
-                       <span class="n">parameters</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;params&#39;</span><span class="p">])</span>
+                        <span class="o">+</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;notebook&#39;</span><span class="p">],</span> <span class="c1"># output</span>
+                       <span class="n">parameters</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;params&#39;</span><span class="p">]</span> <span class="c1"># params</span>
+                       <span class="p">)</span>
 <span class="c1"># run model notebook</span>
 <span class="n">_</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">execute_notebook</span><span class="p">(</span><span class="n">model</span><span class="p">[</span><span class="s1">&#39;notebook&#39;</span><span class="p">],</span>
                         <span class="n">utils</span><span class="p">[</span><span class="s1">&#39;save_notebooks_to&#39;</span><span class="p">]</span> \
@@ -422,9 +526,210 @@ the steps required in your workflow. Then, you might need a dynamic workflow.</p
 <div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="Dynamic-executable-workflow-with-Snakemake">Dynamic executable workflow with Snakemake<a class="anchor-link" href="#Dynamic-executable-workflow-with-Snakemake"> </a></h2><p>Snakemake is a tool that will automatically determine which steps to run based on inputs and outputs.
 It's like gnu make, but for Python: easy to read and write, but powerful.
-Here we only cover a tiny portion of the possibilities of snakemake, but it can do very complex things.
-One thing to notice is that Snakemake must be the root runtime of Python - you can not lauch it from inside a Python script (at least with the current version).</p>
+Unfortunaltely it is impossible to cover all the properties of the tool but see their documentation and internet discussion for ideas.
+Here we only cover a tiny portion of the possibilities of snakemake, but it can do very complex things.</p>
+<p>Snakemake executes the workflow as a rule based directed acyclic graph (DAG).
+Each workflow step is determined by a rule, which consists of inputs, outputs and execution of code.
+The inputs and outputs are files (data, config, source code, notebooks, images, tables etc.).
+The code executed can either be shell commands or Python, written directly into the Snakefile.</p>
+<p>Let's consider a workflow where we have two parallel rules 1a and 1b, and one consequtive rule 2.
+In addition we have rule all, that determines the whole workflow.
+The rules 1a and 1b only depend on their input. The rule 2 depends on outputs of both rules 1a and 1b.
+The rule 2 also has an additional input independent of other rules.
+We can visualize the workflow as follows:</p>
+<p><img src="/ml_project_template/./visuals/snakemake_illustration_simple_workflow.png" alt="Workflow visualization example"></p>
+<p>Now, if we turned it into a Snakefile script, it would look something like this:</p>
+
+<pre><code>rule all: # used to determine the whole workflow
+    input:
+        output_2
+
+rule 1a: # parallel to rule 1b
+    input:
+        input_1a
+    output:
+        output_1a
+    run: # run python commands
+        # Python script to run rule 1a
+
+ rule 1b: # parallel to rule 1a
+    input:
+        input_1b
+    output:
+        output_1b
+    shell: # you also run shell commands
+        # shell script to run rule 1b
+
+ rule 2: # consequent to steps 1a and 1b
+    input:
+        output_1a, # depends on rule 1a
+        output_1b, # depends on rule 1b
+        input_2 # independent input
+    output:
+        output_2
+    run:
+        # Python script to run rule2
+
+</code></pre>
+<p>Snakemake can be either used to run a single rule, or the complete workflow based on rule all.
+Based on the inputs and outputs, snakemake will determine which other rules will then need to be executed.</p>
+<p>In our example, the notebooks consist the nodes of the DAG graph. Based on the changes in input and output files since the last execution, 
+Snakemake determines which steps need to be run. If no changes are observed, snakemake does not do anything.</p>
 <p>The following script will be written into a Snakefile, that you can run to execute the workflow.</p>
+
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%writefile</span> Snakefile
+<span class="c1"># import relevant libraries</span>
+<span class="kn">import</span> <span class="nn">papermill</span> <span class="k">as</span> <span class="nn">pm</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="c1"># determine global variables, wildcards etc.</span>
+
+<span class="c1"># all: final output of the workflow</span>
+<span class="n">rule</span> <span class="nb">all</span><span class="p">:</span>
+    <span class="nb">input</span><span class="p">:</span>
+        <span class="s1">&#39;results/LogisticRegressionClassifier.pkl&#39;</span> <span class="c1"># trained model</span>
+        
+<span class="c1"># data</span>
+<span class="n">rule</span> <span class="n">data</span><span class="p">:</span>
+    <span class="nb">input</span><span class="p">:</span>
+        <span class="s1">&#39;00_data.ipynb&#39;</span> <span class="c1"># every notebook is it&#39;s own input</span>
+        <span class="c1"># if we had input files they should be listed here, separated with comma ,</span>
+    <span class="n">output</span><span class="p">:</span> <span class="c1"># Snakemake checks that after running these files are created / updated</span>
+        <span class="s1">&#39;data/preprocessed_data/dataset_clean_switzerland_cleveland.csv&#39;</span><span class="p">,</span>  <span class="c1"># clean dataset</span>
+        <span class="s1">&#39;data/preprocessed_data/dataset_toy_switzerland_cleveland.csv&#39;</span><span class="p">,</span> <span class="c1"># toy dataset</span>
+        <span class="s1">&#39;ml_project_template/data.py&#39;</span><span class="p">,</span> <span class="c1"># plot functions</span>
+        <span class="s1">&#39;results/notebooks/_00_data.ipynb&#39;</span> <span class="c1"># copy of the executed notebook</span>
+    <span class="n">run</span><span class="p">:</span>
+        <span class="c1"># run notebook with papermill</span>
+        <span class="n">_</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">execute_notebook</span><span class="p">(</span><span class="s1">&#39;00_data.ipynb&#39;</span><span class="p">,</span> <span class="c1"># input</span>
+                                <span class="s1">&#39;results/notebooks/_00_data.ipynb&#39;</span><span class="p">,</span> <span class="c1"># output</span>
+                               <span class="n">parameters</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;seed&#39;</span><span class="p">:</span><span class="mi">0</span><span class="p">})</span> <span class="c1"># params (optional)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s1">&#39;nbdev_build_lib --fname 00_data.ipynb&#39;</span><span class="p">)</span> <span class="c1"># build data.py</span>
+
+<span class="n">rule</span> <span class="n">model</span><span class="p">:</span>
+    <span class="nb">input</span><span class="p">:</span>
+        <span class="s1">&#39;01_model.ipynb&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;data/preprocessed_data/dataset_toy_switzerland_cleveland.csv&#39;</span><span class="p">,</span>
+    <span class="n">output</span><span class="p">:</span>
+        <span class="s1">&#39;ml_project_template/model.py&#39;</span><span class="p">,</span> <span class="c1"># model class</span>
+        <span class="s1">&#39;results/notebooks/_01_model.ipynb&#39;</span>
+    <span class="n">run</span><span class="p">:</span>
+        <span class="n">_</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">execute_notebook</span><span class="p">(</span><span class="s1">&#39;01_model.ipynb&#39;</span><span class="p">,</span> <span class="c1"># we could also use &#39;{input[0]}&#39;</span>
+                                <span class="s1">&#39;results/notebooks/_01_model.ipynb&#39;</span><span class="p">)</span> <span class="c1"># we could also use &#39;{output[1]}&#39;</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s1">&#39;nbdev_build_lib --fname 01_model.ipynb&#39;</span><span class="p">)</span>
+        
+<span class="n">rule</span> <span class="n">loss</span><span class="p">:</span>
+    <span class="nb">input</span><span class="p">:</span>
+        <span class="s1">&#39;02_loss.ipynb&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;data/preprocessed_data/dataset_clean_switzerland_cleveland.csv&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;ml_project_template/data.py&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;ml_project_template/model.py&#39;</span>
+    <span class="n">output</span><span class="p">:</span>
+        <span class="s1">&#39;results/LogisticRegressionClassifier.pkl&#39;</span><span class="p">,</span> <span class="c1"># trained model</span>
+        <span class="s1">&#39;results/notebooks/_02_loss.ipynb&#39;</span>
+    <span class="n">run</span><span class="p">:</span>
+        <span class="n">_</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">execute_notebook</span><span class="p">(</span><span class="s1">&#39;02_loss.ipynb&#39;</span><span class="p">,</span>
+                               <span class="s1">&#39;results/notebooks/_02_loss.ipynb&#39;</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s1">&#39;nbdev_build_lib --fname 02_loss.ipynb&#39;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Overwriting Snakefile
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>One thing to notice is that Snakemake should be used from terminal directly, not from a Python script or notebook.</p>
+<p>To run Snakemake, call:</p>
+
+<pre><code>snakemake -n # dry-run snakemake to check what would be done
+snakemake --jobs 1 # run workflow
+
+</code></pre>
+<p>The --jobs parameter (you can also use -j) is the maximum number of CPU cores to use with the pipeline (local/cluster/cloud cores).
+Usually 1 is enough with simple pipelines, since our primary workflow step is a notebook, and most Python operations are difficult to parallelize.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Parameterized-dynamic-executable-workflow-with-Snakemake">Parameterized dynamic executable workflow with Snakemake<a class="anchor-link" href="#Parameterized-dynamic-executable-workflow-with-Snakemake"> </a></h2><p>Again, we might want to parameterize the notebook for scalability.</p>
+<p>For simple parameterization, use rule parameters:</p>
+
+<pre><code>rule model:
+    input:
+    output:
+    parameters: seed = 0
+    run:
+        _ = pm.execute_notebook(...,
+                                ...,
+                           parameters = {seed: parameters.seed})
+
+</code></pre>
+<p>For complex parameterization, including the parameterization of inputs and outputs,
+consider using a config file. Snakemake can automatically load  json or yaml file to python dictionary:</p>
+
+<pre><code>## in config.yml:
+rules:
+    data:
+        ...
+    model:
+        input:
+            - 01_model.ipynb
+            - data/preprocessed_data/dataset_toy_switzerland_cleveland.csv
+        parameters:
+            seed: 0
+        ...
+    ...
+
+
+## in Snakefile:
+
+# automatically load json or yaml file to python dictionary 'config'
+configfile: config.yml
+
+rule model:
+    input:
+        config['rules']['model']['input']
+    output:
+        ...
+    run:
+        run:
+        _ = pm.execute_notebook(...,
+                                ...,
+                           parameters = {seed: config['rules']['model']['parameters']['seed']})
+
+
+</code></pre>
+<p>For more information, see <a href="https://snakemake.readthedocs.io/">Snakemake documentation</a>.</p>
 
 </div>
 </div>
@@ -450,6 +755,7 @@ Then, you should change the name of this notebook and the default_exp location t
 ### export main
 # remove the two extra # in the line above
 
+import numpy as np
 import sys
 import data, model, loss
 
@@ -481,6 +787,7 @@ if __name__ == &quot;__main__&quot;:
     &quot;&quot;&quot;
     run with: python ml_project_template filename
     &quot;&quot;&quot;
+    np.random.seed(0)
     filename = sys.argv[1]
     main(filename)
 </pre></div>
