@@ -150,6 +150,7 @@ workflow_setup.yml
 
 # Snakemake
 Snakefile
+.snakemake/
 
 # static workflow script example (see 03_workflow.ipynb)
 static_workflow.py
