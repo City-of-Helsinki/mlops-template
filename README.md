@@ -79,14 +79,49 @@ The repository contains the following files and folders:
 
 ## Guiding Principles
 
-The template follows four guiding principles.
+The template followsiveur guiding principles.
 Remember, none of these are strict and you are free to deviate for achieving the best results for you.
 Also, it is better to get started with the work than to perfect it from the beginning.
 You may return to these concepts when you want to improve your project or get stuck, iteratively!
 
 For general coding best practices, refer to [dev.hel.fi](https://dev.hel.fi/) where applicable.
 
-### 1. Exploratory Programming - Use Jupyter Notebooks
+### 1. Prefer Standard Tools
+
+It is recommended to use widely used standard tools with stable community support over niche optimal solutions, if possible.
+This helps in ensuring that the methods used are reviewed, stable, accurate and maintained.
+This is not a hard rule, but in general a viable stable solution is far better than one that is optimized but trivial.
+
+This template installs the following Python standard tools for data science:
+
+    NumPy          # matrix computation, linear algebra, vectorized operations
+    Pandas         # complex data structures, useful functions for handling and plotting data, based on numpy
+    Matplotlib     # create visualizations
+    SciPy          # math and statistics
+    Scikit-learn   # data mining, preprocessing, machine learning models
+    ipython        # jupyter notebooks
+    nbdev          # efficient software development with notebooks, code, docs and results as one 
+    papermill      # parameterize notebooks
+    Snakemake      # create reproducible workflows
+    
+These come with many dependencies, see `requirements.txt` for complete documentation.
+
+Here are a few examples of preferred standard tools not included in this template that might help you get started when the template default tools lack features:
+
+    statsmodels         # statistical models and tests (based on scipy)
+    Keras / TensorFlow  # Neural networks (PyTorch is another alternative)
+    Seaborn             # enhanced visualizations (based on matplotlib)
+    Scrapy              # scrape data from online sources that do not have their own API
+    BeautifulSoup       # parse data from web pages (simpler than Scrapy)
+    NLTK                # natural language processing tools
+    NetworkX            # network analysis algorithms
+    DEAP                # genetic algorithms
+
+The list is not, and never will be complete. You are free to use the tools that best suite you.
+However, regardless of what your problem is, there are likely many different implementations for solving it.
+Try to select a tool that is well documented and has steady userbase, frequent updates and many contributors.
+
+### 2. Exploratory Programming - Use Jupyter Notebooks
 
 We want to keep our code, documentation and results together, seamlessly.
 We also want to see what's going on as we create the software, immediately.
@@ -96,7 +131,7 @@ That's why we use jypyter notebooks as the core of our development.
 Actually, even this page was generated from a notebook!
 
 The notebooks are enhanced with `nbdev` tool to export code to modules, create doc pages, run tests, handle notebook version control etc.
-Read more on nbdev on their [project pages](https://nbdev.fast.ai/). This template is largely based on [nbdev template](https://github.com/fastai/nbdev_template).
+Read more on nbdev on their [project pages](https://nbdev.fast.ai/).
 
 ---
 **INFO BOX: How nbdev exports code from notebooks?**
@@ -120,7 +155,7 @@ With notebook development you get the right results much faster, and everyone in
 
 Read more on exploratory programming with notebooks from [this blog post](https://www.fast.ai/2019/12/02/nbdev/).
 
-### 2. Ease of Reproducibility
+### 3. Ease of Reproducibility
 
 Poor reproducibility is a major issue in data science projects, both in the industry and academia, but is often overlooked at.
 We at the city of Helsinki, as a public sector operators, value it highly, and believe that everyone will benefit from it.
@@ -186,7 +221,11 @@ We use Git for version control of code. Data version control is a topic we are s
 
 ---
 
-### 3. Tidy Data & Tools
+Read more on reproducible code and more tips for scientific computing on [Code Refinery](https://coderefinery.org/).
+Code Refinery is an academic project focused on teaching and sharing knowledge on scientific computing practices.
+They organize workshops and have many great free resources and self-learn [lessons](https://coderefinery.org/lessons/) that you can check out to improve your data science skills.
+
+### 4. Tidy Data & Tools
 
 Tidy principles are guidelines for clean and efficiend data utilization.
 They can be appied to different programming languages.
@@ -200,7 +239,7 @@ Tidy data is easy to handle and understand. Tidy tools makes handling data, prog
 3. **Every cell contains a single numerical value** (int, float, bool, str*)
 > *strings should be converted to numerical format before applying ML
 
-Read more on tidy data from [tidy data manifesto](https://vita.had.co.nz/papers/tidy-data.html).
+Read more on tidy data from [tidy data manifesto](https://vita.had.co.nz/papers/tidy-data.html).
 
 **Tidy Tools:**
 
@@ -231,8 +270,7 @@ instead of multiple or nested lines of code
 m = model()
 m>init(X_train, y_train)
 m>fit(hyperparam)
-prediction = m>predict(X_test)
-mean_values = prediction>mean()
+mean_values = mean(m>predict(X_test))
 ```
 although you can use pipeable functions in either way, or as a composition.
 
@@ -249,10 +287,17 @@ Can you find a function that does both?
 
 Python is not a functional programming language, but it can be written in functional style.
 Many of the concepts can be used to write cleaner data code with Python. 
+The key concepts of functional programming include pure functions, immutability and higher order functions.
+
+* Pure Functions do not have side effects, meaning that they do not change the state of the program. Output of a pure function depends only on it's input.
+* Immutability means that data cannot be changed after creation. Changes can only be made to a copy of the data.
+* Higher order functions are functions that may accept other functions as parameters or return new functions. This allows high level of abstractation.
+
 Read more on functional programming with Python from [this Stack Abuse article](https://stackabuse.com/functional-programming-in-python).
 
 4. **Are designed for humans**
 
+Create your code in a way that it's easy to use, read and debug.
 In addition to clean structure and documentation, consider the naming of your classes, functions and variables.
 Clean code is easy to understand, and actually eases your work with the documentation. 
 Function name should describe what it does.
@@ -262,13 +307,13 @@ Having a common prefix with similar functions and autocomplete makes make even l
 Read more on tidy tools from [tidy tools manifesto](https://cran.r-project.org/web/packages/tidyverse/vignettes/manifesto.html).
 
 
-### 4. Data, Model & Loss - The Three Components of Machine Learning
+### 4. Data, Model & Loss: the core components of a ML workflow
 
 The core of this template constitutes of three notebooks: data, model and loss.
-The notebooks running number prefix (`00_data.ipynb etc.) to emphasize the running order and to improve readability.
-Any data project can be resolved by defining these three steps.
+The notebooks running number prefix (`00_data.ipynb` etc.) to emphasize the running order and to improve readability.
+Any data project can be resolved by defining these three steps. Together they form a basis for a complete ML workflow from data to trained deployable model.
 
-You might be used to doing all of them in a single script (multiple lines of code in a file, excecuted in order from top to bottom),
+You might be used to doing all the steps in a single script or notebook,
 but separating makes development, explaining the results and debugging much more efficient. 
 
 Each notebook is also a basis for a python module, including tests and documentation.
@@ -290,6 +335,7 @@ This is also why we separate between the model and loss notebooks.
 In the model notebook, the machine learning model (or analytics or simulation) is explored, defined and tested.
 You can begin with scripting, but based on the script you should develop real generalizable and tested code.
 This part of the notebooks is the closest to traditional software development it gets: the output is a clean Python module. 
+
 
 **Loss**
 
@@ -330,7 +376,7 @@ instructions on how to install and use it,
 and instructions for contributing.
 
 ## Installing the Template
-{% include note.html content='if you are doing a project on personal or sensitive data for the City of Helsinki, contact the data and analytics team of the city before proceeding!' %}
+{% include note.html content='if you are doing a project on personal or sensitive data for the City of Helsinki, contact the data and analytics team of the city before proceeding!' %}
 ### On your GitHub homepage:
 
 0. (Create [GitHub account](https://github.com/) if you do not have one already. 
@@ -426,6 +472,7 @@ So, after deciding which editor you are working with (Azure ML default notebook 
 8. Check that you can run the notebooks `00_data.ipynb`, `01_model.ipynb` and `02_loss.ipynb`.
 You may have to change the kernel your notebook interpreter is using to the one you just created.
 This can be done drop down bar in top of the notebook editor.
+
 9. Edit `settings.ini`, `docs/_config.yml` and `docs/_data/topnav.yml` according to your project details.
 The files contain instructions for minimum required edits.
 You can continue editing them in the future, so no need to worry about getting it right the first time.
@@ -481,7 +528,10 @@ You can also build the pages locally with jekyll.
 Check out what packages are installed with the template from `requirements.txt`, or check if a specific package is installed with `pip show [package_name]`.
 If you install new packages, remember to update the requirements for dependency management: `pip freeze > requirements.txt`.
 
-8. Remember to track your changes with git! 
+8. Before you publish your project, edit LISENCE and the copywright information in the `index.ipynb` according to your project details.
+Please mind that some dependencies of your project might have more restrictive licenses than the Apace-2.0 this template is distributed under. 
+
+9. Remember to track your changes with git! 
 
 ---
 
@@ -530,5 +580,16 @@ However, there are better sources for learning all that stuff, like this [free e
 ---
 
 
+
+## Contributing
+
+See [here](https://github.com/City-of-Helsinki/ml_project_template/blob/master/CONTRIBUTING.md) on how to contribute.
+
+
+## Copyright
+
+Copyright 2021 City-of-Helsinki. Licensed under the Apache License, Version 2.0 (the "License"); you may not use this project's files except in compliance with the License. A copy of the License is provided in the LICENSE file in this repository.
+
+This template was built using [nbdev](https://nbdev.fast.ai/) on top of the [nbdev template](https://github.com/fastai/nbdev_template) by fast.ai, Inc.
 
 ## Now you are all set up and ready to begin you ML project!

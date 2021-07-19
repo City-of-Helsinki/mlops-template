@@ -103,7 +103,7 @@ setup.py                                     </code></pre>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Guiding-Principles">Guiding Principles<a class="anchor-link" href="#Guiding-Principles"> </a></h2><p>The template follows four guiding principles.
+<h2 id="Guiding-Principles">Guiding Principles<a class="anchor-link" href="#Guiding-Principles"> </a></h2><p>The template followsiveur guiding principles.
 Remember, none of these are strict and you are free to deviate for achieving the best results for you.
 Also, it is better to get started with the work than to perfect it from the beginning.
 You may return to these concepts when you want to improve your project or get stuck, iteratively!</p>
@@ -114,13 +114,51 @@ You may return to these concepts when you want to improve your project or get st
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="1.-Exploratory-Programming---Use-Jupyter-Notebooks">1. Exploratory Programming - Use Jupyter Notebooks<a class="anchor-link" href="#1.-Exploratory-Programming---Use-Jupyter-Notebooks"> </a></h3><p>We want to keep our code, documentation and results together, seamlessly.
+<h3 id="1.-Prefer-Standard-Tools">1. Prefer Standard Tools<a class="anchor-link" href="#1.-Prefer-Standard-Tools"> </a></h3><p>It is recommended to use widely used standard tools with stable community support over niche optimal solutions, if possible.
+This helps in ensuring that the methods used are reviewed, stable, accurate and maintained.
+This is not a hard rule, but in general a viable stable solution is far better than one that is optimized but trivial.</p>
+<p>This template installs the following Python standard tools for data science:</p>
+
+<pre><code>NumPy          # matrix computation, linear algebra, vectorized operations
+Pandas         # complex data structures, useful functions for handling and plotting data, based on numpy
+Matplotlib     # create visualizations
+SciPy          # math and statistics
+Scikit-learn   # data mining, preprocessing, machine learning models
+ipython        # jupyter notebooks
+nbdev          # efficient software development with notebooks, code, docs and results as one 
+papermill      # parameterize notebooks
+Snakemake      # create reproducible workflows
+
+</code></pre>
+<p>These come with many dependencies, see <code>requirements.txt</code> for complete documentation.</p>
+<p>Here are a few examples of preferred standard tools not included in this template that might help you get started when the template default tools lack features:</p>
+
+<pre><code>statsmodels         # statistical models and tests (based on scipy)
+Keras / TensorFlow  # Neural networks (PyTorch is another alternative)
+Seaborn             # enhanced visualizations (based on matplotlib)
+Scrapy              # scrape data from online sources that do not have their own API
+BeautifulSoup       # parse data from web pages (simpler than Scrapy)
+NLTK                # natural language processing tools
+NetworkX            # network analysis algorithms
+DEAP                # genetic algorithms
+
+</code></pre>
+<p>The list is not, and never will be complete. You are free to use the tools that best suite you.
+However, regardless of what your problem is, there are likely many different implementations for solving it.
+Try to select a tool that is well documented and has steady userbase, frequent updates and many contributors.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="2.-Exploratory-Programming---Use-Jupyter-Notebooks">2. Exploratory Programming - Use Jupyter Notebooks<a class="anchor-link" href="#2.-Exploratory-Programming---Use-Jupyter-Notebooks"> </a></h3><p>We want to keep our code, documentation and results together, seamlessly.
 We also want to see what's going on as we create the software, immediately.
 Create code where we first need it, without the need of copy-pasting it around.
 That's why we use jypyter notebooks as the core of our development.</p>
 <p>Actually, even this page was generated from a notebook!</p>
 <p>The notebooks are enhanced with <code>nbdev</code> tool to export code to modules, create doc pages, run tests, handle notebook version control etc.
-Read more on nbdev on their <a href="https://nbdev.fast.ai/">project pages</a>. This template is largely based on <a href="https://github.com/fastai/nbdev_template">nbdev template</a>.</p>
+Read more on nbdev on their <a href="https://nbdev.fast.ai/">project pages</a>.</p>
 <hr>
 <p><strong>INFO BOX: How nbdev exports code from notebooks?</strong></p>
 <p><img src="/ml_project_template/./visuals/nbdev_build_lib.png" alt="Exporting code from notebooks with nbdev"></p>
@@ -144,7 +182,7 @@ you can still use this for planning and creating documentation. Clean code is ea
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="2.-Ease-of-Reproducibility">2. Ease of Reproducibility<a class="anchor-link" href="#2.-Ease-of-Reproducibility"> </a></h3><p>Poor reproducibility is a major issue in data science projects, both in the industry and academia, but is often overlooked at.
+<h3 id="3.-Ease-of-Reproducibility">3. Ease of Reproducibility<a class="anchor-link" href="#3.-Ease-of-Reproducibility"> </a></h3><p>Poor reproducibility is a major issue in data science projects, both in the industry and academia, but is often overlooked at.
 We at the city of Helsinki, as a public sector operators, value it highly, and believe that everyone will benefit from it.
 Our goal is, that each state and decision of our ML models are reproducible.
 A theoretical possibility of recreating a particular result is not enough, if it takes unreasonable efforts to do it.
@@ -197,13 +235,16 @@ in a reversable way that allows you to step back to a previous version, or make 
 Version control allows you to refer to a specific version of your system, making these snapshots reproducible.
 We use Git for version control of code. Data version control is a topic we are still working on.</p>
 <hr>
+<p>Read more on reproducible code and more tips for scientific computing on <a href="https://coderefinery.org/">Code Refinery</a>.
+Code Refinery is an academic project focused on teaching and sharing knowledge on scientific computing practices.
+They organize workshops and have many great free resources and self-learn <a href="https://coderefinery.org/lessons/">lessons</a> that you can check out to improve your data science skills.</p>
 
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="3.-Tidy-Data-&amp;-Tools">3. Tidy Data &amp; Tools<a class="anchor-link" href="#3.-Tidy-Data-&amp;-Tools"> </a></h3><p>Tidy principles are guidelines for clean and efficiend data utilization.
+<h3 id="4.-Tidy-Data-&amp;-Tools">4. Tidy Data &amp; Tools<a class="anchor-link" href="#4.-Tidy-Data-&amp;-Tools"> </a></h3><p>Tidy principles are guidelines for clean and efficiend data utilization.
 They can be appied to different programming languages.
 Common packages, like <code>numpy</code>, <code>pandas</code> and <code>sklearn</code> have been developed so that these concepts are easy to apply.
 Tidy data is easy to handle and understand. Tidy tools makes handling data, programming and creating explainable ML much easier.</p>
@@ -239,8 +280,7 @@ In pseudocode, it looks something like this</p>
 <pre><code>m = model()
 m&gt;init(X_train, y_train)
 m&gt;fit(hyperparam)
-prediction = m&gt;predict(X_test)
-mean_values = prediction&gt;mean()</code></pre>
+mean_values = mean(m&gt;predict(X_test))</code></pre>
 <p>although you can use pipeable functions in either way, or as a composition.</p>
 <p>Piped code is easy to read: you see that a model class is initialized, fitted with certain hyperparameters, a prediction is made and aggregated to a mean.
 Python does not have a native pipe operator such as <code>%&gt;%</code> in R tidyverse,
@@ -254,11 +294,18 @@ Can you find a function that does both?</p>
 </ol>
 <p>Python is not a functional programming language, but it can be written in functional style.
 Many of the concepts can be used to write cleaner data code with Python. 
-Read more on functional programming with Python from <a href="https://stackabuse.com/functional-programming-in-python">this Stack Abuse article</a>.</p>
+The key concepts of functional programming include pure functions, immutability and higher order functions.</p>
+<ul>
+<li>Pure Functions do not have side effects, meaning that they do not change the state of the program. Output of a pure function depends only on it's input.</li>
+<li>Immutability means that data cannot be changed after creation. Changes can only be made to a copy of the data.</li>
+<li>Higher order functions are functions that may accept other functions as parameters or return new functions. This allows high level of abstractation.</li>
+</ul>
+<p>Read more on functional programming with Python from <a href="https://stackabuse.com/functional-programming-in-python">this Stack Abuse article</a>.</p>
 <ol>
 <li><strong>Are designed for humans</strong></li>
 </ol>
-<p>In addition to clean structure and documentation, consider the naming of your classes, functions and variables.
+<p>Create your code in a way that it's easy to use, read and debug.
+In addition to clean structure and documentation, consider the naming of your classes, functions and variables.
 Clean code is easy to understand, and actually eases your work with the documentation. 
 Function name should describe what it does.
 A lengthy informative names is better than short, uninformative ones.
@@ -270,10 +317,10 @@ Having a common prefix with similar functions and autocomplete makes make even l
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="4.-Data,-Model-&amp;-Loss---The-Three-Components-of-Machine-Learning">4. Data, Model &amp; Loss - The Three Components of Machine Learning<a class="anchor-link" href="#4.-Data,-Model-&amp;-Loss---The-Three-Components-of-Machine-Learning"> </a></h3><p>The core of this template constitutes of three notebooks: data, model and loss.
-The notebooks running number prefix (`00_data.ipynb etc.) to emphasize the running order and to improve readability.
-Any data project can be resolved by defining these three steps.</p>
-<p>You might be used to doing all of them in a single script (multiple lines of code in a file, excecuted in order from top to bottom),
+<h3 id="4.-Data,-Model-&amp;-Loss:-the-core-components-of-a-ML-workflow">4. Data, Model &amp; Loss: the core components of a ML workflow<a class="anchor-link" href="#4.-Data,-Model-&amp;-Loss:-the-core-components-of-a-ML-workflow"> </a></h3><p>The core of this template constitutes of three notebooks: data, model and loss.
+The notebooks running number prefix (<code>00_data.ipynb</code> etc.) to emphasize the running order and to improve readability.
+Any data project can be resolved by defining these three steps. Together they form a basis for a complete ML workflow from data to trained deployable model.</p>
+<p>You might be used to doing all the steps in a single script or notebook,
 but separating makes development, explaining the results and debugging much more efficient.</p>
 <p>Each notebook is also a basis for a python module, including tests and documentation.
 The <code>nbdev</code> tool constructs a python module of each of these notebooks, under the folder <code>[your_repository]/[your_module]/</code>
@@ -329,8 +376,7 @@ and instructions for contributing.</p>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Installing-the-Template">Installing the Template<a class="anchor-link" href="#Installing-the-Template"> </a></h2><p>{% include note.html content='if you are doing a project on personal or sensitive data for the City of Helsinki, contact the data and analytics team of the city before proceeding!
-' %}</p>
+<h2 id="Installing-the-Template">Installing the Template<a class="anchor-link" href="#Installing-the-Template"> </a></h2><p>{% include note.html content='if you are doing a project on personal or sensitive data for the City of Helsinki, contact the data and analytics team of the city before proceeding!' %}</p>
 <h3 id="On-your-GitHub-homepage:">On your GitHub homepage:<a class="anchor-link" href="#On-your-GitHub-homepage:"> </a></h3><ol>
 <li>(Create <a href="https://github.com/">GitHub account</a> if you do not have one already. </li>
 <li>Sign into your GitHub homepage</li>
@@ -430,14 +476,16 @@ So, after deciding which editor you are working with (Azure ML default notebook 
 
 </code></pre>
 <ol>
-<li>Check that you can run the notebooks <code>00_data.ipynb</code>, <code>01_model.ipynb</code> and <code>02_loss.ipynb</code>.
+<li><p>Check that you can run the notebooks <code>00_data.ipynb</code>, <code>01_model.ipynb</code> and <code>02_loss.ipynb</code>.
 You may have to change the kernel your notebook interpreter is using to the one you just created.
-This can be done drop down bar in top of the notebook editor.</li>
-<li>Edit <code>settings.ini</code>, <code>docs/_config.yml</code> and <code>docs/_data/topnav.yml</code> according to your project details.
+This can be done drop down bar in top of the notebook editor.</p>
+</li>
+<li><p>Edit <code>settings.ini</code>, <code>docs/_config.yml</code> and <code>docs/_data/topnav.yml</code> according to your project details.
 The files contain instructions for minimum required edits.
 You can continue editing them in the future, so no need to worry about getting it right the first time.
 These are used for building the python modules and docs based on your notebooks.
-If you get errors when building a module or docs, take a look again at these files.</li>
+If you get errors when building a module or docs, take a look again at these files.</p>
+</li>
 <li>Configure your git user name and email adress (one of those added to your git account) if you haven't done it already:</li>
 </ol>
 
@@ -501,6 +549,9 @@ You can also build the pages locally with jekyll.</p>
 Check out what packages are installed with the template from <code>requirements.txt</code>, or check if a specific package is installed with <code>pip show [package_name]</code>.
 If you install new packages, remember to update the requirements for dependency management: <code>pip freeze &gt; requirements.txt</code>.</p>
 </li>
+<li><p>Before you publish your project, edit LISENCE and the copywright information in the <code>index.ipynb</code> according to your project details.
+Please mind that some dependencies of your project might have more restrictive licenses than the Apace-2.0 this template is distributed under.</p>
+</li>
 <li><p>Remember to track your changes with git!</p>
 </li>
 </ol>
@@ -546,6 +597,21 @@ git checkout [branch name] # Change to another branch
 <p>In addition, there are many fancy features for git that enable comparing differences, collaborative work, debugging, automated testing and other crazy things.
 However, there are better sources for learning all that stuff, like this <a href="https://git-scm.com/book/en/v2">free ebook</a>.</p>
 <hr>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Contributing">Contributing<a class="anchor-link" href="#Contributing"> </a></h2><p>See <a href="https://github.com/City-of-Helsinki/ml_project_template/blob/master/CONTRIBUTING.md">here</a> on how to contribute.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Copyright">Copyright<a class="anchor-link" href="#Copyright"> </a></h2><p>Copyright 2021 City-of-Helsinki. Licensed under the Apache License, Version 2.0 (the "License"); you may not use this project's files except in compliance with the License. A copy of the License is provided in the LICENSE file in this repository.</p>
+<p>This template was built using <a href="https://nbdev.fast.ai/">nbdev</a> on top of the <a href="https://github.com/fastai/nbdev_template">nbdev template</a> by fast.ai, Inc.</p>
 
 </div>
 </div>
