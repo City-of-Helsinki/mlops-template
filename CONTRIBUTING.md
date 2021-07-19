@@ -1,5 +1,18 @@
 # How to contribute
 
+Contributions are accepted as pull requests.  Please observe our coding
+practices at https://github.com/City-of-Helsinki/bestpractice/
+and machine-learning specific practices at https://city-of-helsinki.github.io/ml_project_template/.
+Please make your pull requests short, elegant and only handling one
+issue at a time!
+ 
+If you make a pull request, you may also want to contact
+https://github.com/City-of-Helsinki/ml_project_template/discussions to tell about your contribution.
+ 
+Our contribution handling guidelines are at
+https://github.com/City-of-Helsinki/bestpractice/blob/master/accepting-contributions.md
+
+
 ## How to get started
 
 Before anything else, please install the git hooks that run automatic scripts during each commit and merge to strip the notebooks of superfluous metadata (and avoid merge conflicts). After cloning the repository, run the following command inside it:
@@ -29,5 +42,5 @@ nbdev_install_git_hooks
 
 ## Do you want to contribute to the documentation?
 
-* Docs are automatically created from the notebooks in the nbs folder.
+* Docs are automatically created from the notebooks in the root folder.
 
