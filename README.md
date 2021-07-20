@@ -501,15 +501,15 @@ If you get errors when building a module or docs, take a look again at these fil
 
 2. Check out the notebooks, and play around a bit to see that your installation works (notebooks run smoothly) and you understand the template structure
 
-3. Replace the notebooks `index`, `data`, `model`, `loss` and `workflow` with copies without the code examples:
+3. Replace the notebooks `index`, `data`, `model`, `loss` and `workflow` with copies without the code examples (there is also additional empty notebook template `_XX_empty_notebook_template.ipynb` if you want to deviate from basic template structure):
 
 
     git rm index.ipynb 00_data.ipynb 01_model.ipynb 02_loss.ipynb 03_workflow.ipynb
-    git mv notebook_templates/index.ipynb ./
-    git mv notebook_templates/00_data.ipynb ./
-    git mv notebook_templates/01_model.ipynb ./
-    git mv notebook_templates/02_loss.ipynb ./
-    git mv notebook_templates/03_workflow.ipynb ./
+    git mv notebook_templates/_index.ipynb ./index.ipynb
+    git mv notebook_templates/_00_data.ipynb ./00_data.ipynb
+    git mv notebook_templates/_01_model.ipynb ./01_model.ipynb
+    git mv notebook_templates/_02_loss.ipynb ./02_loss.ipynb
+    git mv notebook_templates/_03_workflow.ipynb ./03_workflow.ipynb
 
 4. You may delete the folders `ml_project_template` and `notebook_templates`.
 

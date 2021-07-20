@@ -517,16 +517,16 @@ git commit -m "Initial commit"
 </li>
 <li><p>Check out the notebooks, and play around a bit to see that your installation works (notebooks run smoothly) and you understand the template structure</p>
 </li>
-<li><p>Replace the notebooks <code>index</code>, <code>data</code>, <code>model</code>, <code>loss</code> and <code>workflow</code> with copies without the code examples:</p>
+<li><p>Replace the notebooks <code>index</code>, <code>data</code>, <code>model</code>, <code>loss</code> and <code>workflow</code> with copies without the code examples (there is also additional empty notebook template <code>_XX_empty_notebook_template.ipynb</code> if you want to deviate from basic template structure):</p>
 </li>
 </ol>
 
 <pre><code>git rm index.ipynb 00_data.ipynb 01_model.ipynb 02_loss.ipynb 03_workflow.ipynb
-git mv notebook_templates/index.ipynb ./
-git mv notebook_templates/00_data.ipynb ./
-git mv notebook_templates/01_model.ipynb ./
-git mv notebook_templates/02_loss.ipynb ./
-git mv notebook_templates/03_workflow.ipynb ./
+git mv notebook_templates/_index.ipynb ./index.ipynb
+git mv notebook_templates/_00_data.ipynb ./00_data.ipynb
+git mv notebook_templates/_01_model.ipynb ./01_model.ipynb
+git mv notebook_templates/_02_loss.ipynb ./02_loss.ipynb
+git mv notebook_templates/_03_workflow.ipynb ./03_workflow.ipynb
 
 </code></pre>
 <ol>
