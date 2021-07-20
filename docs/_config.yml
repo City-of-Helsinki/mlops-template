@@ -65,5 +65,5 @@ sidebars:
 plugins:
     - jekyll-remote-theme
     
-remote_theme: rundocs/jekyll-rtd-theme
+remote_theme: 
 baseurl: /ml_project_template/
