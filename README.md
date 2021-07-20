@@ -588,13 +588,13 @@ However, there are better sources for learning all that stuff, like this [free e
 
 ## Contributing
 
-See [here](https://github.com/City-of-Helsinki/ml_project_template/blob/master/CONTRIBUTING.md) on how to contribute.
+See `CONTRIBUTING.md` on how to contribute.
 
 
 ## Copyright
 
 Copyright 2021 City-of-Helsinki. Licensed under the Apache License, Version 2.0 (the "License"); you may not use this project's files except in compliance with the License. A copy of the License is provided in the LICENSE file in this repository.
 
-This template was built using [nbdev](https://nbdev.fast.ai/) on top of the [nbdev template](https://github.com/fastai/nbdev_template) by fast.ai, Inc.
+This template was built using [nbdev](https://nbdev.fast.ai/) on top of the fast.ai [nbdev template](https://github.com/fastai/nbdev_template).
 
 ## Now you are all set up and ready to begin you ML project!
