@@ -2,6 +2,11 @@
 > Template for open source ML and analytics projects.
 
 
+```python
+%load_ext lab_black
+# nb_black if using jupyter
+```
+
 ## About
 
 This is a git repository\* template for Python-based open source ML and analytics projects.
