@@ -11,6 +11,11 @@
 
 This is a git repository\* template for Python-based open source ML and analytics projects.
 
+It is developed and maintained by the data and analytics team of the city of Helsinki.
+The template is intented as the basis of ML projects of the city,
+but free for anyone to use under the Apache-2.0 licence.
+
+
 ---
 ** INFO BOX: Git Repository ** 
 \*A git repository is a folder that contains source code and documentation for a software project.
@@ -486,7 +491,7 @@ If you get errors when building a module or docs, take a look again at these fil
 
 10. The Helsinki logo is a registered trademark, and may only be used by the city of Helsinki.
 If you are using this template for other than city of Helsinki projects, remove the files `favicon.ico` and `company_logo.png` from `docs/assets/images/`.
-You may replace these with your own logo. Fast.ai logo will show if custom logos are not defined.
+You may replace these with your own logo. Fast.ai logo will show in documentation if custom logos are not defined.
 
 11. Configure your git user name and email adress (one of those added to your git account) if you haven't done it already:
 
@@ -593,7 +598,7 @@ However, there are better sources for learning all that stuff, like this [free e
 
 ## Contributing
 
-See `CONTRIBUTING.md` on how to contribute.
+See [CONTRIBUTING.md](https://github.com/City-of-Helsinki/ml_project_template/blob/master/CONTRIBUTING.md) on how to contribute.
 
 
 ## Copyright
@@ -603,6 +608,6 @@ Copyright 2021 City-of-Helsinki. Licensed under the Apache License, Version 2.0 
 The Helsinki logo is a registered trademark, and may only be used by the city of Helsinki.
 If you are using this template for other than city of Helsinki projects, remove the files `favicon.ico` and `company_logo.png` from `docs/assets/images/`.
 
-This template was built using [nbdev](https://nbdev.fast.ai/) on top of the fast.ai [nbdev template](https://github.com/fastai/nbdev_template).
+This template was built using [nbdev](https://nbdev.fast.ai/) on top of the fast.ai [nbdev_template](https://github.com/fastai/nbdev_template).
 
 ## Now you are all set up and ready to begin you ML project!

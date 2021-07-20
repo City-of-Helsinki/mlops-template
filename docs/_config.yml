@@ -4,6 +4,7 @@ topnav_title: ml_project_template
 site_title: ml_project_template
 company_name: City of Helsinki
 description: Template for reproducible and explainable ML projects.
+baseurl: /ml_project_template/
 ##
 
 output: web
@@ -66,4 +67,4 @@ plugins:
     - jekyll-remote-theme
     
 remote_theme: fastai/nbdev-jekyll-theme
-baseurl: /ml_project_template/
+
