@@ -483,19 +483,24 @@ The files contain instructions for minimum required edits.
 You can continue editing them in the future, so no need to worry about getting it right the first time.
 These are used for building the python modules and docs based on your notebooks.
 If you get errors when building a module or docs, take a look again at these files.
-10. Configure your git user name and email adress (one of those added to your git account) if you haven't done it already:
+
+10. The Helsinki logo is a registered trademark, and may only be used by the city of Helsinki.
+If you are using this template for other than city of Helsinki projects, remove the files `favicon.ico` and `company_logo.png` from `docs/assets/images/`.
+You may replace these with your own logo. Fast.ai logo will show if custom logos are not defined.
+
+11. Configure your git user name and email adress (one of those added to your git account) if you haven't done it already:
 
 
     git config --global user.name "FIRST_NAME LAST_NAME"
     git config --global user.email "MY_NAME@example.com"
 
-11. Make initial commit (snapshot of the code as it is when you begin the work):
+12. Make initial commit (snapshot of the code as it is when you begin the work):
 
 
     git add .
     git commit -m "Initial commit"
 
-12. Push (save changes to remote repository): `git push -u origin master`. You will be asked to log in with your SSH key and password, again.
+13. Push (save changes to remote repository): `git push -u origin master`. You will be asked to log in with your SSH key and password, again.
 
 
 ## How to use
@@ -594,6 +599,9 @@ See `CONTRIBUTING.md` on how to contribute.
 ## Copyright
 
 Copyright 2021 City-of-Helsinki. Licensed under the Apache License, Version 2.0 (the "License"); you may not use this project's files except in compliance with the License. A copy of the License is provided in the LICENSE file in this repository.
+
+The Helsinki logo is a registered trademark, and may only be used by the city of Helsinki.
+If you are using this template for other than city of Helsinki projects, remove the files `favicon.ico` and `company_logo.png` from `docs/assets/images/`.
 
 This template was built using [nbdev](https://nbdev.fast.ai/) on top of the fast.ai [nbdev template](https://github.com/fastai/nbdev_template).
 
