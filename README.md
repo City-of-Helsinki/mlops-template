@@ -603,10 +603,12 @@ See [CONTRIBUTING.md](https://github.com/City-of-Helsinki/ml_project_template/bl
 
 ## Copyright
 
-Copyright 2021 City-of-Helsinki. Licensed under the Apache License, Version 2.0 (the "License"); you may not use this project's files except in compliance with the License. A copy of the License is provided in the LICENSE file in this repository.
+Copyright 2021 City-of-Helsinki. Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this project's files except in compliance with the License.
+A copy of the License is provided in the LICENSE file in this repository.
 
 The Helsinki logo is a registered trademark, and may only be used by the city of Helsinki.
-If you are using this template for other than city of Helsinki projects, remove the files `favicon.ico` and `company_logo.png` from `docs/assets/images/`.
+{% include note.html content='If you are using this template for other than city of Helsinki projects,' %}remove the files `favicon.ico` and `company_logo.png` from `docs/assets/images/`.
 
 This template was built using [nbdev](https://nbdev.fast.ai/) on top of the fast.ai [nbdev_template](https://github.com/fastai/nbdev_template).
 

@@ -280,6 +280,13 @@ It could be done here, or by the model class instance.</p>
 </div>
     {% endraw %}
 
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Train &amp; test data size:</p>
+
+</div>
+</div>
+</div>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -313,6 +320,13 @@ It could be done here, or by the model class instance.</p>
 </div>
     {% endraw %}
 
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Validation data size:</p>
+
+</div>
+</div>
+</div>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -619,7 +633,7 @@ null hypothesis rejected: False
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Ok, so the false and correct predictions are infact differently distributed with regard to the talach feature. Interesting!
+<p>Ok, so the false and correct predictions are infact differently distributed with regard to the trestbps and talach features. Interesting!
 We could use this information to improve our model.</p>
 
 </div>
@@ -822,13 +836,29 @@ If you want, you can edit the model to use accuracy as the evaluation metric as 
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Deploy-or-save-fitted-models,-hyperparameters">Deploy or save fitted models, hyperparameters<a class="anchor-link" href="#Deploy-or-save-fitted-models,-hyperparameters"> </a></h2><p>You can save the trained model for example as pickle for later use, or deploy it directly into your production environment.
-For example, you could add the model to an Azure functions script or ML SDK model.
-You can also include acceptance tests for deployment, say for example that the evaluation loss must reach certain level.</p>
-<p>Pickle is a format for storing python objects as-is. A saved pickle can be re-opened in identical environment.
-You might want to consider adding a 'init from config file' option to your model class,
-and saving the relevant information in a human readable format like yaml.</p>
-<p>The python module can now be published, for example through PyPI (see <a href="https://nbdev.fast.ai/tutorial.html#Upload-to-pypi">nbdev docs</a> on how to do it.)</p>
+<h2 id="Save-or-deploy-trained-model">Save or deploy trained model<a class="anchor-link" href="#Save-or-deploy-trained-model"> </a></h2><p>Congratulations, you now have a trained and evaluated ML model ready for action!
+It is time to save it for later use or deploy it in production environment directly.</p>
+<p>In your work you might want to simply begin by saving the trained model as a pickle and consider the workflow notebook before returning to deployment.
+It can reveal reveal and help you solve issues with the reproducibility and automation of your workflow.</p>
+<p>There are five common ways for doing this:</p>
+<ol>
+<li>Pickle the model. This means saving it in a pickle format,
+that can be loaded in any Python environment with the same python version and equal dependencies installed.
+The dependencies are defined in <code>requirements.txt</code>. </li>
+<li>Extract model parameters. Alternatively, you can save the model parameters in a config file,
+that allows you to reconstruct the model in your target environment.
+This allows you to even reconstruct the model in a different programming language, if you wish.</li>
+<li>Create an API. You can create an executable Python application with API to make new predictions.
+The workflow notebook contains a pseudo example of an API to our example ML model.</li>
+<li>Embed model inside a web application using Flask, Django or Dash, and use your model as a containerized microservice.</li>
+<li>Deploy the model to a cloud service, for example as an Azure Functions application or Azure Machine Learning model.</li>
+</ol>
+<p>In addition you might want to share the code you created so it can be applied to different problems.
+See the instructions in <a href="https://nbdev.fast.ai/tutorial.html#Upload-to-pypi">nbdev docs</a> on how to publish PyPI package created with nbdev.
+You can also create github hosted documentation pages for your project with <code>nbdev_build_docs</code>.
+Nbdev will convert your notebooks to HTML pages for you with links to your github repo.</p>
+<p>These options are not exclusive. You might want to perform multiple of them in your project.</p>
+<p>The pickling option is the most simple one, so we demonstrate it here:</p>
 
 </div>
 </div>
@@ -842,9 +872,9 @@ and saving the relevant information in a human readable format like yaml.</p>
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">pickle</span>
 
-<span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;results/LogisticRegressionClassifier.pkl&quot;</span>
+<span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;results/LogisticRegressionClassifier.pkl&quot;</span> <span class="c1"># name of the file containing trained model</span>
 <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-    <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+    <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span> <span class="c1"># trained model is saved as-is</span>
 </pre></div>
 
     </div>
@@ -856,10 +886,11 @@ and saving the relevant information in a human readable format like yaml.</p>
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>You can now load the pickled trained model in another environment (installed with dependencies defined in requirements.txt)</p>
+<p>You can now load the pickled trained model in another environment:</p>
 
 <pre><code>with open(filename, "rb") as f:
     model = pickle.load(f)</code></pre>
+<p>We can also test if the model was saved successfully:</p>
 
 </div>
 </div>
@@ -888,7 +919,7 @@ and saving the relevant information in a human readable format like yaml.</p>
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="You-can-now-move-on-to-the-workflow-notebook-to-define-automatic-training,-updating-and-deploying-of-your-model!">You can now move on to the workflow notebook to define automatic training, updating and deploying of your model!<a class="anchor-link" href="#You-can-now-move-on-to-the-workflow-notebook-to-define-automatic-training,-updating-and-deploying-of-your-model!"> </a></h2>
+<h2 id="You-can-now-move-on-to-the-workflow-notebook!">You can now move on to the workflow notebook!<a class="anchor-link" href="#You-can-now-move-on-to-the-workflow-notebook!"> </a></h2>
 </div>
 </div>
 </div>
