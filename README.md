@@ -598,7 +598,7 @@ However, there are better sources for learning all that stuff, like this [free e
 
 ## Contributing
 
-See [CONTRIBUTING.md](https://github.com/City-of-Helsinki/ml_project_template/blob/master/CONTRIBUTING.md) on how to contribute.
+See [CONTRIBUTING.md](https://github.com/City-of-Helsinki/ml_project_template/blob/master/CONTRIBUTING.md) on how to contribute to the development of this template.
 
 
 ## Copyright
