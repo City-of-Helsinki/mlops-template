@@ -361,7 +361,7 @@ We use Git for version control of code. Data version control is a topic we are s
 For additional reading, there are many great online resources for learning reproducible data science, such as [The Turing Way](https://the-turing-way.netlify.app/welcome.html) and
 [Code Refinery](https://coderefinery.org/).
 
-### 6. Data, Model & Loss - the core components of a ML workflow
+### 6. Data, Model & Loss - the components of a ML workflow
 
 The core of this template constitutes of three notebooks: data, model and loss.
 The notebooks running number prefix (`00_data.ipynb` etc.) to emphasize the running order and to improve readability.
