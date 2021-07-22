@@ -314,6 +314,7 @@ For ease of reproducibility we
 
 Documentation means, that everything in a ML project is explained in a text (up to a reasonable level).
 This includes commenting code, but also adding relevant references, explaining the maths if needed, and introducing the logic and reasoning between every step.
+In addition, you should consider your metadata - the project folder structure, naming policy etc.
 To help you with documentation, you can ask yourself "what am I doing and why?" when coding,
 and "what does this mean?" every time you get results, be it an intermediate step in data cleansing or the final results of your workflow.
 Then, write the answers down, and ask your *non-tech-savvy* colleague to explain the process and results to you based on your documentation.
