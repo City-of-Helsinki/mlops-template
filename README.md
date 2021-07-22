@@ -295,7 +295,7 @@ Remember that **information is aesthetic** - find the beauty in representing the
 ### 5. Ease of Reproducibility
 
 Poor reproducibility is a major issue in data science projects, both in the industry and academia, but is often overlooked at.
-We at the city of Helsinki, as a public sector operators, value it highly, and believe that everyone will benefit from it.
+We at the city of Helsinki as a public sector operators highly value reproducibility. We believe it benefits everyone.
 Our goal is, that each state and decision of our ML models are reproducible.
 A theoretical possibility of recreating a particular result is not enough, if it takes unreasonable efforts to do it.
 Good reproducibility equals to ease of reproducibility.
@@ -354,11 +354,12 @@ We will add examples of both in the `workflow` notebook.
 Version control means that you keep track of all changes in your system,
 in a reversable way that allows you to step back to a previous version, or make branches to try out options.
 Version control allows you to refer to a specific version of your system, making these snapshots reproducible.
-We use Git for version control of code. Data version control is a topic we are still working on.
+We use Git for version control of code, and virtual environments to isolate the code from the environment.
+Containerization and data version control are topics we are still working on.
 
 ---
 
-For additional reading, there are many great online resources for learning reproducible data science, such as [The Turing Way](https://the-turing-way.netlify.app/welcome.html) and
+There are many great online resources for learning reproducible data science, such as [The Turing Way](https://the-turing-way.netlify.app/welcome.html) and
 [Code Refinery](https://coderefinery.org/).
 
 ### 6. Data, Model & Loss - the components of a ML workflow
