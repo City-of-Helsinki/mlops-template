@@ -2,11 +2,6 @@
 > Template for open source ML and analytics projects.
 
 
-```python
-%load_ext lab_black
-# nb_black if using jupyter
-```
-
 ## About
 
 This is a git repository\* template for Python-based open source ML and analytics projects.
@@ -87,14 +82,15 @@ The repository contains the following files and folders:
     docker-compose.yml   
     setup.py                                     
 
-## Guiding Principles
+## Best Practices
 
-The template followsiveur guiding principles.
+We included the following guiding principles to help you excel in your ML project.
+
 Remember, none of these are strict and you are free to deviate for achieving the best results for you.
 Also, it is better to get started with the work than to perfect it from the beginning.
 You may return to these concepts when you want to improve your project or get stuck, iteratively!
 
-For general coding best practices, refer to [dev.hel.fi](https://dev.hel.fi/) where applicable.
+For general coding best practices in city of Helsinki projects, refer to [dev.hel.fi](https://dev.hel.fi/) where applicable.
 
 ### 1. Prefer Standard Tools
 
@@ -165,91 +161,23 @@ With notebook development you get the right results much faster, and everyone in
 
 Read more on exploratory programming with notebooks from [this blog post](https://www.fast.ai/2019/12/02/nbdev/).
 
-### 3. Ease of Reproducibility
-
-Poor reproducibility is a major issue in data science projects, both in the industry and academia, but is often overlooked at.
-We at the city of Helsinki, as a public sector operators, value it highly, and believe that everyone will benefit from it.
-Our goal is, that each state and decision of our ML models are reproducible.
-A theoretical possibility of recreating a particular result is not enough, if it takes unreasonable efforts to do it.
-Good reproducibility equals to ease of reproducibility.
-
-For ease of reproducibility we 
-
-1. Document
-2. Seed
-3. Orchestrate (pipeline)
-4. Version control everything.
-
---- 
-** INFO BOX: Documentation, Seeding, Orchestration and Version control **
-
-*Documentation*
-
-Documentation means, that everything in a ML project is explained in a text (up to a reasonable level).
-This includes commenting code, but also adding relevant references, explaining the maths if needed, and introducing the logic and reasoning between every step.
-To help you with documentation, you can ask yourself "what am I doing and why?" when coding,
-and "what does this mean?" every time you get results, be it an intermediate step in data cleansing or the final results of your workflow.
-Then, write the answers down, and ask your *non-tech-savvy* colleague to explain the process and results to you based on your documentation.
-Iterate this, until you are happy with their answer, and you'll have great documentation!
-With great documentation you can ensure that someone else could actually reproduce the same results you came up with.
-
-*Seed*
-
-Seeding means, that random processes are initialized with a *seed*, also known as *random state*.
-Creating random numbers is a difficult task in computer science. Each random number you get from a random number generator,
-such as the `np.random`, is actually a *pseudo random* number - number taken from a number sequence.
-Bunch of numbers taken from this sequence have properties similar to some taking them from true random distribution.
-The sequence is defined by the initial number, the seed, and so if you use the same seed for a random number generator,
-you can reproduce the results.
-
-*Orchestration*
-
-Orchestration or *pipeline* means automated workflow control.
-The goal is, that with a single command you can run all steps of your workflow,
-instead of trying to rerun individual cells or notebooks.
-It means, that with the same code and same data,
-you can always reproduce the same results, even if your code isn't all in a single script.
-It helps you to automate the training of ML models in production,
-but also when testing your model in development.
-An orchestrated workflow is excecuted on a trigger event.
-They can either be static or dynamic. A static workflow executes all steps on the trigger event.
-Most applications have static workflows.
-This is ok, if you have a static data source (the data can change) and your processing steps are computationally light.
-Dynamic workflows only execute the steps that are required, i.e. the steps,
-that are affected by the changes that happened since the last trigger event.
-This change can either be in the code or in the data.
-For example if you may have a varying number of input sources to read data from at each training round of the algorithm.
-Depending on your ML application, you should consider if you want to use static or dynamic orchestration.
-We will add examples of both in the `workflow` notebook.
-
-*Version control*
-
-Version control means that you keep track of all changes in your system,
-in a reversable way that allows you to step back to a previous version, or make branches to try out options.
-Version control allows you to refer to a specific version of your system, making these snapshots reproducible.
-We use Git for version control of code. Data version control is a topic we are still working on.
-
----
-
-Read more on reproducible code and more tips for scientific computing on [Code Refinery](https://coderefinery.org/).
-Code Refinery is an academic project focused on teaching and sharing knowledge on scientific computing practices.
-They organize workshops and have many great free resources and self-learn [lessons](https://coderefinery.org/lessons/) that you can check out to improve your data science skills.
-
-### 4. Tidy Data & Tools
+### 3. Tidy Data & Tools
+> "All tidy datasets are alike, but every messy dataset is messy in its own way." - Hadley Wickham
 
 Tidy principles are guidelines for clean and efficiend data utilization.
 They can be appied to different programming languages.
 Common packages, like `numpy`, `pandas` and `sklearn` have been developed so that these concepts are easy to apply.
 Tidy data is easy to handle and understand. Tidy tools makes handling data, programming and creating explainable ML much easier.
 
-**Data is tidy, when:**
-
+**Data is tidy, when:**
 1. **Every column is a variable** (either a feature or a label)
 2. **Every row is an observation** (a data point).
 3. **Every cell contains a single numerical value** (int, float, bool, str*)
-> *strings should be converted to numerical format before applying ML
+
+*strings should usually be converted to numerical format before applying ML
 
 Read more on tidy data from [tidy data manifesto](https://vita.had.co.nz/papers/tidy-data.html).
+
 
 **Tidy Tools:**
 
@@ -317,7 +245,123 @@ Having a common prefix with similar functions and autocomplete makes make even l
 Read more on tidy tools from [tidy tools manifesto](https://cran.r-project.org/web/packages/tidyverse/vignettes/manifesto.html).
 
 
-### 4. Data, Model & Loss: the core components of a ML workflow
+### 4. Visualize Everything - Information is Aesthetic
+
+The human eye is incredible tool for pattern recognition,
+and thus visualization is probably the most powerful tool of data science.
+
+A good rule of thumb is to visualize everything you can. 
+How does your training data look like, how is your data after dimension reduction, how does the loss function evolve when you add data?
+Great visualization will help you in model selection, detecting outliers, comparing values, evaluating your model and most importantly, explaining the results.
+
+However, it is only helpful if you visualize the right aspects with the right tools, and stay true to the data.
+There are many ways one can lie with data, intentionally or by accident.
+The internet is full of examples of poor visualizations, see for example [this Towards Data Science article](https://towardsdatascience.com/why-is-this-chart-bad-5f16da298afa).
+
+Many organizations have brand-synchronized visual guidelines, which unfortunately fit poorly for representing information.
+In addition people making the plots just don't know how to make them great, so they just aim for what appears visually pleasing.
+However, this quasi-aesthetic approach may lead to incorrect intepretation of the data.
+The risk increases with easy to use advanced tools, such as `seaborn`,
+that allows one to easily make fine-art like graphs.
+
+You are still encouraged to use the fancy tools and make stunning plots - just consider how you can stay true to the data.
+
+[Tufte's Principles of Graphical Exellence](https://sphweb.bumc.bu.edu/otlt/MPH-Modules/BS/DataPresentation/DataPresentation3.html)
+give great instructions on how data should be visualized in an informative manner:
+
+* Show the data
+* Induce the viewer to think about the substance of the findings rather that the methodology, the graphical design, or other aspects
+* Avoid distorting what the data have to say
+* Present many numbers in a small space, i.e., efficiently
+* Make large data sets coherent
+* Encourage the eye to compare different pieces of data
+* Reveal the data at several levels of detail, from a broad overview to the fine structure
+* Serve a clear purpose:  description, exploration, tabulation, or decoration
+* Be closely integrated with the statistical and verbal descriptions of the data set
+
+(From E. R. Tufte. The Visual Display of Quantitative Information, 2nd Edition.  Graphics Press, Cheshire, Connecticut, 2001.)
+
+
+Great visualizations is a massive topic and we can not possibly fit everything in this template. Here are a few links for further reading:
+
+1. [Ten Simple Rules for Better Figures](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1003833)
+2. [Colorbrewer, tool for planning colour palettes in graphs](https://colorbrewer2.org/#type=sequential&scheme=BuGn&n=3)
+3. Misleading graph mistakes to avoid from [Wikipedia](https://en.wikipedia.org/wiki/Misleading_graph) or this [blog post](https://avoinelama.fi/hingo/kirjoituksia/misleadingvisualizations.html).
+4. Matplotlib [tutorials](https://matplotlib.org/stable/tutorials/index.html) and [examples](https://matplotlib.org/stable/gallery/index.html)
+5. [Seaborn tutorials](https://www.tutorialspoint.com/seaborn/index.htm)
+
+Remember that **information is aesthetic** - find the beauty in representing the data in a way that is easy to perceive.
+
+### 5. Ease of Reproducibility
+
+Poor reproducibility is a major issue in data science projects, both in the industry and academia, but is often overlooked at.
+We at the city of Helsinki, as a public sector operators, value it highly, and believe that everyone will benefit from it.
+Our goal is, that each state and decision of our ML models are reproducible.
+A theoretical possibility of recreating a particular result is not enough, if it takes unreasonable efforts to do it.
+Good reproducibility equals to ease of reproducibility.
+
+For ease of reproducibility we 
+
+1. Document
+2. Seed
+3. Orchestrate (pipeline)
+4. Version control everything.
+
+--- 
+** INFO BOX: Documentation, Seeding, Orchestration and Version control **
+
+*Documentation*
+
+Documentation means, that everything in a ML project is explained in a text (up to a reasonable level).
+This includes commenting code, but also adding relevant references, explaining the maths if needed, and introducing the logic and reasoning between every step.
+To help you with documentation, you can ask yourself "what am I doing and why?" when coding,
+and "what does this mean?" every time you get results, be it an intermediate step in data cleansing or the final results of your workflow.
+Then, write the answers down, and ask your *non-tech-savvy* colleague to explain the process and results to you based on your documentation.
+Iterate this, until you are happy with their answer, and you'll have great documentation!
+With great documentation you can ensure that someone else could actually reproduce the same results you came up with.
+
+*Seed*
+
+Seeding means, that random processes are initialized with a *seed*, also known as *random state*.
+Creating random numbers is a difficult task in computer science. Each random number you get from a random number generator,
+such as the `np.random`, is actually a *pseudo random* number - number taken from a number sequence.
+Bunch of numbers taken from this sequence have properties similar to some taking them from true random distribution.
+The sequence is defined by the initial number, the seed, and so if you use the same seed for a random number generator,
+you can reproduce the results.
+
+*Orchestration*
+
+Orchestration or *pipeline* means automated workflow control.
+The goal is, that with a single command you can run all steps of your workflow,
+instead of trying to rerun individual cells or notebooks.
+It means, that with the same code and same data,
+you can always reproduce the same results, even if your code isn't all in a single script.
+It helps you to automate the training of ML models in production,
+but also when testing your model in development.
+An orchestrated workflow is excecuted on a trigger event.
+They can either be static or dynamic. A static workflow executes all steps on the trigger event.
+Most applications have static workflows.
+This is ok, if you have a static data source (the data can change) and your processing steps are computationally light.
+Dynamic workflows only execute the steps that are required, i.e. the steps,
+that are affected by the changes that happened since the last trigger event.
+This change can either be in the code or in the data.
+For example if you may have a varying number of input sources to read data from at each training round of the algorithm.
+Depending on your ML application, you should consider if you want to use static or dynamic orchestration.
+We will add examples of both in the `workflow` notebook.
+
+*Version control*
+
+Version control means that you keep track of all changes in your system,
+in a reversable way that allows you to step back to a previous version, or make branches to try out options.
+Version control allows you to refer to a specific version of your system, making these snapshots reproducible.
+We use Git for version control of code. Data version control is a topic we are still working on.
+
+---
+
+For additional reading, there are many great online resources for learning reproducible data science, such as [The Turing Way](https://the-turing-way.netlify.app/welcome.html) and
+[Code Refinery](https://coderefinery.org/).
+
+### 6. Data, Model & Loss - the core components of a ML workflow
 
 The core of this template constitutes of three notebooks: data, model and loss.
 The notebooks running number prefix (`00_data.ipynb` etc.) to emphasize the running order and to improve readability.
@@ -372,7 +416,8 @@ it might be better to separate them in their own notebooks `02a_model1.ipynb` an
 ## Example Project
 
 We wanted to make this template easy to approach.
-That's why we included a demo, that it is built around.
+That's why we included a demo, that it is built around - the notebooks `index`, `data`, `model`, `loss` and `workflow`.
+They explain the required steps of a ML project.
 
 The demo is an example ML project on automating heart disease diagnosis with logistic regression on [UCI heart disease open dataset](https://archive.ics.uci.edu/ml/datasets/heart+disease).
 The dataset contains missing values, and is thus great for demonstrating some light data wrangling.
@@ -609,6 +654,10 @@ A copy of the License is provided in the LICENSE file in this repository.
 
 The Helsinki logo is a registered trademark, and may only be used by the city of Helsinki.
 {% include note.html content='If you are using this template for other than city of Helsinki projects, remove the files `favicon.ico` and `company_logo.png` from `docs/assets/images/`.' %}
+    # to remove remove helsinki logo and favicon:
+    git rm docs/assets/images/favicon.ico docs/assets/images/company_logo.png
+    git commit -m "removed Helsinki logo and favicon"
+
 This template was built using [nbdev](https://nbdev.fast.ai/) on top of the fast.ai [nbdev_template](https://github.com/fastai/nbdev_template).
 
 ## Now you are all set up and ready to begin you ML project!
