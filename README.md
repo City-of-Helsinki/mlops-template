@@ -442,17 +442,16 @@ and instructions for contributing.
 
 0. (Create [GitHub account](https://github.com/) if you do not have one already. 
 1. Sign into your GitHub homepage
-2. In the top right corner of the homepage, click the '+'-button
-3. Select 'Import repository'
-4. Under 'Your old repository's clone URL' copy the clone url of this repository: `https://github.com/City-of-Helsinki/ml_project_template` 
-(**NOTE:** if you are already familiar with using the template, you can install a pre-cleaned version: `https://github.com/City-of-Helsinki/ml_project_template_pre_cleaned`. If you do so, follow these instructions where applicable.)
-5. Give your project a name. Do not use the dash symbol '-', but rather the underscore '_', because the name of the repo will become the name of your Python module.
-6. If you are creating a project for your organization, change owner of the repo from the drop down bar (it's you by default).
+2. Go to page https://github.com/City-of-Helsinki/ml_project_template and click the green button that says 'Use this template'.
+(**NOTE:** if you are already familiar with using the template, you can use the pre-cleaned version instead: https://github.com/City-of-Helsinki/ml_project_template_pre_cleaned.
+If you do so, follow these instructions where applicable.)
+3. Give your project a name. Do not use the dash symbol '-', but rather the underscore '_', because the name of the repo will become the name of your Python module.
+4. If you are creating a project for your organization, change owner of the repo from the drop down bar (it's you by default).
 You need to be included as a team member to the GitHub of the organization.
-7. Define your project publicity (you can change this later, in most cases you'll want to begin with a private repo).
-8. Click 'Begin import'
+5. Define your project publicity (you can change this later, in most cases you'll want to begin with a private repo).
+6. Click 'Create repository from template'
 
-This will create a new repository for you copying everything from this template, including the commit history.
+This will create a new repository for you copying everything from this template, but with clean commit history.
 
 ### 2. On your computing environment:
 
