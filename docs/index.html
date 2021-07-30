@@ -32,7 +32,11 @@ nb_path: "index.ipynb"
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="About">About<a class="anchor-link" href="#About"> </a></h2><p>This is a git repository* template for Python-based open source ML and analytics projects.</p>
-<p>It is developed and maintained by the data and analytics team of the city of Helsinki.
+<p>Installing this template through GitHub import create a new, 
+independent repository with clean commit history, 
+but with a copy of all the files and folders in this repository.
+Updates to the template can not be pulled to projects built on an import.</p>
+<p>This template is developed and maintained by the data and analytics team of the city of Helsinki.
 The template is intented as the basis of ML projects of the city,
 but free for anyone to use under the Apache-2.0 licence.</p>
 <hr>
@@ -52,7 +56,7 @@ It defines steps and tools of a ML project and helps you to tie them together fo
 You can just replace the examples with your own code, or start from scratch with clean notebooks.
 Instructions for using the template are given below, so just keep reading!</p>
 <p>ML requires team effort. When working with data, we have three kinds of people.
-We havepeople who know code, people who know data, and people who know a problem to solve.
+We have people who know code, people who know data, and people who know a problem to solve.
 Those who know two of these are rare, not to mention owning all three.
 Working with the template enables joint work of application field specialists 
 (e.g. healthcare, city planning, finance), researchers, data analysts, engineers &amp; scientists, programmers and other stakeholders.
@@ -88,6 +92,7 @@ notebook_templates/ # Notebook templates with usage instructions, but without co
 requirements.txt    # Required python packages and versions
 CONTRIBUTING.md     # Instructions for contributing
 settings.ini        # Project specific settings. Build instructions for lib and docs.
+docker-compose.yml  # docker settings (fast.ai default), if you wish to containerize your project
 
 ## AUTOMATICALLY GENERATED: (Do not edit unless otherwise specified!)
 docs/               # Project documentation (html)
@@ -95,10 +100,9 @@ docs/               # Project documentation (html)
 Makefile
 README.md 
 
-## STATIC NON-EDITABLES: (Do not edit unless you really know what you're doing!)
+## STATIC NON-EDITABLES: (Do not edit unless otherwise specified or you really know what you're doing!)
 LISENCE
-MANIFEST.in
-docker-compose.yml   
+MANIFEST.in   
 setup.py                                     </code></pre>
 
 </div>
@@ -426,12 +430,13 @@ and instructions for contributing.</p>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="Installing-the-Template">Installing the Template<a class="anchor-link" href="#Installing-the-Template"> </a></h2><p>{% include note.html content='if you are doing a project on personal or sensitive data for the City of Helsinki, contact the data and analytics team of the city before proceeding!' %}</p>
-<h3 id="On-your-GitHub-homepage:">On your GitHub homepage:<a class="anchor-link" href="#On-your-GitHub-homepage:"> </a></h3><ol>
+<h3 id="1.-On-your-GitHub-homepage:">1. On your GitHub homepage:<a class="anchor-link" href="#1.-On-your-GitHub-homepage:"> </a></h3><ol>
 <li>(Create <a href="https://github.com/">GitHub account</a> if you do not have one already. </li>
 <li>Sign into your GitHub homepage</li>
 <li>In the top right corner of the homepage, click the '+'-button</li>
 <li>Select 'Import repository'</li>
-<li>Under 'Your old repository's clone URL' copy the clone url of this repository: <code>https://github.com/City-of-Helsinki/ml_project_template</code></li>
+<li>Under 'Your old repository's clone URL' copy the clone url of this repository: <code>https://github.com/City-of-Helsinki/ml_project_template</code> 
+(<strong>NOTE:</strong> if you are already familiar with using the template, you can install a pre-cleaned version: <code>https://github.com/City-of-Helsinki/ml_project_template_pre_cleaned</code>. If you do so, follow these instructions where applicable.)</li>
 <li>Give your project a name. Do not use the dash symbol '-', but rather the underscore '_', because the name of the repo will become the name of your Python module.</li>
 <li>If you are creating a project for your organization, change owner of the repo from the drop down bar (it's you by default).
 You need to be included as a team member to the GitHub of the organization.</li>
@@ -439,9 +444,8 @@ You need to be included as a team member to the GitHub of the organization.</li>
 <li>Click 'Begin import'</li>
 </ol>
 <p>This will create a new repository for you copying everything from this template, including the commit history.</p>
-<h3 id="On-your-computing-environment:">On your computing environment:<a class="anchor-link" href="#On-your-computing-environment:"> </a></h3><p><strong>Put all the highlited </strong> <code>commands</code> <strong> to shell one ate a time and press enter</strong>
-<strong>(replace the parts with square brackets with your own information '[replace this with your info]')</strong>
-(remove the brackets)</p>
+<h3 id="2.-On-your-computing-environment:">2. On your computing environment:<a class="anchor-link" href="#2.-On-your-computing-environment:"> </a></h3><p><strong>Put all the highlited </strong> <code>commands</code> <strong> to shell one ate a time and press enter</strong>
+<strong>(replace the parts with square brackets with your own information</strong> <code>'[replace this with your info]'</code><strong>(remove the brackets))</strong></p>
 <ol>
 <li><p>Create an SSH key and add it to your github profile. SSH is a protocol for secure communication over the internet. 
  A ssh key is unique to a computing unit, and you must recreate this step every time you are using a new unit,
@@ -527,8 +531,28 @@ So, after deciding which editor you are working with (Azure ML default notebook 
 <ol>
 <li><p>Check that you can run the notebooks <code>00_data.ipynb</code>, <code>01_model.ipynb</code> and <code>02_loss.ipynb</code>.
 You may have to change the kernel your notebook interpreter is using to the one you just created.
-This can be done drop down bar in top of the notebook editor.</p>
+This can be done drop down bar in top of the notebook editor. You can play around with the notebooks to better understand the structure and the examples.</p>
 </li>
+<li><p>Replace the notebooks <code>index</code>, <code>data</code>, <code>model</code>, <code>loss</code> and <code>workflow</code> with copies without the code examples (there is also additional empty notebook template <code>_XX_empty_notebook_template.ipynb</code> if you want to deviate from basic template structure):</p>
+</li>
+</ol>
+
+<pre><code>git rm index.ipynb 00_data.ipynb 01_model.ipynb 02_loss.ipynb 03_workflow.ipynb
+git mv notebook_templates/_index.ipynb ./index.ipynb
+git mv notebook_templates/_00_data.ipynb ./00_data.ipynb
+git mv notebook_templates/_01_model.ipynb ./01_model.ipynb
+git mv notebook_templates/_02_loss.ipynb ./02_loss.ipynb
+git mv notebook_templates/_03_workflow.ipynb ./03_workflow.ipynb
+
+</code></pre>
+<ol>
+<li>You may delete the folders <code>ml_project_template</code>, <code>notebook_templates</code> and <code>visuals</code>.</li>
+</ol>
+
+<pre><code>git rm -r ml_project_template notebook_templates visuals docs/visuals
+
+</code></pre>
+<ol>
 <li><p>Edit <code>settings.ini</code>, <code>docs/_config.yml</code> and <code>docs/_data/topnav.yml</code> according to your project details.
 The files contain instructions for minimum required edits.
 You can continue editing them in the future, so no need to worry about getting it right the first time.
@@ -538,6 +562,8 @@ If you get errors when building a module or docs, take a look again at these fil
 <li><p>The Helsinki logo is a registered trademark, and may only be used by the city of Helsinki.
 If you are using this template for other than city of Helsinki projects, remove the files <code>favicon.ico</code> and <code>company_logo.png</code> from <code>docs/assets/images/</code>.
 You may replace these with your own logo. Fast.ai logo will show in documentation if custom logos are not defined.</p>
+</li>
+<li><p>Recreate the module and doc pages to clean them: <code>nbdev_build_lib &amp;&amp; nbdev_build_docs</code></p>
 </li>
 <li><p>Configure your git user name and email adress (one of those added to your git account) if you haven't done it already:</p>
 </li>
@@ -569,33 +595,14 @@ git commit -m "Initial commit"
 </li>
 <li><p>Remember to always activate your virtual environment before you start working: <code>conda activate [environment name]</code> with anaconda or <code>source [environment name]/bin/activate</code> with virtualenv</p>
 </li>
-<li><p>Check out the notebooks, and play around a bit to see that your installation works (notebooks run smoothly) and you understand the template structure</p>
+<li><p>Explore, explain, visualize, test - do your thing!</p>
 </li>
-<li><p>Replace the notebooks <code>index</code>, <code>data</code>, <code>model</code>, <code>loss</code> and <code>workflow</code> with copies without the code examples (there is also additional empty notebook template <code>_XX_empty_notebook_template.ipynb</code> if you want to deviate from basic template structure):</p>
-</li>
-</ol>
-
-<pre><code>git rm index.ipynb 00_data.ipynb 01_model.ipynb 02_loss.ipynb 03_workflow.ipynb
-git mv notebook_templates/_index.ipynb ./index.ipynb
-git mv notebook_templates/_00_data.ipynb ./00_data.ipynb
-git mv notebook_templates/_01_model.ipynb ./01_model.ipynb
-git mv notebook_templates/_02_loss.ipynb ./02_loss.ipynb
-git mv notebook_templates/_03_workflow.ipynb ./03_workflow.ipynb
-
-</code></pre>
-<ol>
-<li>You may delete the folders <code>ml_project_template</code> and <code>notebook_templates</code>.</li>
-</ol>
-
-<pre><code>git rm -r ml_project_template notebook_templates
-
-</code></pre>
-<ol>
 <li><p>Save your notebooks and call <code>nbdev_build_lib</code> to build python modules of your notebooks - needed if you want to share code between notebooks or create a modules.
+This will export all notebook cells with <code># export</code> tag to corresponding python files.
 Remember to do this if you want to rerun your workflow after making changes to exportables.</p>
 </li>
 <li><p>Save your notebooks and call <code>nbdev_build_docs</code> to create doc pages based on your notebooks (see below).
-This will also create README.md file based on this notebook.
+This will also update README.md file based on <code>index.ipynb</code>.
 If you want to host your project pages on GitHub, you will have to make your project public.
 You can also build the pages locally with jekyll.</p>
 </li>

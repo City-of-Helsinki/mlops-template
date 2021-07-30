@@ -6,10 +6,14 @@
 
 This is a git repository\* template for Python-based open source ML and analytics projects.
 
-It is developed and maintained by the data and analytics team of the city of Helsinki.
+Installing this template through GitHub import create a new, 
+independent repository with clean commit history, 
+but with a copy of all the files and folders in this repository.
+Updates to the template can not be pulled to projects built on an import.
+
+This template is developed and maintained by the data and analytics team of the city of Helsinki.
 The template is intented as the basis of ML projects of the city,
 but free for anyone to use under the Apache-2.0 licence.
-
 
 ---
 ** INFO BOX: Git Repository ** 
@@ -31,7 +35,7 @@ You can just replace the examples with your own code, or start from scratch with
 Instructions for using the template are given below, so just keep reading!
 
 ML requires team effort. When working with data, we have three kinds of people.
-We havepeople who know code, people who know data, and people who know a problem to solve.
+We have people who know code, people who know data, and people who know a problem to solve.
 Those who know two of these are rare, not to mention owning all three.
 Working with the template enables joint work of application field specialists 
 (e.g. healthcare, city planning, finance), researchers, data analysts, engineers & scientists, programmers and other stakeholders.
@@ -69,6 +73,7 @@ The repository contains the following files and folders:
     requirements.txt    # Required python packages and versions
     CONTRIBUTING.md     # Instructions for contributing
     settings.ini        # Project specific settings. Build instructions for lib and docs.
+    docker-compose.yml  # docker settings (fast.ai default), if you wish to containerize your project
 
     ## AUTOMATICALLY GENERATED: (Do not edit unless otherwise specified!)
     docs/               # Project documentation (html)
@@ -76,10 +81,9 @@ The repository contains the following files and folders:
     Makefile
     README.md 
 
-    ## STATIC NON-EDITABLES: (Do not edit unless you really know what you're doing!)
+    ## STATIC NON-EDITABLES: (Do not edit unless otherwise specified or you really know what you're doing!)
     LISENCE
-    MANIFEST.in
-    docker-compose.yml   
+    MANIFEST.in   
     setup.py                                     
 
 ## Best Practices
@@ -434,13 +438,14 @@ and instructions for contributing.
 
 ## Installing the Template
 {% include note.html content='if you are doing a project on personal or sensitive data for the City of Helsinki, contact the data and analytics team of the city before proceeding!' %}
-### On your GitHub homepage:
+### 1. On your GitHub homepage:
 
 0. (Create [GitHub account](https://github.com/) if you do not have one already. 
 1. Sign into your GitHub homepage
 2. In the top right corner of the homepage, click the '+'-button
 3. Select 'Import repository'
-4. Under 'Your old repository's clone URL' copy the clone url of this repository: `https://github.com/City-of-Helsinki/ml_project_template`
+4. Under 'Your old repository's clone URL' copy the clone url of this repository: `https://github.com/City-of-Helsinki/ml_project_template` 
+(**NOTE:** if you are already familiar with using the template, you can install a pre-cleaned version: `https://github.com/City-of-Helsinki/ml_project_template_pre_cleaned`. If you do so, follow these instructions where applicable.)
 5. Give your project a name. Do not use the dash symbol '-', but rather the underscore '_', because the name of the repo will become the name of your Python module.
 6. If you are creating a project for your organization, change owner of the repo from the drop down bar (it's you by default).
 You need to be included as a team member to the GitHub of the organization.
@@ -449,11 +454,11 @@ You need to be included as a team member to the GitHub of the organization.
 
 This will create a new repository for you copying everything from this template, including the commit history.
 
-### On your computing environment:
+### 2. On your computing environment:
 
 **Put all the highlited ** `commands` ** to shell one ate a time and press enter**
-**(replace the parts with square brackets with your own information '[replace this with your info]')**
-(remove the brackets)
+**(replace the parts with square brackets with your own information** `'[replace this with your info]'`**(remove the brackets))**
+
 
 0. Create an SSH key and add it to your github profile. SSH is a protocol for secure communication over the internet. 
     A ssh key is unique to a computing unit, and you must recreate this step every time you are using a new unit,
@@ -528,42 +533,9 @@ So, after deciding which editor you are working with (Azure ML default notebook 
 
 8. Check that you can run the notebooks `00_data.ipynb`, `01_model.ipynb` and `02_loss.ipynb`.
 You may have to change the kernel your notebook interpreter is using to the one you just created.
-This can be done drop down bar in top of the notebook editor.
+This can be done drop down bar in top of the notebook editor. You can play around with the notebooks to better understand the structure and the examples.
 
-9. Edit `settings.ini`, `docs/_config.yml` and `docs/_data/topnav.yml` according to your project details.
-The files contain instructions for minimum required edits.
-You can continue editing them in the future, so no need to worry about getting it right the first time.
-These are used for building the python modules and docs based on your notebooks.
-If you get errors when building a module or docs, take a look again at these files.
-
-10. The Helsinki logo is a registered trademark, and may only be used by the city of Helsinki.
-If you are using this template for other than city of Helsinki projects, remove the files `favicon.ico` and `company_logo.png` from `docs/assets/images/`.
-You may replace these with your own logo. Fast.ai logo will show in documentation if custom logos are not defined.
-
-11. Configure your git user name and email adress (one of those added to your git account) if you haven't done it already:
-
-
-    git config --global user.name "FIRST_NAME LAST_NAME"
-    git config --global user.email "MY_NAME@example.com"
-
-12. Make initial commit (snapshot of the code as it is when you begin the work):
-
-
-    git add .
-    git commit -m "Initial commit"
-
-13. Push (save changes to remote repository): `git push -u origin master`. You will be asked to log in with your SSH key and password, again.
-
-
-## How to use
-
-1. Install this template as basis of your new project (see above).
-
-2. Remember to always activate your virtual environment before you start working: `conda activate [environment name]` with anaconda or `source [environment name]/bin/activate` with virtualenv
-
-2. Check out the notebooks, and play around a bit to see that your installation works (notebooks run smoothly) and you understand the template structure
-
-3. Replace the notebooks `index`, `data`, `model`, `loss` and `workflow` with copies without the code examples (there is also additional empty notebook template `_XX_empty_notebook_template.ipynb` if you want to deviate from basic template structure):
+9. Replace the notebooks `index`, `data`, `model`, `loss` and `workflow` with copies without the code examples (there is also additional empty notebook template `_XX_empty_notebook_template.ipynb` if you want to deviate from basic template structure):
 
 
     git rm index.ipynb 00_data.ipynb 01_model.ipynb 02_loss.ipynb 03_workflow.ipynb
@@ -573,16 +545,52 @@ You may replace these with your own logo. Fast.ai logo will show in documentatio
     git mv notebook_templates/_02_loss.ipynb ./02_loss.ipynb
     git mv notebook_templates/_03_workflow.ipynb ./03_workflow.ipynb
 
-4. You may delete the folders `ml_project_template` and `notebook_templates`.
+10. You may delete the folders `ml_project_template`, `notebook_templates` and `visuals`.
 
 
-    git rm -r ml_project_template notebook_templates
+    git rm -r ml_project_template notebook_templates visuals docs/visuals
+
+11. Edit `settings.ini`, `docs/_config.yml` and `docs/_data/topnav.yml` according to your project details.
+The files contain instructions for minimum required edits.
+You can continue editing them in the future, so no need to worry about getting it right the first time.
+These are used for building the python modules and docs based on your notebooks.
+If you get errors when building a module or docs, take a look again at these files.
+
+12. The Helsinki logo is a registered trademark, and may only be used by the city of Helsinki.
+If you are using this template for other than city of Helsinki projects, remove the files `favicon.ico` and `company_logo.png` from `docs/assets/images/`.
+You may replace these with your own logo. Fast.ai logo will show in documentation if custom logos are not defined.
+
+13. Recreate the module and doc pages to clean them: `nbdev_build_lib && nbdev_build_docs`
+
+14. Configure your git user name and email adress (one of those added to your git account) if you haven't done it already:
+
+
+    git config --global user.name "FIRST_NAME LAST_NAME"
+    git config --global user.email "MY_NAME@example.com"
+
+15. Make initial commit (snapshot of the code as it is when you begin the work):
+
+
+    git add .
+    git commit -m "Initial commit"
+
+16. Push (save changes to remote repository): `git push -u origin master`. You will be asked to log in with your SSH key and password, again.
+
+
+## How to use
+
+1. Install this template as basis of your new project (see above).
+
+2. Remember to always activate your virtual environment before you start working: `conda activate [environment name]` with anaconda or `source [environment name]/bin/activate` with virtualenv
+
+3. Explore, explain, visualize, test - do your thing!
 
 5. Save your notebooks and call `nbdev_build_lib` to build python modules of your notebooks - needed if you want to share code between notebooks or create a modules.
-Remember to do this if you want to rerun your workflow after making changes to exportables. 
+This will export all notebook cells with `# export` tag to corresponding python files.
+Remember to do this if you want to rerun your workflow after making changes to exportables.
 
 6. Save your notebooks and call `nbdev_build_docs` to create doc pages based on your notebooks (see below).
-This will also create README.md file based on this notebook.
+This will also update README.md file based on `index.ipynb`.
 If you want to host your project pages on GitHub, you will have to make your project public.
 You can also build the pages locally with jekyll.
 
