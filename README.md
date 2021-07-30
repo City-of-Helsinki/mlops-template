@@ -6,7 +6,7 @@
 
 This is a git repository\* template for Python-based open source ML and analytics projects.
 
-Installing this template through GitHub import create a new, 
+Installing this template creates a new, 
 independent repository with clean commit history, 
 but with a copy of all the files and folders in this repository.
 Updates to the template can not be pulled to projects built on an import.
