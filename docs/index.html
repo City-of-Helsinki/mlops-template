@@ -528,12 +528,17 @@ So, after deciding which editor you are working with (Azure ML default notebook 
 
 </code></pre>
 <ol>
-<li><p>Check that you can run the notebooks <code>00_data.ipynb</code>, <code>01_model.ipynb</code> and <code>02_loss.ipynb</code>.
+<li><p>Check that you can run the notebooks <code>00_data.ipynb</code>, <code>01_model.ipynb</code>, <code>02_loss.ipynb</code> and <code>03_workflow.ipynb</code>.
 You may have to change the kernel your notebook interpreter is using to the one you just created.
 This can be done drop down bar in top of the notebook editor. You can play around with the notebooks to better understand the structure and the examples.</p>
 </li>
-<li><p>Replace the notebooks <code>index</code>, <code>data</code>, <code>model</code>, <code>loss</code> and <code>workflow</code> with copies without the code examples (there is also additional empty notebook template <code>_XX_empty_notebook_template.ipynb</code> if you want to deviate from basic template structure):</p>
+<li><p>If while getting to know the template examples you ran or edited any of the notebooks, run the following command to clean any unrelevant changes.</p>
+<p>git reset --hard</p>
 </li>
+</ol>
+<p>Please note, that this will reset any changes made to the template. We do this to clean any 'play-around' work you might have done getting to know the template and the examples.</p>
+<ol>
+<li>Replace the notebooks <code>index</code>, <code>data</code>, <code>model</code>, <code>loss</code> and <code>workflow</code> with copies without the code examples (there is also additional empty notebook template <code>_XX_empty_notebook_template.ipynb</code> if you want to deviate from basic template structure):</li>
 </ol>
 
 <pre><code>git rm index.ipynb 00_data.ipynb 01_model.ipynb 02_loss.ipynb 03_workflow.ipynb

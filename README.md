@@ -530,11 +530,17 @@ So, after deciding which editor you are working with (Azure ML default notebook 
     # do not add comment to same line with a magic command:
     %load_ext nb_black #this comment breaks the magic command
 
-8. Check that you can run the notebooks `00_data.ipynb`, `01_model.ipynb` and `02_loss.ipynb`.
+8. Check that you can run the notebooks `00_data.ipynb`, `01_model.ipynb`, `02_loss.ipynb` and `03_workflow.ipynb`.
 You may have to change the kernel your notebook interpreter is using to the one you just created.
 This can be done drop down bar in top of the notebook editor. You can play around with the notebooks to better understand the structure and the examples.
 
-9. Replace the notebooks `index`, `data`, `model`, `loss` and `workflow` with copies without the code examples (there is also additional empty notebook template `_XX_empty_notebook_template.ipynb` if you want to deviate from basic template structure):
+9. If while getting to know the template examples you ran or edited any of the notebooks, run the following command to clean any unrelevant changes.
+
+    git reset --hard
+
+Please note, that this will reset any changes made to the template. We do this to clean any 'play-around' work you might have done getting to know the template and the examples.
+
+10. Replace the notebooks `index`, `data`, `model`, `loss` and `workflow` with copies without the code examples (there is also additional empty notebook template `_XX_empty_notebook_template.ipynb` if you want to deviate from basic template structure):
 
 
     git rm index.ipynb 00_data.ipynb 01_model.ipynb 02_loss.ipynb 03_workflow.ipynb
@@ -544,36 +550,36 @@ This can be done drop down bar in top of the notebook editor. You can play aroun
     git mv notebook_templates/_02_loss.ipynb ./02_loss.ipynb
     git mv notebook_templates/_03_workflow.ipynb ./03_workflow.ipynb
 
-10. You may delete the folders `ml_project_template`, `notebook_templates` and `visuals`.
+11. You may delete the folders `ml_project_template`, `notebook_templates` and `visuals`.
 
 
     git rm -r ml_project_template notebook_templates visuals docs/visuals
 
-11. Edit `settings.ini`, `docs/_config.yml` and `docs/_data/topnav.yml` according to your project details.
+12. Edit `settings.ini`, `docs/_config.yml` and `docs/_data/topnav.yml` according to your project details.
 The files contain instructions for minimum required edits.
 You can continue editing them in the future, so no need to worry about getting it right the first time.
 These are used for building the python modules and docs based on your notebooks.
 If you get errors when building a module or docs, take a look again at these files.
 
-12. The Helsinki logo is a registered trademark, and may only be used by the city of Helsinki.
+13. The Helsinki logo is a registered trademark, and may only be used by the city of Helsinki.
 If you are using this template for other than city of Helsinki projects, remove the files `favicon.ico` and `company_logo.png` from `docs/assets/images/`.
 You may replace these with your own logo. Fast.ai logo will show in documentation if custom logos are not defined.
 
-13. Recreate the module and doc pages to clean them: `nbdev_build_lib && nbdev_build_docs`
+14. Recreate the module and doc pages to clean them: `nbdev_build_lib && nbdev_build_docs`
 
-14. Configure your git user name and email adress (one of those added to your git account) if you haven't done it already:
+15. Configure your git user name and email adress (one of those added to your git account) if you haven't done it already:
 
 
     git config --global user.name "FIRST_NAME LAST_NAME"
     git config --global user.email "MY_NAME@example.com"
 
-15. Make initial commit (snapshot of the code as it is when you begin the work):
+16. Make initial commit (snapshot of the code as it is when you begin the work):
 
 
     git add .
     git commit -m "Initial commit"
 
-16. Push (save changes to remote repository): `git push -u origin master`. You will be asked to log in with your SSH key and password, again.
+17. Push (save changes to remote repository): `git push -u origin master`. You will be asked to log in with your SSH key and password, again.
 
 
 ## How to use
