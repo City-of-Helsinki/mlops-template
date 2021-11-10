@@ -173,7 +173,7 @@ They can be appied to different programming languages.
 Common packages, like `numpy`, `pandas` and `sklearn` have been developed so that these concepts are easy to apply.
 Tidy data is easy to handle and understand. Tidy tools makes handling data, programming and creating explainable ML much easier.
 
-**Data is tidy, when:**
+**Data is tidy, when:**
 1. **Every column is a variable** (either a feature or a label)
 2. **Every row is an observation** (a data point).
 3. **Every cell contains a single numerical value** (int, float, bool, str*)
@@ -654,6 +654,28 @@ However, there are better sources for learning all that stuff, like this [free e
 
 ---
 
+
+
+## Keeping Project libraries up to date
+
+Python has a rich and wide ecosystem of libraries to help with machine learning tasks among other things. Pandas, Matplotlib, Scipy, PyTorch to name a few. If base libraries in this template aren't sufficient you can add more with `pip install library`. However, `pip` command installs libraries into your local Python environment. To achieve consistent reproducibility we need to gather information about requirements into project repository. New libraries are added to `project_requirements.in` file. When you change this file remember to run:
+
+```bash
+pip-compile --generate-hashes --allow-unsafe -o requirements.txt base_requirements.in full_requirements.in project_requirements.in
+pip-compile --generate-hashes --allow-unsafe -o project_requirements.txt base_requirements.in project_requirements.in
+```
+
+These two commands update full requirements for development environments and lighter, more focused requirements for server usage.
+
+After requirements are updated you should run:
+
+```bash
+pip install -r requirements.txt
+```
+
+This way libraries you and other users will have the same Python environment.
+
+Warning: if you don't update package names and versions next time you or anybody else tries to use this project in another environment its code might not work. Worse, it might *seem to* work, but does so incorrectly.
 
 
 ## Contributing
