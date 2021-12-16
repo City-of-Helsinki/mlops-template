@@ -1,0 +1,4 @@
+pandas<1.4
+matplotlib<3.5
+sklearn
+papermill
