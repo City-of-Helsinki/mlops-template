@@ -1,4 +1,5 @@
-pandas<1.4
+numpy
 matplotlib<3.5
-sklearn
+pandas<1.4
 papermill
+sklearn

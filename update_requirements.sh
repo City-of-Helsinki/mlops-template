@@ -7,3 +7,6 @@ pip-compile --generate-hashes --allow-unsafe -o requirements.txt base_requiremen
 
 ## update project_requirements.txt
 pip-compile --generate-hashes --allow-unsafe -o project_requirements.txt base_requirements.in project_requirements.in
+
+## install updated requirements
+pip install -r requirements.txt

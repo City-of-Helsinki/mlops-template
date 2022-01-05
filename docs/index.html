@@ -31,563 +31,99 @@ nb_path: "index.ipynb"
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="About">About<a class="anchor-link" href="#About"> </a></h2><p>This is a git repository* template for Python-based open source ML and analytics projects.</p>
+<p>{% include note.html content='Once you begin your work, rewrite this notebook (index.ipynb) so that it describes your project, and regenerate README by calling <code>nbdev_build_docs</code>' %}</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="About">About<a class="anchor-link" href="#About"> </a></h2><p>This is a git repository template for Python-based open source ML and analytics projects.</p>
 <p>Installing this template creates a new, 
 independent repository with clean commit history, 
 but with a copy of all the files and folders in this repository.
-Updates to the template can not be pulled to projects built on an import.</p>
-<p>This template is developed and maintained by the data and analytics team of the city of Helsinki.
-The template is intented as the basis of ML projects of the city,
-but free for anyone to use under the Apache-2.0 licence.</p>
-<hr>
-<p><strong> INFO BOX: Git Repository </strong> 
-*A git repository is a folder that contains source code and documentation for a software project.
-Git is a software for version control and collaborative coding work. 
-Git is commonly used from from command prompt (Windows), shell (Linux / Ubuntu) or terminal (MacOS).
-It keeps track of all changes you make to your software in a <code>.gitfile</code>,
-so that you can try out different things without making messy manual back ups.
-To learn more about Git, their <a href="https://git-scm.com/">homepage</a> is a great place to start.
-Git is often used with GitHub, a free online service for storing and sharing repositories.
-GitHub allows collaborative work, automated testing, hosting project doc pages and other fancy features.
-Read more on GitHub on their <a href="https://github.com/City-of-Helsinki/ml_project_template">homepage</a>.</p>
-<hr>
+Note, that updates to the template can not be automatically pulled to new projects that are built using on top of it.</p>
 <p>This template helps you to develop, test, share and update ML applications, in a collaborative way.
-It defines steps and tools of a ML project and helps you to tie them together for easy to use, explainable and reproducible workflow.
-You can just replace the examples with your own code, or start from scratch with clean notebooks.
-Instructions for using the template are given below, so just keep reading!</p>
-<p>ML requires team effort. When working with data, we have three kinds of people.
-We have people who know code, people who know data, and people who know a problem to solve.
-Those who know two of these are rare, not to mention owning all three.
-Working with the template enables joint work of application field specialists 
-(e.g. healthcare, city planning, finance), researchers, data analysts, engineers &amp; scientists, programmers and other stakeholders.
-In essence, the template is a tool for teamwork - <em>a single person does not have to, and most likely does not even know how to complete all of the steps defined!</em>.
-With code, documentation and results as one, each team member can understand what is going on, and contribute on their behalf.</p>
+It defines steps and tools of a ML project and helps you to tie them together for easy to use, explainable and reproducible workflow.</p>
 <p>The template is completely open source and environment agnostic.
 It contains examples and instructions to help you through the whole project.
 However, we try to keep it light and easy to maintain, and thus the documentation is not exhaustive.
 We have added references to original sources so that they are easy to find.</p>
-<p>If you see a tool or concept you are not familiar with, don't be scared.
-Just follow along and you'll get started with ease, for sure.</p>
-<p>If you have a question, the internet most probably already has the answer. Just search engine it!
-If you can't find the answer, you can post your question to the <a href="https://github.com/City-of-Helsinki/ml_project_template/discussions">discussion forum</a>,
-so the maintainers can help. <a href="https://stackoverflow.com/">Stack Overflow</a> is the recommended forum for questions that are not specific to this template.</p>
-<p>All you need to do for starting to work on your data project is to install the template following the instructions below.</p>
+<p>The template is developed and maintained by the data and analytics team of the city of Helsinki.
+The template is published under the Apache-2.0 licence and open source utilization is encouraged!</p>
 
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Contents">Contents<a class="anchor-link" href="#Contents"> </a></h2><p>The repository contains the following files and folders:</p>
+<h2 id="Contents">Contents<a class="anchor-link" href="#Contents"> </a></h2><p>The core structure of the repository is the following:</p>
 
-<pre><code>## EDITABLES:
-data/               # Folder for storing data files. Contents are ignored by git.
-results/            # Runned notebooks, figures, trained models etc. Ignored by git.
-notebook_templates/ # Notebook templates with usage instructions, but without code examples
-.gitignore          # Filetypes, files and folders to be ignored by git.
-00_data.ipynb       # Data loading, cleaning and preprocessing with examples
-01_model.ipynb      # ML Model scripting, class creation and testing with examples
-02_loss.ipynb       # ML Evaluation with examples
-04_workflow.ipynb   # ML workflow definition with examples
-requirements.txt    # Required python packages and versions
-CONTRIBUTING.md     # Instructions for contributing
+<pre><code>## EDITABLE:
+data/               # Folder for storing data files. Ignored by git by default.
+|- raw_data/        # To store raw data files
+|- preprocessed_data/   # To store cleaned data
+results/            # Save results here. Ignored by git by default.
+|- notebooks/       # Save automatically executed notebooks here
+00_data.ipynb       # Extract, transfer, load data here &amp; define related functions.
+01_model.ipynb      # Create and code test your ML model
+02_loss.ipynb       # Train and evaluate ML model, deploy or save for later use
+04_workflow.ipynb   # Define ML workflow and parameterization
+project_requirements.in    # Add here the Python packages you want to install
 settings.ini        # Project specific settings. Build instructions for lib and docs.
-docker-compose.yml  # docker settings (fast.ai default), if you wish to containerize your project
+Dockerfile          # instructions for building docker image
+docker-compose.yml  # docker settings (fast.ai default)
 
 ## AUTOMATICALLY GENERATED: (Do not edit unless otherwise specified!)
 docs/               # Project documentation (html)
 [your_module]/      # Python module built from the notebooks. The name of the module is the name of the repository (after installation).
-Makefile
-README.md 
+README.md           # The frontpage of your 
+requirements.txt    # automatically generated by pip-tools
+project_requirements.txt # automatically generated by pip-tools
+setup.py            # settings for the python module of your project. Generated by nbdev.
 
-## STATIC NON-EDITABLES: (Do not edit unless otherwise specified or you really know what you're doing!)
-LISENCE
-MANIFEST.in   
-setup.py                                     </code></pre>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Best-Practices">Best Practices<a class="anchor-link" href="#Best-Practices"> </a></h2><p>We included the following guiding principles to help you excel in your ML project.</p>
-<p>Remember, none of these are strict and you are free to deviate for achieving the best results for you.
-Also, it is better to get started with the work than to perfect it from the beginning.
-You may return to these concepts when you want to improve your project or get stuck, iteratively!</p>
-<p>For general coding best practices in city of Helsinki projects, refer to <a href="https://dev.hel.fi/">dev.hel.fi</a> where applicable.</p>
+## STATIC NON-EDITABLE: (Edit only if you know what you're doing!)
+base_requirements.in    # core tools that every project built based on the template always requires
+full_requirements.in    # core tools that every project requies at development stage
+LISENCE                 # lisence information
+MANIFEST.in             # metadata for building python distributable</code></pre>
 
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="1.-Prefer-Standard-Tools">1. Prefer Standard Tools<a class="anchor-link" href="#1.-Prefer-Standard-Tools"> </a></h3><p>It is recommended to use widely used standard tools with stable community support over niche optimal solutions, if possible.
-This helps in ensuring that the methods used are reviewed, stable, accurate and maintained.
-This is not a hard rule, but in general a viable stable solution is far better than one that is optimized but trivial.</p>
-<p>This template installs the following Python standard tools for data science:</p>
-
-<pre><code>NumPy          # matrix computation, linear algebra, vectorized operations
-Pandas         # complex data structures, useful functions for handling and plotting data, based on numpy
-Matplotlib     # create visualizations
-SciPy          # math and statistics
-Scikit-learn   # data mining, preprocessing, machine learning models
-ipython        # jupyter notebooks
-nbdev          # efficient software development with notebooks, code, docs and results as one 
-papermill      # parameterize notebooks
-Snakemake      # create reproducible workflows
-
-</code></pre>
-<p>These come with many dependencies, see <code>requirements.txt</code> for complete documentation.</p>
-<p>Here are a few examples of preferred standard tools not included in this template that might help you get started when the template default tools lack features:</p>
-
-<pre><code>statsmodels         # statistical models and tests (based on scipy)
-Keras / TensorFlow  # Neural networks (PyTorch is another alternative)
-Seaborn             # enhanced visualizations (based on matplotlib)
-Scrapy              # scrape data from online sources that do not have their own API
-BeautifulSoup       # parse data from web pages (simpler than Scrapy)
-NLTK                # natural language processing tools
-NetworkX            # network analysis algorithms
-DEAP                # genetic algorithms
-
-</code></pre>
-<p>The list is not, and never will be complete. You are free to use the tools that best suite you.
-However, regardless of what your problem is, there are likely many different implementations for solving it.
-Try to select a tool that is well documented and has steady userbase, frequent updates and many contributors.</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="2.-Exploratory-Programming---Use-Jupyter-Notebooks">2. Exploratory Programming - Use Jupyter Notebooks<a class="anchor-link" href="#2.-Exploratory-Programming---Use-Jupyter-Notebooks"> </a></h3><p>We want to keep our code, documentation and results together, seamlessly.
-We also want to see what's going on as we create the software, immediately.
-Create code where we first need it, without the need of copy-pasting it around.
-That's why we use jypyter notebooks as the core of our development.</p>
-<p>Actually, even this page was generated from a notebook!</p>
-<p>The notebooks are enhanced with <code>nbdev</code> tool to export code to modules, create doc pages, run tests, handle notebook version control etc.
-Read more on nbdev on their <a href="https://nbdev.fast.ai/">project pages</a>.</p>
-<hr>
-<p><strong>INFO BOX: How nbdev exports code from notebooks?</strong></p>
-<p><img src="/ml_project_template/./visuals/nbdev_build_lib.png" alt="Exporting code from notebooks with nbdev"></p>
-<hr>
-<p>Some reasoning for those who are not yet convinced:</p>
-<ul>
-<li>In data projects, the code efficiency is irrelevant. The thinking time is what matters.</li>
-<li>It is simply impractical to create poorly documented notebook. With notebook development, your code is always well documented.</li>
-<li>How many of you actually test your ML code? Clean, running notebooks are the tests, and with <code>nbdev</code> unit tests are easy to include. </li>
-<li>Most data science projects involve multiple stakeholders with various backgrounds and skillsets.
-Many of them do not understand code, and even those who do, can not if it is poorly documented, nor can they interpret the results alone.
-Notebook development can be used to improve explainability.</li>
-<li>If you are building an armada of spaceships, tiny IoT devices or otherwise feel that this template does not fulfill your requirements for production pipeline,
-you can still use this for planning and creating documentation. Clean code is easier to achieve following a well documented demo!</li>
-</ul>
-<p>With notebook development you get the right results much faster, and everyone involved can actually understand what is happening.</p>
-<p>Read more on exploratory programming with notebooks from <a href="https://www.fast.ai/2019/12/02/nbdev/">this blog post</a>.</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="3.-Tidy-Data-&amp;-Tools">3. Tidy Data &amp; Tools<a class="anchor-link" href="#3.-Tidy-Data-&amp;-Tools"> </a></h3><blockquote><p>"All tidy datasets are alike, but every messy dataset is messy in its own way." - Hadley Wickham</p>
-</blockquote>
-<p>Tidy principles are guidelines for clean and efficiend data utilization.
-They can be appied to different programming languages.
-Common packages, like <code>numpy</code>, <code>pandas</code> and <code>sklearn</code> have been developed so that these concepts are easy to apply.
-Tidy data is easy to handle and understand. Tidy tools makes handling data, programming and creating explainable ML much easier.</p>
-<p><strong>Data is tidy, when:</strong></p>
-<ol>
-<li><strong>Every column is a variable</strong> (either a feature or a label)</li>
-<li><strong>Every row is an observation</strong> (a data point).</li>
-<li><strong>Every cell contains a single numerical value</strong> (int, float, bool, str*)</li>
-</ol>
-<p>*strings should usually be converted to numerical format before applying ML</p>
-<p>Read more on tidy data from <a href="https://vita.had.co.nz/papers/tidy-data.html">tidy data manifesto</a>.</p>
-<p><strong>Tidy Tools:</strong></p>
-<ol>
-<li><strong>Reuse existing data structures</strong></li>
-</ol>
-<p>Favour the default data types of the tools used over custom data types.
-Avoid unnecessary conversions: once you have converted your data to tidy format, keep it tidy.</p>
-<ol>
-<li><strong>Compose simple functions with the pipe</strong></li>
-</ol>
-<p>A pipe operator takes the expression before it and gives it as the first argument to the expression after it,
-assuming the expression on the right is a function call. In addition, pipe functions should do one thing, and do it well.
-They either perform a transformation or a side-effect, but never both.</p>
-<p>In a transformation a modified copy of the input is returned.
-In a side effect a reference to the directly modified input is returned.</p>
-<p>This allows composition of simple functions. In addition, you can easily determine what a pipeable function does just from its name.
-In pseudocode, it looks something like this</p>
-
-<pre><code>model() &gt;&gt; init(X_train, y_train) &gt;&gt; fit(hyperparam) &gt;&gt; predict(X_test) &gt;&gt; mean()</code></pre>
-<p>instead of multiple or nested lines of code</p>
-
-<pre><code>m = model()
-m&gt;init(X_train, y_train)
-m&gt;fit(hyperparam)
-mean_values = mean(m&gt;predict(X_test))</code></pre>
-<p>although you can use pipeable functions in either way, or as a composition.</p>
-<p>Piped code is easy to read: you see that a model class is initialized, fitted with certain hyperparameters, a prediction is made and aggregated to a mean.
-Python does not have a native pipe operator such as <code>%&gt;%</code> in R tidyverse,
-but Python class functions can be written in a pipe-like way.
-More on this in the <code>model</code> notebook.</p>
-<p>As an excercise, you can take a look at function definitions of your favourite <code>sklearn</code> model.
-Which of the functions perform transformations and which side-effects?
-Can you find a function that does both?</p>
-<ol>
-<li><strong>Embrace functional programming</strong></li>
-</ol>
-<p>Python is not a functional programming language, but it can be written in functional style.
-Many of the concepts can be used to write cleaner data code with Python. 
-The key concepts of functional programming include pure functions, immutability and higher order functions.</p>
-<ul>
-<li>Pure Functions do not have side effects, meaning that they do not change the state of the program. Output of a pure function depends only on it's input.</li>
-<li>Immutability means that data cannot be changed after creation. Changes can only be made to a copy of the data.</li>
-<li>Higher order functions are functions that may accept other functions as parameters or return new functions. This allows high level of abstractation.</li>
-</ul>
-<p>Read more on functional programming with Python from <a href="https://stackabuse.com/functional-programming-in-python">this Stack Abuse article</a>.</p>
-<ol>
-<li><strong>Are designed for humans</strong></li>
-</ol>
-<p>Create your code in a way that it's easy to use, read and debug.
-In addition to clean structure and documentation, consider the naming of your classes, functions and variables.
-Clean code is easy to understand, and actually eases your work with the documentation. 
-Function name should describe what it does.
-A lengthy informative names is better than short, uninformative ones.
-Having a common prefix with similar functions and autocomplete makes make even lengthy names descriptions easy to use.</p>
-<p>Read more on tidy tools from <a href="https://cran.r-project.org/web/packages/tidyverse/vignettes/manifesto.html">tidy tools manifesto</a>.</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="4.-Visualize-Everything---Information-is-Aesthetic">4. Visualize Everything - Information is Aesthetic<a class="anchor-link" href="#4.-Visualize-Everything---Information-is-Aesthetic"> </a></h3><p>The human eye is incredible tool for pattern recognition,
-and thus visualization is probably the most powerful tool of data science.</p>
-<p>A good rule of thumb is to visualize everything you can. 
-How does your training data look like, how is your data after dimension reduction, how does the loss function evolve when you add data?
-Great visualization will help you in model selection, detecting outliers, comparing values, evaluating your model and most importantly, explaining the results.</p>
-<p>However, it is only helpful if you visualize the right aspects with the right tools, and stay true to the data.
-There are many ways one can lie with data, intentionally or by accident.
-The internet is full of examples of poor visualizations, see for example <a href="https://towardsdatascience.com/why-is-this-chart-bad-5f16da298afa">this Towards Data Science article</a>.</p>
-<p>Many organizations have brand-synchronized visual guidelines, which unfortunately fit poorly for representing information.
-In addition people making the plots just don't know how to make them great, so they just aim for what appears visually pleasing.
-However, this quasi-aesthetic approach may lead to incorrect intepretation of the data.
-The risk increases with easy to use advanced tools, such as <code>seaborn</code>,
-that allows one to easily make fine-art like graphs.</p>
-<p>You are still encouraged to use the fancy tools and make stunning plots - just consider how you can stay true to the data.</p>
-<p><a href="https://sphweb.bumc.bu.edu/otlt/MPH-Modules/BS/DataPresentation/DataPresentation3.html">Tufte's Principles of Graphical Exellence</a>
-give great instructions on how data should be visualized in an informative manner:</p>
-<ul>
-<li>Show the data</li>
-<li>Induce the viewer to think about the substance of the findings rather that the methodology, the graphical design, or other aspects</li>
-<li>Avoid distorting what the data have to say</li>
-<li>Present many numbers in a small space, i.e., efficiently</li>
-<li>Make large data sets coherent</li>
-<li>Encourage the eye to compare different pieces of data</li>
-<li>Reveal the data at several levels of detail, from a broad overview to the fine structure</li>
-<li>Serve a clear purpose:  description, exploration, tabulation, or decoration</li>
-<li>Be closely integrated with the statistical and verbal descriptions of the data set</li>
-</ul>
-<p>(From E. R. Tufte. The Visual Display of Quantitative Information, 2nd Edition.  Graphics Press, Cheshire, Connecticut, 2001.)</p>
-<p>Great visualizations is a massive topic and we can not possibly fit everything in this template. Here are a few links for further reading:</p>
-<ol>
-<li><a href="https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1003833">Ten Simple Rules for Better Figures</a></li>
-<li><a href="https://colorbrewer2.org/#type=sequential&amp;scheme=BuGn&amp;n=3">Colorbrewer, tool for planning colour palettes in graphs</a></li>
-<li>Misleading graph mistakes to avoid from <a href="https://en.wikipedia.org/wiki/Misleading_graph">Wikipedia</a> or this <a href="https://avoinelama.fi/hingo/kirjoituksia/misleadingvisualizations.html">blog post</a>.</li>
-<li>Matplotlib <a href="https://matplotlib.org/stable/tutorials/index.html">tutorials</a> and <a href="https://matplotlib.org/stable/gallery/index.html">examples</a></li>
-<li><a href="https://www.tutorialspoint.com/seaborn/index.htm">Seaborn tutorials</a></li>
-</ol>
-<p>Remember that <strong>information is aesthetic</strong> - find the beauty in representing the data in a way that is easy to perceive.</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="5.-Ease-of-Reproducibility">5. Ease of Reproducibility<a class="anchor-link" href="#5.-Ease-of-Reproducibility"> </a></h3><p>Poor reproducibility is a major issue in data science projects, both in the industry and academia, but is often overlooked at.
-We at the city of Helsinki as a public sector operators highly value reproducibility. We believe it benefits everyone.
-Our goal is, that each state and decision of our ML models are reproducible.
-A theoretical possibility of recreating a particular result is not enough, if it takes unreasonable efforts to do it.
-Good reproducibility equals to ease of reproducibility.</p>
-<p>For ease of reproducibility we</p>
-<ol>
-<li>Document</li>
-<li>Seed</li>
-<li>Orchestrate (pipeline)</li>
-<li>Version control everything.</li>
-</ol>
-<hr>
-<p><strong> INFO BOX: Documentation, Seeding, Orchestration and Version control </strong></p>
-<p><em>Documentation</em></p>
-<p>Documentation means, that everything in a ML project is explained in a text (up to a reasonable level).
-This includes commenting code, but also adding relevant references, explaining the maths if needed, and introducing the logic and reasoning between every step.
-In addition, you should consider your metadata - the project folder structure, naming policy etc.
-To help you with documentation, you can ask yourself "what am I doing and why?" when coding,
-and "what does this mean?" every time you get results, be it an intermediate step in data cleansing or the final results of your workflow.
-Then, write the answers down, and ask your <em>non-tech-savvy</em> colleague to explain the process and results to you based on your documentation.
-Iterate this, until you are happy with their answer, and you'll have great documentation!
-With great documentation you can ensure that someone else could actually reproduce the same results you came up with.</p>
-<p><em>Seed</em></p>
-<p>Seeding means, that random processes are initialized with a <em>seed</em>, also known as <em>random state</em>.
-Creating random numbers is a difficult task in computer science. Each random number you get from a random number generator,
-such as the <code>np.random</code>, is actually a <em>pseudo random</em> number - number taken from a number sequence.
-Bunch of numbers taken from this sequence have properties similar to some taking them from true random distribution.
-The sequence is defined by the initial number, the seed, and so if you use the same seed for a random number generator,
-you can reproduce the results.</p>
-<p><em>Orchestration</em></p>
-<p>Orchestration or <em>pipeline</em> means automated workflow control.
-The goal is, that with a single command you can run all steps of your workflow,
-instead of trying to rerun individual cells or notebooks.
-It means, that with the same code and same data,
-you can always reproduce the same results, even if your code isn't all in a single script.
-It helps you to automate the training of ML models in production,
-but also when testing your model in development.
-An orchestrated workflow is excecuted on a trigger event.
-They can either be static or dynamic. A static workflow executes all steps on the trigger event.
-Most applications have static workflows.
-This is ok, if you have a static data source (the data can change) and your processing steps are computationally light.
-Dynamic workflows only execute the steps that are required, i.e. the steps,
-that are affected by the changes that happened since the last trigger event.
-This change can either be in the code or in the data.
-For example if you may have a varying number of input sources to read data from at each training round of the algorithm.
-Depending on your ML application, you should consider if you want to use static or dynamic orchestration.
-We will add examples of both in the <code>workflow</code> notebook.</p>
-<p><em>Version control</em></p>
-<p>Version control means that you keep track of all changes in your system,
-in a reversable way that allows you to step back to a previous version, or make branches to try out options.
-Version control allows you to refer to a specific version of your system, making these snapshots reproducible.
-We use Git for version control of code, and virtual environments to isolate the code from the environment.
-Containerization and data version control are topics we are still working on.</p>
-<hr>
-<p>There are many great online resources for learning reproducible data science, such as <a href="https://the-turing-way.netlify.app/welcome.html">The Turing Way</a> and
-<a href="https://coderefinery.org/">Code Refinery</a>.</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="6.-Data,-Model-&amp;-Loss---the-components-of-a-ML-workflow">6. Data, Model &amp; Loss - the components of a ML workflow<a class="anchor-link" href="#6.-Data,-Model-&amp;-Loss---the-components-of-a-ML-workflow"> </a></h3><p>The core of this template constitutes of three notebooks: data, model and loss.
-The notebooks running number prefix (<code>00_data.ipynb</code> etc.) to emphasize the running order and to improve readability.
-Any data project can be resolved by defining these three steps. Together they form a basis for a complete ML workflow from data to trained deployable model.</p>
-<p>You might be used to doing all the steps in a single script or notebook,
-but separating makes development, explaining the results and debugging much more efficient.</p>
-<p>Each notebook is also a basis for a python module, including tests and documentation.
-The <code>nbdev</code> tool constructs a python module of each of these notebooks, under the folder <code>[your_repository]/[your_module]/</code>
-(<code>ml_project_template/ml_project_template/</code> in this template).
-The name of the module becomes the name of your repository after installing the template following the instructions below
-This allows you to share code between your notebooks, or even publish a complete python module, while doing all your development in the notebooks.</p>
-<p><strong>Data</strong></p>
-<p>In the data notebook, the the data is loaded and cleaned, and a basic analysis may be carried out.
-With nbdev you can also export data handling functions to be used in other notebooks.
-You should also create a small toy dataset to develop and test your algorithm with - no,
-trust me, your code won't work for the first n+1 times, and running it with the whole dataset will waste so much time!
-This is also why we separate between the model and loss notebooks.</p>
-<p><strong>Model</strong></p>
-<p>In the model notebook, the machine learning model (or analytics or simulation) is explored, defined and tested.
-You can begin with scripting, but based on the script you should develop real generalizable and tested code.
-This part of the notebooks is the closest to traditional software development it gets: the output is a clean Python module.</p>
-<p><strong>Loss</strong></p>
-<p>In the loss notebook, you will finally train your model with the whole dataset and evaluate it in action.
-Some might call this step <em>inference</em>, others <em>evaluation</em>.
-No matter the name, you evaluate the performance of your model to see if it is ready for production.
-If the results are satisfactory, you can ship your code to it's destination.
-For example Azure SDK allows you to define your code in Python and then excecute it in the cloud, seamlessly.
-However, this part depends a lot on the project, so we'll leave it to you to figure it out.
-If your are doing research, having the results in the notebooks might be enough for you.</p>
-<p><strong>Workflow</strong></p>
-<p>We added the fourth notebook to enable automatic workflow control of the notebooks.
-With the help of this notebook, you can create workflows to automatically update, train and deploy your ML model.
-The workflows can either be static or dynamic, and you can even parameterize them to automatically update your workflow definition.
-Usually this notebook is the last one you need to touch, so you don't need to mind it in the beginning.
-However, if you have multiple or varying number of data sources, or a very complex workflow,
-you might want to define a dynamic workflow already in the early development phase.</p>
-<p>You can also create new notebooks to your liking. For example, if you want to create and create many algorithms that are inheritantly different
-it might be better to separate them in their own notebooks <code>02a_model1.ipynb</code> and <code>02b_model2.ipynb</code>.</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Example-Project">Example Project<a class="anchor-link" href="#Example-Project"> </a></h2><p>We wanted to make this template easy to approach.
-That's why we included a demo, that it is built around - the notebooks <code>index</code>, <code>data</code>, <code>model</code>, <code>loss</code> and <code>workflow</code>.
-They explain the required steps of a ML project.</p>
-<p>The demo is an example ML project on automating heart disease diagnosis with logistic regression on <a href="https://archive.ics.uci.edu/ml/datasets/heart+disease">UCI heart disease open dataset</a>.
-The dataset contains missing values, and is thus great for demonstrating some light data wrangling.
-The demo is only meant for showcasing how the template joins together different tools and steps.</p>
-<p><strong>If you'd like to skip the demo</strong>, and get right into action, you can replace the notebooks <code>index</code>, <code>data</code>, <code>model</code>, <code>loss</code> and <code>workflow</code> with clean copies under the folder <code>notebook_templates/</code>.</p>
-<p>The <code>index</code> notebook (this notebook or the empty copy) will become the <code>README</code> of your project and frontpage of your documentation, so edit it accordingly.
-You should at least have a general description of the project,
-instructions on how to install and use it,
-and instructions for contributing.</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Installing-the-Template">Installing the Template<a class="anchor-link" href="#Installing-the-Template"> </a></h2><p>{% include note.html content='if you are doing a project on personal or sensitive data for the City of Helsinki, contact the data and analytics team of the city before proceeding!' %}</p>
+<h2 id="How-to-Install">How to Install<a class="anchor-link" href="#How-to-Install"> </a></h2><p>{% include note.html content='if you are doing a project on personal data for the City of Helsinki, contact the data and analytics team of the city before proceeding any further!' %}</p>
 <h3 id="1.-On-your-GitHub-homepage:">1. On your GitHub homepage:<a class="anchor-link" href="#1.-On-your-GitHub-homepage:"> </a></h3><ol>
 <li>(Create <a href="https://github.com/">GitHub account</a> if you do not have one already. </li>
 <li>Sign into your GitHub homepage</li>
-<li>Go to page <a href="https://github.com/City-of-Helsinki/ml_project_template">https://github.com/City-of-Helsinki/ml_project_template</a> and click the green button that says 'Use this template'.
-(<strong>NOTE:</strong> if you are already familiar with using the template, you can use the pre-cleaned version instead: <a href="https://github.com/City-of-Helsinki/ml_project_template_pre_cleaned">https://github.com/City-of-Helsinki/ml_project_template_pre_cleaned</a>.
-If you do so, follow these instructions where applicable.)</li>
+<li>Go to page <a href="https://github.com/City-of-Helsinki/ml_project_template">https://github.com/City-of-Helsinki/ml_project_template</a> and click the green button that says 'Use this template'.</li>
 <li>Give your project a name. Do not use the dash symbol '-', but rather the underscore '_', because the name of the repo will become the name of your Python module.</li>
 <li>If you are creating a project for your organization, change owner of the repo from the drop down bar (it's you by default).
 You need to be included as a team member to the GitHub of the organization.</li>
-<li>Define your project publicity (you can change this later, in most cases you'll want to begin with a private repo).</li>
+<li>Define your project publicity (you can change this later, but most likely you want to begin with a private repo).</li>
 <li>Click 'Create repository from template'</li>
 </ol>
 <p>This will create a new repository for you copying everything from this template, but with clean commit history.</p>
-<h3 id="2.-On-your-computing-environment:">2. On your computing environment:<a class="anchor-link" href="#2.-On-your-computing-environment:"> </a></h3><p><strong>Put all the highlited </strong> <code>commands</code> <strong> to shell one ate a time and press enter</strong>
-<strong>(replace the parts with square brackets with your own information</strong> <code>'[replace this with your info]'</code><strong>(remove the brackets))</strong></p>
-<ol>
-<li><p>Create an SSH key and add it to your github profile. SSH is a protocol for secure communication over the internet. 
- A ssh key is unique to a computing unit, and you must recreate this step every time you are using a new unit,
- be it a personal computer, server or a cloud computing instance. You can read more on SSH from <a href="https://fi.wikipedia.org/wiki/SSH">Wikipedia</a> or 
- from <a href="https://docs.github.com/en/github/authenticating-to-github/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent">GitHub docs</a>.</p>
-<ul>
-<li>Create SSH key with <code>ssh-keygen -t ed25519 -C "[your_email]"</code></li>
-<li>You can leave the name empty (just press enter), but <strong>always create keys with a secure password that you remember</strong>.
-This password can not be reset. You have to create new key if you forget it.</li>
-<li>Now among other lines, there should be a text displayed saying <code>Your public key has been saved in [public_key_path]/id_ed25519.pub</code>.</li>
-<li>Copy the public key adress and call <code>cat [public_key_path]/id_ed25519.pub]</code></li>
-<li>Now the key has been copied to clipboard and displayed on your shell. It begins with 'ssh' and ends with your email.
-Depending on your system, you may also have to manually copy it from the shell output.</li>
-<li>Go to your GitHub homepage &gt; progile picture in top right corner &gt; settings &gt; SSH and GPG keys &gt; new ssh key</li>
-<li>Paste the public key to the key part, and give the key a name that describes the computing environment it belongs to.</li>
-<li>If you permanently stop using this computing environment, remove the public key from your github profile.</li>
-</ul>
-</li>
-<li><p>In your shell, move to the folder you want to work in: <code>cd [path to your programming projects folder]</code>.
-(If you get lost, <code>cd ..</code> moves you one folder towards root, and <code>cd</code> gets you to root.)</p>
-</li>
-<li>Clone the repository you just imported: <code>git clone git@github.com:[repository_owner]/[your_repository]</code>.
-If the repository is private, you'll be asked the password of the ssh key you just generated. 
-This will copy all the files and folders that you imported to your new repository in the github website, to your computing environment.</li>
+<h3 id="2.-Setting-up-your-development-environment">2. Setting up your development environment<a class="anchor-link" href="#2.-Setting-up-your-development-environment"> </a></h3><h4 id="2.1-Alternative-1:-Codespaces">2.1 Alternative 1: Codespaces<a class="anchor-link" href="#2.1-Alternative-1:-Codespaces"> </a></h4><p>If your organization has Codespaces enabled (requires Enterprise GitHub &amp; Azure subscription), you are now ready to begin development. Just launch the repository in a codespace, and a dev container is automatically set up.</p>
+<h4 id="2.2-Alternative-2:-Local-installation-with-Docker">2.2 Alternative 2: Local installation with Docker<a class="anchor-link" href="#2.2-Alternative-2:-Local-installation-with-Docker"> </a></h4><h4 id="2.3-Alternative-3:-Local-installation-manually">2.3 Alternative 3: Local installation manually<a class="anchor-link" href="#2.3-Alternative-3:-Local-installation-manually"> </a></h4><ol>
+<li>Create an SSH key and add it to your github profile (<a href="https://docs.github.com/en/authentication/connecting-to-github-with-ssh">instructions</a>)</li>
+<li>Configure your git user name and email adress if you haven't done it already: <code>git config --global user.name "FIRST_NAME LAST_NAME" &amp;&amp; git config --global user.email "your@email.com"</code></li>
+<li>Clone your new repository: <code>git clone git@github.com:[repository_owner]/[your_repository]</code>.</li>
 <li>Go inside the repository folder: <code>cd [your_repository]</code></li>
-<li>Create virtual environment.  Virtual environments allow you to install project specific python versions and track dependencies.
-Read more on virtual environments from <a href="https://realpython.com/python-virtual-environments-a-primer/">this blog post</a>.</li>
+<li>Create and activate virtual environment of your choice. Remember to define the Python version to 3.9! (Instructions: <a href="https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html">conda</a>, <a href="https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/">venv</a>)</li>
+<li>Install requirements: <code>pip install -r requirements.txt &amp;&amp; nbdev_install_git_hooks</code></li>
+<li>Create an ipython kernel for running the notebooks: <code>python -m ipykernel install --user --name python39myenv</code></li>
 </ol>
-
-<pre><code># Using conda (Azure ML only supports conda virtual environments):
-
-conda create --name [environment_name] python=3.8
-conda activate [environment_name] # every time you start working
-conda install pip
-
-conda deactivate # when you stop working
-
-# Using virtualenv (preferred way if not working in Azure):
-
-pip install virtualenv
-python3.8 -m virtualenv [environment_name]
-source [environment_name]/bin/activate # every time you start working
-
-deactivate # when you stop working
-
-</code></pre>
+<h3 id="3.-Initializing-your-project">3. Initializing your project<a class="anchor-link" href="#3.-Initializing-your-project"> </a></h3><p>After setting up your local dev environment, you must edit the</p>
 <ol>
-<li>Install dependencies (versions of python packages that work well together):</li>
+<li>Edit <code>LICENCE</code>, <code>Makefile</code>, <code>settings.ini</code>, <code>docs/_config.yml</code> and <code>docs/_data/topnav.yml</code> according to your project details. You can continue editing them in the future.</li>
+<li>Remove the folder <code>ml_project_template</code>. A new folder with the name of your repository will be created automatically when calling <code>nbdev_build_lib</code>. This contains the python module of your project.</li>
+<li>Recreate the module and doc pages to clean them: <code>nbdev_build_lib &amp;&amp; nbdev_build_docs</code></li>
+<li>Make initial commit: <code>git add . &amp;&amp; git commit -m "initialized repository from City-of-Helsinki/ml_project_template"</code></li>
+<li>Push changes <code>git push -u origin master</code></li>
 </ol>
-
-<pre><code>pip install -r requirements.txt # install required versions of python packages with pip
-nbdev_install_git_hooks # install nbdev git additions
-
-</code></pre>
-<ol>
-<li>Create an ipython kernel for running the notebooks. Good practice is to name the kernel with your virtual environment name.</li>
-</ol>
-
-<pre><code>python -m ipykernel install --user --name [ipython_kernel_name] --display-name "Python 3.8 ([ipython_kernel_name])"
-
-</code></pre>
-<ol>
-<li>With your team, decide which notebook editor are you using. There are two common editors: Jupyter and JupyterLab, but both run the same notebooks.
-Depending on the selection, you'll have to edit the top cell of each notebook where black formatter extension is activated for the notebook cells.
-You can change this later, but it is convenient to only develop with one type of an editor.
-Black is a code formatting tool used to unify code style regardless of who is writing it.
-You may notice, that the structure of your code changes a bit from what you have written after you run the cells of a notebook.
-This is the formatter restructuring your code.
-There are other formats and tools, and even more opinions on them, but black is used in the city of Helsinki projects.
-So, after deciding which editor you are working with (Azure ML default notebook view is based on JupyterLab), edit the top cell of all notebooks:</li>
-</ol>
-
-<pre><code># if using Jupyter:
-%load_ext nb_black
-
-# if using JupyterLab:
-%load_ext lab_black
-
-# do not add comment to same line with a magic command:
-%load_ext nb_black #this comment breaks the magic command
-
-</code></pre>
-<ol>
-<li><p>Check that you can run the notebooks <code>00_data.ipynb</code>, <code>01_model.ipynb</code>, <code>02_loss.ipynb</code> and <code>03_workflow.ipynb</code>.
-You may have to change the kernel your notebook interpreter is using to the one you just created.
-This can be done drop down bar in top of the notebook editor. You can play around with the notebooks to better understand the structure and the examples.</p>
-</li>
-<li><p>If while getting to know the template examples you ran or edited any of the notebooks, run the following command to clean any unrelevant changes.</p>
-<p>git reset --hard</p>
-</li>
-</ol>
-<p>Please note, that this will reset any changes made to the template. We do this to clean any 'play-around' work you might have done getting to know the template and the examples.</p>
-<ol>
-<li>Replace the notebooks <code>index</code>, <code>data</code>, <code>model</code>, <code>loss</code> and <code>workflow</code> with copies without the code examples (there is also additional empty notebook template <code>_XX_empty_notebook_template.ipynb</code> if you want to deviate from basic template structure):</li>
-</ol>
-
-<pre><code>git rm index.ipynb 00_data.ipynb 01_model.ipynb 02_loss.ipynb 03_workflow.ipynb
-git mv notebook_templates/_index.ipynb ./index.ipynb
-git mv notebook_templates/_00_data.ipynb ./00_data.ipynb
-git mv notebook_templates/_01_model.ipynb ./01_model.ipynb
-git mv notebook_templates/_02_loss.ipynb ./02_loss.ipynb
-git mv notebook_templates/_03_workflow.ipynb ./03_workflow.ipynb
-
-</code></pre>
-<ol>
-<li>You may delete the folders <code>ml_project_template</code>, <code>notebook_templates</code> and <code>visuals</code>.</li>
-</ol>
-
-<pre><code>git rm -r ml_project_template notebook_templates visuals docs/visuals
-
-</code></pre>
-<ol>
-<li><p>Edit <code>settings.ini</code>, <code>docs/_config.yml</code> and <code>docs/_data/topnav.yml</code> according to your project details.
-The files contain instructions for minimum required edits.
-You can continue editing them in the future, so no need to worry about getting it right the first time.
-These are used for building the python modules and docs based on your notebooks.
-If you get errors when building a module or docs, take a look again at these files.</p>
-</li>
-<li><p>The Helsinki logo is a registered trademark, and may only be used by the city of Helsinki.
-If you are using this template for other than city of Helsinki projects, remove the files <code>favicon.ico</code> and <code>company_logo.png</code> from <code>docs/assets/images/</code>.
-You may replace these with your own logo. Fast.ai logo will show in documentation if custom logos are not defined.</p>
-</li>
-<li><p>Recreate the module and doc pages to clean them: <code>nbdev_build_lib &amp;&amp; nbdev_build_docs</code></p>
-</li>
-<li><p>Configure your git user name and email adress (one of those added to your git account) if you haven't done it already:</p>
-</li>
-</ol>
-
-<pre><code>git config --global user.name "FIRST_NAME LAST_NAME"
-git config --global user.email "MY_NAME@example.com"
-
-</code></pre>
-<ol>
-<li>Make initial commit (snapshot of the code as it is when you begin the work):</li>
-</ol>
-
-<pre><code>git add .
-git commit -m "Initial commit"
-
-</code></pre>
-<ol>
-<li>Push (save changes to remote repository): <code>git push -u origin master</code>. You will be asked to log in with your SSH key and password, again.</li>
-</ol>
+<p>You are now ready to begin your ML project development! Remember to track your changes with git!</p>
 
 </div>
 </div>
@@ -597,87 +133,74 @@ git commit -m "Initial commit"
 <h2 id="How-to-use">How to use<a class="anchor-link" href="#How-to-use"> </a></h2><ol>
 <li><p>Install this template as basis of your new project (see above).</p>
 </li>
-<li><p>Remember to always activate your virtual environment before you start working: <code>conda activate [environment name]</code> with anaconda or <code>source [environment name]/bin/activate</code> with virtualenv</p>
+<li><p>Remember to activate your virtual environment every time you begin work: <code>conda activate [environment name]</code> with anaconda or <code>source [environment name]/bin/activate</code> with virtualenv</p>
 </li>
-<li><p>Explore, explain, visualize, test - do your thing!</p>
+<li><p>Do your data science!</p>
 </li>
 <li><p>Save your notebooks and call <code>nbdev_build_lib</code> to build python modules of your notebooks - needed if you want to share code between notebooks or create a modules.
-This will export all notebook cells with <code># export</code> tag to corresponding python files.
-Remember to do this if you want to rerun your workflow after making changes to exportables.</p>
+This will export all notebook cells with <code># export</code> tag to corresponding .py files under the module (the folder inside your repository named after your repository).
+Do this every time you make changes to any exportable parts of the code.</p>
 </li>
 <li><p>Save your notebooks and call <code>nbdev_build_docs</code> to create doc pages based on your notebooks (see below).
-This will also update README.md file based on <code>index.ipynb</code>.
-If you want to host your project pages on GitHub, you will have to make your project public.
-You can also build the pages locally with jekyll.</p>
-</li>
-<li><p>You can install new packages with <code>pip install [package name]</code>.
-Check out what packages are installed with the template from <code>requirements.txt</code>, or check if a specific package is installed with <code>pip show [package_name]</code>.
-If you install new packages, remember to update the requirements for dependency management: <code>pip freeze &gt; requirements.txt</code>.</p>
-</li>
-<li><p>Before you publish your project, edit LISENCE and the copywright information in the <code>index.ipynb</code> according to your project details.
-Please mind that some dependencies of your project might have more restrictive licenses than the Apace-2.0 this template is distributed under.</p>
-</li>
-<li><p>Remember to track your changes with git!</p>
+This will convert the notebooks into HTML files under <code>docs/</code> and update README based on the <code>index.ipynb</code>.
+If you want to host your project pages on GitHub, you will have to make your project public and enable github pages in repo &gt; Settings &gt; Pages : set Source to <code>docs/</code>.
+Alternatively you can build the pages locally with jekyll.</p>
 </li>
 </ol>
-<hr>
-<p><strong>INFO BOX: Some useful commands with git</strong></p>
-
-<pre><code>git status #See which files have changes since the last commit: `git status` 
-
-git add [filenames separated by whitespace ' '] # Add files to a commit. * will add all files, and . will add everythin in a directory 
-
-git commit -m "[short description of the changes you made]" # Create commit and explain what you changed
-
-git push origin -u # Push commit to remote repository (GitHub server) 
-
-</code></pre>
-<p><em>A good rule of thumb is to commit every change you make, and push at the end of the day when you stop working!</em></p>
-
-<pre><code>git pull # Load changes that someone else has made
-
-</code></pre>
-<p>If you are working with a team of people, you will most likely run into conflicts when pushing or pulling code.
-This means, that there are overlapping changes in the code. Read more from <a href="https://stackoverflow.com/questions/161813/how-to-resolve-merge-conflicts-in-a-git-repository">Stack Overflow</a>
-or <a href="https://docs.github.com/en/github/collaborating-with-pull-requests/addressing-merge-conflicts/resolving-a-merge-conflict-on-github">GitHub docs</a>
-on how to resolve conflicts.</p>
-
-<pre><code>git rm [file name] # Remove files so that git will also stop tracking them  (`git rm -r [folder]` for folders)
-
-</code></pre>
-<p>To ignore files or folders from being tracked by git, add them to <code>.gitignore</code> file.
-In this template the <code>data</code> and <code>results</code> folders have been added to the <code>.gitignore</code>.
-We do not want to version them with git, as it will explode the size of the repository.</p>
-<p>Branches are like alternative timelines in your commit history.
-They allow you to test out things that radically change the code.</p>
-
-<pre><code>git branch # Check out current branch
-
-git branch [branch_name] # Make a new branch
-
-git checkout [branch name] # Change to another branch
-
-
-</code></pre>
-<p>In addition, there are many fancy features for git that enable comparing differences, collaborative work, debugging, automated testing and other crazy things.
-However, there are better sources for learning all that stuff, like this <a href="https://git-scm.com/book/en/v2">free ebook</a>.</p>
-<hr>
 
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Keeping-Project-libraries-up-to-date">Keeping Project libraries up to date<a class="anchor-link" href="#Keeping-Project-libraries-up-to-date"> </a></h2><p>Python has a rich and wide ecosystem of libraries to help with machine learning tasks among other things. Pandas, Matplotlib, Scipy, PyTorch to name a few. If base libraries in this template aren't sufficient you can add more with <code>pip install library</code>. However, <code>pip</code> command installs libraries into your local Python environment. To achieve consistent reproducibility we need to gather information about requirements into project repository. New libraries are added to <code>project_requirements.in</code> file. When you change this file remember to run:</p>
+<h2 id="Keeping-Project-libraries-up-to-date">Keeping Project libraries up to date<a class="anchor-link" href="#Keeping-Project-libraries-up-to-date"> </a></h2><p>Python has a rich and wide ecosystem of libraries to help with machine learning tasks among other things.
+Pandas, Matplotlib, Scipy, PyTorch to name a few.
+If base libraries in this template aren't sufficient you can add more with <code>pip install library</code>.
+However, <code>pip</code> command installs libraries into your local Python environment. 
+To achieve consistent reproducibility we need to gather information about requirements into project repository. 
+New libraries are added to <code>project_requirements.in</code> file. When you change this file remember to run:</p>
 <div class="highlight"><pre><span></span>pip-compile --generate-hashes --allow-unsafe -o requirements.txt base_requirements.in full_requirements.in project_requirements.in
 pip-compile --generate-hashes --allow-unsafe -o project_requirements.txt base_requirements.in project_requirements.in
 </pre></div>
-<p>These two commands update full requirements for development environments and lighter, more focused requirements for server usage.</p>
+<p>These update full requirements for development environments and lighter, more focused requirements for server usage.</p>
 <p>After requirements are updated you should run:</p>
 <div class="highlight"><pre><span></span>pip install -r requirements.txt
 </pre></div>
-<p>This way libraries you and other users will have the same Python environment.</p>
-<p>Warning: if you don't update package names and versions next time you or anybody else tries to use this project in another environment its code might not work. Worse, it might <em>seem to</em> work, but does so incorrectly.</p>
+<p>This way libraries you and other users will have the same Python environment.
+{% include note.html content='run <code>./update_requirements.sh</code> - it contains the three above pip commands for updating and installing the requirements for convenience!' %}
+Warning: if you don't update package names and versions next time you or anybody else tries to use this project in another environment its code might not work. Worse, it might <em>seem to</em> work, but does so incorrectly.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Ethical-Aspects">Ethical Aspects<a class="anchor-link" href="#Ethical-Aspects"> </a></h3><p>Please involve ethical consideration of your ML application!</p>
+<p>For example:</p>
+<ul>
+<li>Can you recognize ethical issues with your ML project?</li>
+<li>Is there a risk for bias, discrimination, violation of privacy or conflict with the local or global laws?</li>
+<li>Could your results or algorithms be misused for malicious acts?</li>
+<li>Can data or model updates include bias in your model?</li>
+<li>How have you tackled these issues in your implementation?</li>
+</ul>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="How-to-Cite-this-Work-(optional)">How to Cite this Work (optional)<a class="anchor-link" href="#How-to-Cite-this-Work-(optional)"> </a></h2><p>If you are doing a research project, you can add bibtex and other citation templates here.
+You can also get a doi for your code by adding it to a code archive,
+so your code can be cited directly!</p>
+<p>To cite this work, use:</p>
+
+<pre><code>@misc{sten2022helsinki,
+title = {Helsinki Machine Learning Project Template},
+author = {Nuutti A Sten and Jussi Arpalahti},
+year = {2022},
+howpublished = {City of Helsinki. Available at: \url{https://github.com/City-of-Helsinki/ml_project_template}}
+}</code></pre>
 
 </div>
 </div>
@@ -704,12 +227,6 @@ git commit -m "removed Helsinki logo and favicon"
 </code></pre>
 <p>This template was built using <a href="https://nbdev.fast.ai/">nbdev</a> on top of the fast.ai <a href="https://github.com/fastai/nbdev_template">nbdev_template</a>.</p>
 
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Now-you-are-all-set-up-and-ready-to-begin-you-ML-project!">Now you are all set up and ready to begin you ML project!<a class="anchor-link" href="#Now-you-are-all-set-up-and-ready-to-begin-you-ML-project!"> </a></h2>
 </div>
 </div>
 </div>
