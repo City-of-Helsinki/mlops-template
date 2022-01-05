@@ -1,5 +1,9 @@
 #!/bin/bash
 ## script to update requirements.txt
-## prior running, add requirement to one of the .in files
+## prior running, manually write desired updates .in files
+
+## update requirements.txt
 pip-compile --generate-hashes --allow-unsafe -o requirements.txt base_requirements.in full_requirements.in project_requirements.in
-pip install -r requirements.txt
+
+## update project_requirements.txt
+pip-compile --generate-hashes --allow-unsafe -o project_requirements.txt base_requirements.in project_requirements.in
