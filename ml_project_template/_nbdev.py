@@ -2,9 +2,12 @@
 
 __all__ = ["index", "modules", "custom_doc_links", "git_url"]
 
-index = {}
+index = {"cwd": "03_workflow.ipynb",
+         "save_notebooks_to": "03_workflow.ipynb"}
 
-modules = ["model.py"]
+modules = ["model.py",
+           "workflow.py",
+           "api.py"]
 
 doc_url = "https://City-of-Helsinki.github.io/ml_project_template/"
 
