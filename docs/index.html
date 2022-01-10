@@ -42,13 +42,14 @@ nb_path: "index.ipynb"
 <p>The template assumes the concept of Notebook Development.
 This means, that you do all the data science work inside notebooks.
 There is no copy-pasting! We use the <a href="https://nbdev.fast.ai/">nbdev</a> tool to build python modules and doc pages from the notebooks, automatically.
-This way you always have your code, results and documentation as one. Handy, right?</p>
+This way you always have your code, results and documentation as one.
+Notebooks can be executed with the <a href="https://papermill.readthedocs.io/">papermill</a> tool for an automatic, well documented model update workflow. Handy, isn't it?</p>
 <p>The template assumes that you divide your machine learning project into 5 parts:</p>
 <ol>
-<li>Data loading &amp; preprocessing</li>
-<li>Model code &amp; algorithm (python class) development with small test data</li>
+<li>Data - loading &amp; preprocessing</li>
+<li>Model - Python class code &amp; algorithm development with small test data</li>
 <li>Loss - model training &amp; evaluation with full data</li>
-<li>Workflow - automate and parameterize steps 0.-2. </li>
+<li>Workflow - automatic model update (recreating steps 0.-2.)</li>
 <li>API - an interface to utilize your trained model</li>
 </ol>
 <p>Each part has their own notebook template, that you can follow to plan, monitor and do your development work.</p>
@@ -83,6 +84,7 @@ results/            # Save results here. Ignored by git by default.
 03_workflow.ipynb   # Define ML workflow and parameterization
 04_api.ipynb        # Define runtime API for using trained ML model
 project_requirements.in    # Add here the Python packages you want to install
+update_requirements.sh  # run this to install new python packages
 settings.ini        # Project specific settings. Build instructions for lib and docs.
 Dockerfile          # instructions for building docker image
 docker-compose.yml  # docker settings (fast.ai default)
@@ -166,12 +168,12 @@ Alternatively you can build the pages locally with jekyll.</p>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Keeping-Project-libraries-up-to-date">Keeping Project libraries up to date<a class="anchor-link" href="#Keeping-Project-libraries-up-to-date"> </a></h2><p>Python has a rich and wide ecosystem of libraries to help with machine learning tasks among other things.
+<h2 id="Installing-&amp;-updating-project-libraries">Installing &amp; updating project libraries<a class="anchor-link" href="#Installing-&amp;-updating-project-libraries"> </a></h2><p>Python has a rich and wide ecosystem of libraries to help with machine learning tasks among other things.
 Pandas, Matplotlib, Scipy, PyTorch to name a few.
 If base libraries in this template aren't sufficient you can add more with <code>pip install library</code>.
 However, <code>pip</code> command installs libraries into your local Python environment. 
 To achieve consistent reproducibility we need to gather information about requirements into project repository. 
-New libraries are added to <code>project_requirements.in</code> file. When you change this file remember to run:</p>
+New libraries are added to <strong><code>project_requirements.in</code></strong> file. When you change this file remember to run:</p>
 <div class="highlight"><pre><span></span>pip-compile --generate-hashes --allow-unsafe -o requirements.txt base_requirements.in full_requirements.in project_requirements.in
 pip-compile --generate-hashes --allow-unsafe -o project_requirements.txt base_requirements.in project_requirements.in
 </pre></div>
@@ -180,7 +182,7 @@ pip-compile --generate-hashes --allow-unsafe -o project_requirements.txt base_re
 <div class="highlight"><pre><span></span>pip install -r requirements.txt
 </pre></div>
 <p>This way libraries you and other users will have the same Python environment.
-{% include note.html content='run <code>./update_requirements.sh</code> - it contains the three above pip commands for updating and installing the requirements for convenience!' %}
+{% include note.html content='run <code>./update_requirements.sh</code> for short - it contains the three above pip commands for updating and installing the requirements!' %}
 Warning: if you don't update package names and versions next time you or anybody else tries to use this project in another environment its code might not work. Worse, it might <em>seem to</em> work, but does so incorrectly.</p>
 
 </div>
