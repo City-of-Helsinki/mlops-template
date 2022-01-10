@@ -3,11 +3,18 @@
 __all__ = ['cwd', 'save_notebooks_to']
 
 # Cell
+import papermill
+from pathlib import Path
+import os
+
+# your code here
+
+# Cell
 
 """
 A workflow to re-run your machine learning workflow automatically.
 
-The script will:
+This example script will
 - rebuild your python module
 - run data notebook to reload and clean data
 - run model notebook to sw test your model
@@ -22,6 +29,7 @@ save_notebooks_to = cwd / "results" / "notebooks"
 # Hint! you can also create time or setup -stamped folders to store your results!
 
 # make sure changes are updated to module
+# (this will do nothing if you run the workflow from inside a notebook)
 os.system("nbdev_build_lib")
 
 # run workflow
@@ -30,7 +38,7 @@ for notebook in ["00_data.ipynb", "01_model.ipynb", "02_loss.ipynb"]:
         notebook,  # this notebook will be executed
         save_notebooks_to
         / ("_" + notebook),  # this is where the executed notebook will be saved
-        # (notebooks named with '_' -prefix are ignored by nbdev)
+        # (notebooks named with '_' -prefix are ignored by nbdev!)
         parameters={"seed": 1},  # you can change notebook parameters
         kernel_name="python39myenv",
     )  # note: change kernel according to your project setup!

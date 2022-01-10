@@ -74,7 +74,7 @@ You can also save the model for later use, or deploy it to production environmen
 </div>
     {% raw %}
     
-<div class="cell border-box-sizing code_cell rendered">
+<div class="cell border-box-sizing code_cell rendered celltag_parameters">
 <div class="input">
 
 <div class="inner_cell">
@@ -148,30 +148,6 @@ You can also save the model for later use, or deploy it to production environmen
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="Split-the-data-into-training,-testing-and-validation-data">Split the data into training, testing and validation data<a class="anchor-link" href="#Split-the-data-into-training,-testing-and-validation-data"> </a></h2>
-</div>
-</div>
-</div>
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span> 
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Define-loss">Define loss<a class="anchor-link" href="#Define-loss"> </a></h2><p>How do you evaluate model performance?</p>
-
 </div>
 </div>
 </div>
@@ -310,6 +286,31 @@ You can also save the model for later use, or deploy it to production environmen
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Acceptance-testing-&amp;-deployment">Acceptance testing &amp; deployment<a class="anchor-link" href="#Acceptance-testing-&amp;-deployment"> </a></h2><p>Is the model 'good enough' for production?</p>
+<p>Define criterion and tests for 'good enough' and automatic model save / deployment process.</p>
+
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># EXAMPLE: model.deploy() if val_loss &gt; 0.85 else drift_alert()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="Conclusions">Conclusions<a class="anchor-link" href="#Conclusions"> </a></h2><p>How the results look like?</p>
 
 </div>
@@ -322,23 +323,6 @@ You can also save the model for later use, or deploy it to production environmen
 </div>
 </div>
 </div>
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span> 
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="You-can-now-move-on-to-the-workflow-notebook!">You can now move on to the workflow notebook!<a class="anchor-link" href="#You-can-now-move-on-to-the-workflow-notebook!"> </a></h2>
