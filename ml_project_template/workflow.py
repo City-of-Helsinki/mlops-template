@@ -38,7 +38,7 @@ for notebook in ["00_data.ipynb", "01_model.ipynb", "02_loss.ipynb"]:
         notebook,  # this notebook will be executed
         save_notebooks_to
         / ("_" + notebook),  # this is where the executed notebook will be saved
-        # (notebooks named with '_' -prefix are ignored by nbdev!)
+        # (notebooks named with '_' -prefix are ignored by nbdev build_lib & build_docs!)
         parameters={"seed": 1},  # you can change notebook parameters
-        kernel_name="python39myenv",
+        kernel_name="python38myenv",
     )  # note: change kernel according to your project setup!
