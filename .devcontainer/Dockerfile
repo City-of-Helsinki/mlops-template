@@ -16,7 +16,7 @@ COPY . /app
 
 RUN python -m pip install -U pip
 
-RUN pip install -r /app/project_requirements.txt
+RUN pip install -r /app/requirements.txt
 
 # docker build . -t [your_project:container_tag] -p 8888:8888
 # docker run -it --rm -v $(pwd):/home/project [container_tag] # if you want to mount current directory
