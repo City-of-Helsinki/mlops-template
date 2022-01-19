@@ -15,3 +15,6 @@ COPY . /app
 RUN python -m pip install -U pip
 
 RUN pip install -r /app/requirements.txt
+
+# for running the workflow
+RUN python -m ipykernel install --user --name python38myenv
