@@ -112,7 +112,7 @@ You can also do your development 'the good old way':
 2. Clone your new repository: `git clone git@github.com:[repository_owner]/[your_repository]`.
 3. Go inside the repository folder: `cd [your_repository]`
 4. Create and activate virtual environment of your choice. Remember to define the Python version to 3.8! (Instructions: [conda](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html), [venv](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/))
-5. Install requirements: `pip install -r requirements.txt && nbdev_install_git_hooks`
+5. Install requirements: `pip install -r requirements.txt`
 6. Create an ipython kernel for running the notebooks: `python -m ipykernel install --user --name python38myenv`
 
 ### 3. Initializing your project
