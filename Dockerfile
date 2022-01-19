@@ -14,4 +14,4 @@ COPY . /app
 
 RUN python -m pip install -U pip
 
-RUN pip install -r /app/project_requirements.txt
+RUN pip install -r /app/requirements.txt
