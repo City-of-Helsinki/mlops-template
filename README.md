@@ -101,16 +101,16 @@ This will create a new repository for you copying everything from this template,
 
 ### 2. Setting up your development environment
 
-#### 2.a Recommended: Codespaces
+#### a) Recommended: Codespaces
 
 If your organization has [Codespaces](https://github.com/features/codespaces) enabled (requires Enterprise GitHub & Azure subscription), you are now ready to begin development. Just launch the repository in a codespace, and a dev container is automatically set up!
 
-#### 2.b Can't use Codespaces: Local installation with Docker
+#### b) Can't use Codespaces: Local installation with Docker
 
 You can build a development environment locally with docker.
 The recommended way is to use VSC in a container development mode ([link to instructions](https://code.visualstudio.com/docs/remote/containers)).
 
-#### 2.c Can't use Docker: Local manual installation
+#### c) Can't use Docker: Local manual installation
 
 You can also do your development 'the good old way':
 
@@ -121,6 +121,10 @@ You can also do your development 'the good old way':
 4. Create and activate virtual environment of your choice. Remember to define the Python version to 3.8! (Instructions: [conda](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html), [venv](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/))
 5. Install requirements: `pip install -r requirements.txt`
 6. Create an ipython kernel for running the notebooks: `python -m ipykernel install --user --name python38myenv`
+
+#### d) Installing to an offline device
+
+Sometimes you have to work in an environment that can not be connected to the internet, for example for privacy or cybersecurity reasons. In this case, first install the template and all packages that you assume you will require to an environment with internet, and build the docker image as in 2c). Then, save the docker image and transfer it to your offline environment following [these instructions](https://stackoverflow.com/questions/48125169/how-run-docker-images-without-connect-to-internet/48125632#48125632).
 
 ### 3. Initializing your project
 
