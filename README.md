@@ -17,9 +17,9 @@ Notebooks can be executed with the [papermill](https://papermill.readthedocs.io/
 The template assumes that you divide your machine learning project into 5 parts:
 
 0. Data - loading & preprocessing
-1. Model - Python class code & algorithm development with small test data
-2. Loss - model training & evaluation with full data
-3. Workflow - automatic model update (recreating steps 0.-2.)
+1. Model - Python class code & algorithm development with small sample of data (N = 10-1000)
+2. Loss - model training & evaluation with full dataset
+3. Workflow - automatic model update (reproduce steps 0.-2.)
 4. API - an interface to utilize your trained model
 
 Each part has their own notebook template, that you can follow to plan and do your development.
@@ -98,12 +98,12 @@ This will create a new repository for you copying everything from this template,
 
 If your organization has [Codespaces](https://github.com/features/codespaces) enabled (requires Enterprise GitHub & Azure subscription), you are now ready to begin development. Just launch the repository in a codespace, and a dev container is automatically set up!
 
-#### 2.b I can't use Codespaces: Local installation with Docker
+#### 2.b Can't use Codespaces: Local installation with Docker
 
 You can build a development environment locally with docker.
 The recommended way is to use VSC in a container development mode ([link to instructions](https://code.visualstudio.com/docs/remote/containers)).
 
-#### 2.c I can't use Docker: Local manual installation
+#### 2.c Can't use Docker: Local manual installation
 
 You can also do your development 'the good old way':
 
@@ -117,9 +117,9 @@ You can also do your development 'the good old way':
 
 ### 3. Initializing your project
 
-After setting up your local dev environment, you must edit the
+Few last tweaks before you are good to go:
 
-1. Edit `LICENCE`, `Makefile`, `settings.ini`, `docs/_config.yml` and `docs/_data/topnav.yml` according to your project details. You can continue editing them in the future.
+1. Edit `LICENCE`, `Makefile`, `settings.ini`, `docs/_config.yml` and `docs/_data/topnav.yml` according to your project details. Don't worry - you can continue editing them in the future.
 2. Remove the folder `ml_project_template` with the command `git rm -r ml_project_template`. A new folder with the name of your repository will be created automatically when calling `nbdev_build_lib`.
 3. Recreate the python module: `nbdev_build_lib`. In the future, repeat this step every time you move between notebooks to ensure your python modules are up to date.
 4. Recreate the html doc pages: `nbdev_build_docs`. In the future, repeat this step every time you push code to ensure your documentation is up to date.
