@@ -2,6 +2,14 @@
 > Template for open source ML and analytics projects.
 
 
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![GitHub version](https://badge.fury.io/gh/City-of-Helsinki%2Fml_project_template.svg)](https://badge.fury.io/gh/City-of-Helsinki%2Fml_project_template)
+![GitHub issues](https://img.shields.io/github/issues/City-of-Helsinki/ml_project_template)
+![GitHub forks](https://img.shields.io/github/forks/City-of-Helsinki/ml_project_template)
+![GitHub stars](https://img.shields.io/github/stars/City-of-Helsinki/ml_project_template)
+![GitHub license](https://img.shields.io/github/license/City-of-Helsinki/ml_project_template)
+
+
 {% include note.html content='Once you begin your work, rewrite this notebook (index.ipynb) so that it describes your project, and regenerate README by calling `nbdev_build_docs`' %}
 
 ## About
@@ -85,8 +93,7 @@ The core structure of the repository is the following:
 1. Sign into your GitHub homepage
 2. Go to [github.com/City-of-Helsinki/ml_project_template](https://github.com/City-of-Helsinki/ml_project_template) and click the green button that says 'Use this template'.
 3. Give your project a name. Do not use the dash symbol '-', but rather the underscore '_', because the name of the repo will become the name of your Python module.
-4. If you are creating a project for your organization, change owner of the repo from the drop down bar (it's you by default).
-You need to be included as a team member to the GitHub of the organization.
+4. If you are creating a project for your organization, change the owner of the repo. From the drop down bar, select your organization GitHub account (e.g. City-of-Helsinki). You need to be included as a team member to the GitHub of the organization.
 5. Define your project publicity (you can change this later, but most likely you want to begin with a private repo).
 6. Click 'Create repository from template'
 
@@ -191,7 +198,7 @@ For example:
 
 If you are doing a research project, you can add bibtex and other citation templates here.
 You can also get a doi for your code by adding it to a code archive,
-so your code can be cited directly! Most archives also provide repository tags.
+so your code can be cited directly! Most archives also provide repository badges.
 
 To cite this work, use:
 
