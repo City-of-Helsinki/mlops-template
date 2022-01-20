@@ -5,7 +5,9 @@ __all__ = ["index", "modules", "custom_doc_links", "git_url"]
 index = {"cwd": "03_workflow.ipynb",
          "save_notebooks_to": "03_workflow.ipynb"}
 
-modules = ["model.py",
+modules = ["data.py",
+           "model.py",
+           "loss.py",
            "workflow.py",
            "api.py"]
 
