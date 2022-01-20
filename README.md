@@ -19,8 +19,9 @@ This is a git repository template for Python-based open source ML and analytics 
 The template assumes the concept of Notebook Development.
 This means, that you do all the data science work inside notebooks.
 There is no copy-pasting! We use the [nbdev](https://nbdev.fast.ai/) tool to build python modules and doc pages from the notebooks, automatically.
-This way you always have your code, results and documentation as one.
-Notebooks can be executed with the [papermill](https://papermill.readthedocs.io/) tool for an automatic, well documented model update workflow. Handy, isn't it?
+This way you always have your code, results and documentation as one. 
+Notebooks can be executed with the [papermill](https://papermill.readthedocs.io/) tool for an automatic, 
+well documented model update workflow. Handy, isn't it?
 
 The template assumes that you divide your machine learning project into 5 parts:
 
@@ -103,12 +104,12 @@ This will create a new repository for you copying everything from this template,
 
 #### a) Recommended: Codespaces
 
-If your organization has [Codespaces](https://github.com/features/codespaces) enabled (requires Enterprise GitHub & Azure subscription), you are now ready to begin development. Just launch the repository in a codespace, and a dev container is automatically set up!
+If your organization has [Codespaces](https://github.com/features/codespaces) enabled (requires GitHub Enterprise & Azure subscription), you are now ready to begin development. Just launch the repository in a codespace, and a dev container is automatically set up!
 
 #### b) Can't use Codespaces: Local installation with Docker
 
 You can build a development environment locally with docker.
-The recommended way is to use VSC in a container development mode ([link to instructions](https://code.visualstudio.com/docs/remote/containers)).
+The recommended way is to use VSC in container development mode ([link to instructions](https://code.visualstudio.com/docs/remote/containers)).
 
 #### c) Can't use Docker: Local manual installation
 
@@ -121,8 +122,9 @@ You can also do your development 'the good old way':
 4. Create and activate virtual environment of your choice. Remember to define the Python version to 3.8! (Instructions: [conda](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html), [venv](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/))
 5. Install requirements: `pip-sync requirements.txt`
 6. Create an ipython kernel for running the notebooks: `python -m ipykernel install --user --name python38myenv`
+7. The default development enviroment contains basic Jupyter, and many IDEs have built-in support notebooks. If you wish, you can install JupyterLab by uncommenting it in `requirements.in` and re-running pip-sync. To launch JupyterLab, run `jupyter-lab --allow-root --config .devcontainer/jupyter-server-config.py`.
 
-#### d) Installing to an offline device
+#### d) Can't connect to internet: Offline install with Docker
 
 Sometimes you have to work in an environment that can not be connected to the internet, for example for privacy or cybersecurity reasons. In this case, first install the template and all packages that you assume you will require to an environment with internet, and build the docker image as in 2c). Then, save the docker image and transfer it to your offline environment following [these instructions](https://stackoverflow.com/questions/48125169/how-run-docker-images-without-connect-to-internet/48125632#48125632).
 
