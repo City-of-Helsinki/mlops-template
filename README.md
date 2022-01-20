@@ -117,12 +117,13 @@ You can also do your development 'the good old way':
 
 0. Create an SSH key and add it to your github profile ([instructions](https://docs.github.com/en/authentication/connecting-to-github-with-ssh))
 1. Configure your git user name and email adress if you haven't done it already: `git config --global user.name "Firstname Lastname" && git config --global user.email "your@email.com"`
-2. Clone your new repository: `git clone git@github.com:[repository_owner]/[your_repository]`.
+2. Clone your new repository: `git clone git@github.com:[repository_owner]/[your_repository]`
 3. Go inside the repository folder: `cd [your_repository]`
 4. Create and activate virtual environment of your choice. Remember to define the Python version to 3.8! (Instructions: [conda](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html), [venv](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/))
-5. Install requirements: `pip-sync requirements.txt`
-6. Create an ipython kernel for running the notebooks: `python -m ipykernel install --user --name python38myenv`
-7. The default development enviroment contains basic Jupyter, and many IDEs have built-in support notebooks. If you wish, you can install JupyterLab by uncommenting it in `requirements.in` and re-running pip-sync. To launch JupyterLab, run `jupyter-lab --allow-root --config .devcontainer/jupyter-server-config.py`.
+5. Install pip-tools: `python -m pip install pip-tools`
+6. Install requirements: `pip-sync requirements.txt`
+7. Create an ipython kernel for running the notebooks: `python -m ipykernel install --user --name python38myenv`
+8. The default development enviroment contains basic Jupyter, and many IDEs have built-in support notebooks. If you wish, you can install JupyterLab by uncommenting it in `requirements.in` and re-running pip-sync. To launch JupyterLab, run `jupyter-lab --allow-root --config .devcontainer/jupyter-server-config.py`
 
 #### d) Can't connect to internet: Offline install with Docker
 
