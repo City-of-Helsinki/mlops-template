@@ -2,11 +2,11 @@
 ## script to update requirements.txt
 ## prior running, manually write desired updates .in files
 
-## update dev-requirements.txt
-pip-compile --generate-hashes --allow-unsafe -o dev-requirements.txt base-requirements.in dev-requirements.in requirements.in
-
 ## update requirements.txt
-pip-compile --generate-hashes --allow-unsafe -o requirements.txt base-requirements.in requirements.in
+pip-compile --generate-hashes --allow-unsafe -o requirements.txt base-requirements.in requirements.in project.in
+
+## update min-requirements.txt
+pip-compile --generate-hashes --allow-unsafe -o min-requirements.txt base-requirements.in project.in
 
 ## install updated requirements
-pip-sync dev-requirements.txt requirements.txt
+pip-sync requirements.txt
