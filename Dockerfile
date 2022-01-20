@@ -14,8 +14,7 @@ COPY . /app
 
 RUN python -m pip install -U pip
 
-RUN cd app/
-RUN ./update_install_reqs.sh
+RUN cd /app && ./update_install_reqs.sh
 
 # for running the workflow
 RUN python -m ipykernel install --user --name python38myenv
