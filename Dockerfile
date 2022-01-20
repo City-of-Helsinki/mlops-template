@@ -12,14 +12,12 @@ RUN mkdir /app
 
 COPY . /app
 
-RUN cd /app
-
 RUN python -m pip install -U pip
 
 RUN python -m pip install pip-tools
 
 # update and install dev requirements
-RUN ./update_install_dev_reqs.sh
+RUN cd /app && ./update_install_dev_reqs.sh
 
 # for running the workflow
 RUN python -m ipykernel install --user --name python38myenv
