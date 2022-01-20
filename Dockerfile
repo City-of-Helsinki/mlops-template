@@ -14,7 +14,10 @@ COPY . /app
 
 RUN python -m pip install -U pip
 
-RUN pip-sync /app/dev-requirements.txt /app/requirements.txt
+RUN python -m pip install pip-tools
+
+# update and install dev requirements
+RUN cd /app && ./update_install_reqs.sh
 
 # for running the workflow
 RUN python -m ipykernel install --user --name python38myenv
