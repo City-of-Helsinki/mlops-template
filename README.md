@@ -65,7 +65,7 @@ The core structure of the repository is the following:
     02_loss.ipynb       # Train and evaluate ML model, deploy or save for later use
     03_workflow.ipynb   # Define ML workflow and parameterization
     04_api.ipynb        # Define runtime API for using trained ML model
-    project.in    # Add here the Python packages you want to install
+    project-requirements.in    # Add here the Python packages you want to install
     update_install_dev_reqs.sh  # run this script to install new python packages
     settings.ini        # Project specific settings. Build instructions for lib and docs.
     Dockerfile          # Define docker image build instructions
@@ -168,11 +168,11 @@ Pandas, Matplotlib, Scipy, PyTorch to name a few.
 If base libraries in this template aren't sufficient you can add more with `pip install library`.
 However, `pip` command installs libraries into your local Python environment. 
 To achieve consistent reproducibility we need to gather information about requirements into project repository. 
-New libraries are added to **`project.in`** file. When you change this file remember to run:
+New libraries are added to **`project-requirements.in`** file. When you change this file remember to run:
 
 ```bash
-pip-compile --generate-hashes --allow-unsafe -o requirements.txt base-requirements.in requirements.in project.in
-pip-compile --generate-hashes --allow-unsafe -o min-requirements.txt base-requirements.in project.in
+pip-compile --generate-hashes --allow-unsafe -o requirements.txt base-requirements.in requirements.in project-requirements.in
+pip-compile --generate-hashes --allow-unsafe -o min-requirements.txt base-requirements.in project-requirements.in
 ```
 
 These update full requirements for development environments and lighter, more focused requirements for server usage.
