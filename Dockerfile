@@ -12,15 +12,14 @@ RUN mkdir /app
 
 COPY . /app
 
+WORKDIR /app
+
 RUN python -m pip install -U pip
 
 RUN python -m pip install pip-tools
 
 # update and install dev requirements
-RUN cd /app && ./update_install_dev_reqs.sh
+RUN ./update_install_dev_reqs.sh
 
 # for running the workflow
 RUN python -m ipykernel install --user --name python38myenv
-
-# Uncomment to run jupyterlab when container is launched:
-# RUN jupyter-lab --allow-root --config .devcontainer/jupyter-server-config.py 
