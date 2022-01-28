@@ -4,7 +4,7 @@ SRC = $(wildcard ./*.ipynb)
 
 all: ml_project_template docs
 
-ml_project_template: $(SRC)
+ml_project_template: $(SRC) ## replace ml_project_template with your repo name
 	nbdev_build_lib
 	touch ml_project_template
 

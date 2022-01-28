@@ -2,13 +2,14 @@
 
 __all__ = ["index", "modules", "custom_doc_links", "git_url"]
 
-index = {"plot_histogram": "00_data.ipynb",
-         "plot_trellis": "00_data.ipynb",
-         "MachineLearningModel": "01_model.ipynb",
-         "LogisticRegressionClassifier": "01_model.ipynb"}
+index = {"cwd": "03_workflow.ipynb",
+         "save_notebooks_to": "03_workflow.ipynb"}
 
 modules = ["data.py",
-           "model.py"]
+           "model.py",
+           "loss.py",
+           "workflow.py",
+           "api.py"]
 
 doc_url = "https://City-of-Helsinki.github.io/ml_project_template/"
 
