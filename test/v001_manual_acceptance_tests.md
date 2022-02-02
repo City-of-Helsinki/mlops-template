@@ -5,7 +5,7 @@ The tests focus on the template instructions - can the user with no prior experi
 
 After you have carried out a test, add PASS / FAIL + YOUR NAME + DATE after the test. If the test FAILS, make an issue where you describe the problem in detail. Add the issue number to the list after the test. Unclear instructions are a valid reason for an issue.
 
-## 1. Review documentation on GitHub: https://github.com/Datahel/ml_project_template/tree/master
+## 1. Review documentation on GitHub: https://github.com/City-of-Helsinki/ml_project_template/tree/master/
 
 1.1. Read through README.md. Check for broken formatting, typos and mark down if there are any parts you don't understand. Check that all links in README work, i.e. lead to a sensible page or hyperlink to some part of the template. Acceptance criteria: nothing to fix (format breakdowns may have to be accepted because README / html conversions).
 
@@ -21,7 +21,7 @@ After you have carried out a test, add PASS / FAIL + YOUR NAME + DATE after the 
 
   Result:
 
-## 3. Review the install instructions: https://github.com/Datahel/ml_project_template/tree/master/README.md
+## 3. Review the install instructions: https://github.com/City-of-Helsinki/ml_project_template/blob/master/README.md
 
 3.1. Install with Codespaces: follow the How to install: 1, 2a, 3. Create the repo as inside repo in Datahel and name your repo ml_template_test_codespaces. Acceptance criteria: you can run 03_workflow notebook and data, model and loss notebooks are created by papermill under results/notebooks.
 
@@ -39,7 +39,7 @@ After you have carried out a test, add PASS / FAIL + YOUR NAME + DATE after the 
 
   Result:
 
-## 4. Review the How to use instructions: https://github.com/Datahel/ml_project_template/tree/master/README.md
+## 4. Review the How to use instructions: https://github.com/City-of-Helsinki/ml_project_template/blob/master/README.md
 
 4.1. Take the repo created ad step 3.1. Follow the How to use & Installing and updating project requirements, add and install `seaborn` to the project requirements. Acceptance criteria: seaborn is automatically installed when a new codespace is created from the project.
 
