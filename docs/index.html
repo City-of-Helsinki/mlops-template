@@ -6,8 +6,8 @@ title: Helsinki Machine Learning Project Template
 keywords: fastai
 sidebar: home_sidebar
 
-summary: "Template for open source ML and analytics projects."
-description: "Template for open source ML and analytics projects."
+
+
 nb_path: "index.ipynb"
 ---
 <!--
@@ -31,9 +31,11 @@ nb_path: "index.ipynb"
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p><a href="https://github.com/psf/black"><img src="https://img.shields.io/badge/code%20style-black-000000.svg" alt="Code style: black"></a>
+<p><img src="https://img.shields.io/badge/python-3.8-blue" alt="Python version">
+<a href="https://github.com/psf/black"><img src="https://img.shields.io/badge/code%20style-black-000000.svg" alt="Code style: black"></a>
 <a href="https://badge.fury.io/gh/City-of-Helsinki%2Fml_project_template"><img src="https://badge.fury.io/gh/City-of-Helsinki%2Fml_project_template.svg" alt="GitHub version"></a>
 <img src="https://img.shields.io/github/issues/City-of-Helsinki/ml_project_template" alt="GitHub issues">
+<img src="https://img.shields.io/github/issues-closed-raw/City-of-Helsinki/ml_project_template" alt="GitHub issues">
 <img src="https://img.shields.io/github/forks/City-of-Helsinki/ml_project_template" alt="GitHub forks">
 <img src="https://img.shields.io/github/stars/City-of-Helsinki/ml_project_template" alt="GitHub stars">
 <img src="https://img.shields.io/github/license/City-of-Helsinki/ml_project_template" alt="GitHub license"></p>
@@ -43,7 +45,8 @@ nb_path: "index.ipynb"
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>{% include note.html content='Once you begin your work, rewrite this notebook (index.ipynb) so that it describes your project, and regenerate README by calling <code>nbdev_build_docs</code>' %}</p>
+
+<pre><code>NOTE: Once you begin your work, rewrite this notebook (index.ipynb) so that it describes your project, and regenerate README by calling `nbdev_build_docs`</code></pre>
 
 </div>
 </div>
@@ -60,10 +63,10 @@ well documented model update workflow. Handy, isn't it?</p>
 <p>The template assumes that you divide your machine learning project into 5 parts:</p>
 <ol>
 <li>Data - loading &amp; preprocessing</li>
-<li>Model - Python class code &amp; algorithm development with small sample of data (N = 10-1000)</li>
-<li>Loss - model training &amp; evaluation with full dataset</li>
+<li>Model - Python class code &amp; algorithm development</li>
+<li>Loss - model training &amp; evaluation</li>
 <li>Workflow - automatic model update (reproduce steps 0.-2.)</li>
-<li>API - an interface to utilize your trained model</li>
+<li>API - an interface to interact with a trained model</li>
 </ol>
 <p>Each part has their own notebook template, that you can follow to plan and do your development.</p>
 <p>In addition, the template comes with a working Dockerfile and .devcontainer for doing your development easily with any device.
@@ -115,7 +118,8 @@ base-requirements.in    # core tools that every project built based on the templ
 requirements.in    # development tools + project spesific requirements
 LISENCE                 # lisence information
 MANIFEST.in             # metadata for building python distributable
-setup.py                # settings for the python module of your project</code></pre>
+setup.py                # settings for the python module of your project
+CODE_OF_CONDUCT.md      # code of conduct. Please review before contributing.</code></pre>
 
 </div>
 </div>
@@ -123,7 +127,7 @@ setup.py                # settings for the python module of your project</code><
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="How-to-install">How to install<a class="anchor-link" href="#How-to-install"> </a></h2><p>{% include note.html content='if you are doing a project on personal data for the City of Helsinki, contact the data and analytics team of the city before proceeding any further!' %}</p>
-<h3 id="1.-On-your-GitHub-homepage:">1. On your GitHub homepage:<a class="anchor-link" href="#1.-On-your-GitHub-homepage:"> </a></h3><ol>
+<h3 id="1.-On-your-GitHub-homepage">1. On your GitHub homepage<a class="anchor-link" href="#1.-On-your-GitHub-homepage"> </a></h3><ol>
 <li>(Create <a href="https://github.com/">GitHub account</a> if you do not have one already. </li>
 <li>Sign into your GitHub homepage</li>
 <li>Go to <a href="https://github.com/City-of-Helsinki/ml_project_template">github.com/City-of-Helsinki/ml_project_template</a> and click the green button that says 'Use this template'.</li>
@@ -158,7 +162,7 @@ The recommended way is to use VSC in container development mode (<a href="https:
 <li>Make initial commit: <code>git add . &amp;&amp; git commit -m "initialized repository from City-of-Helsinki/ml_project_template"</code></li>
 <li>Push changes <code>git push -u origin master</code></li>
 </ol>
-<p>You are now ready to begin your ML project development! Remember to track your changes with git!</p>
+<p>You are now ready to begin your ML project development. Remember to track your changes with git!</p>
 
 </div>
 </div>
@@ -201,16 +205,18 @@ pip-compile --generate-hashes --allow-unsafe -o min-requirements.txt base-requir
 <p>After requirements are updated you should run:</p>
 <div class="highlight"><pre><span></span>pip-sync requirements.txt
 </pre></div>
-<p>This way libraries you and other users will have the same Python environment.
-{% include note.html content='run <code>./update_install_dev_reqs.sh</code> for short - it contains the three above pip commands for updating and installing the requirements!' %}
-Warning: if you don't update package names and versions next time you or anybody else tries to use this project in another environment its code might not work. Worse, it might <em>seem to</em> work, but does so incorrectly.</p>
+<p>This way libraries you and other users will have the same Python environment.</p>
+
+<pre><code>NOTE: run `./update_install_dev_reqs.sh` for short - it contains the three above pip commands for updating and installing the requirements!
+
+WARNING: if you don't update package names and versions next time you or anybody else tries to use this project in another environment its code might not work. Worse, it might *seem to* work, but does so incorrectly.</code></pre>
 
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Ethical-aspects">Ethical aspects<a class="anchor-link" href="#Ethical-aspects"> </a></h2><p>Please involve ethical consideration in the documentation ML application!</p>
+<h2 id="Ethical-aspects">Ethical aspects<a class="anchor-link" href="#Ethical-aspects"> </a></h2><p>Please involve ethical consideration in the documentation ML application.</p>
 <p>For example:</p>
 <ul>
 <li>Can you recognize ethical issues with your ML project?</li>
@@ -254,10 +260,12 @@ howpublished = {City of Helsinki. Available at: \url{https://github.com/City-of-
 <h2 id="Copyright">Copyright<a class="anchor-link" href="#Copyright"> </a></h2><p>Copyright 2022 City-of-Helsinki. Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this project's files except in compliance with the License.
 A copy of the License is provided in the LICENSE file in this repository.</p>
-<p>The Helsinki logo is a registered trademark, and may only be used by the city of Helsinki.
-{% include note.html content='If you are using this template for other than city of Helsinki projects, remove the files <code>favicon.ico</code> and <code>company_logo.png</code> from <code>docs/assets/images/</code>.' %}</p>
+<p>The Helsinki logo is a registered trademark, and may only be used by the city of Helsinki.</p>
 
-<pre><code># to remove remove helsinki logo and favicon:
+<pre><code>NOTE: If you are using this template for other than city of Helsinki projects, remove the files `favicon.ico` and `company_logo.png` from `docs/assets/images/`.
+
+
+# to remove remove helsinki logo and favicon, run:
 git rm docs/assets/images/favicon.ico docs/assets/images/company_logo.png
 git commit -m "removed Helsinki logo and favicon"
 
