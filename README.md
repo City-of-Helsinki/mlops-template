@@ -1,16 +1,17 @@
 # Helsinki Machine Learning Project Template
-> Template for open source ML and analytics projects.
 
 
+
+![Python version](https://img.shields.io/badge/python-3.8-blue)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![GitHub version](https://badge.fury.io/gh/City-of-Helsinki%2Fml_project_template.svg)](https://badge.fury.io/gh/City-of-Helsinki%2Fml_project_template)
 ![GitHub issues](https://img.shields.io/github/issues/City-of-Helsinki/ml_project_template)
+![GitHub issues](https://img.shields.io/github/issues-closed-raw/City-of-Helsinki/ml_project_template)
 ![GitHub forks](https://img.shields.io/github/forks/City-of-Helsinki/ml_project_template)
 ![GitHub stars](https://img.shields.io/github/stars/City-of-Helsinki/ml_project_template)
 ![GitHub license](https://img.shields.io/github/license/City-of-Helsinki/ml_project_template)
 
-
-{% include note.html content='Once you begin your work, rewrite this notebook (index.ipynb) so that it describes your project, and regenerate README by calling `nbdev_build_docs`' %}
+    NOTE: Once you begin your work, rewrite this notebook (index.ipynb) so that it describes your project, and regenerate README by calling `nbdev_build_docs`
 
 ## About
 
@@ -26,10 +27,10 @@ well documented model update workflow. Handy, isn't it?
 The template assumes that you divide your machine learning project into 5 parts:
 
 0. Data - loading & preprocessing
-1. Model - Python class code & algorithm development with small sample of data (N = 10-1000)
-2. Loss - model training & evaluation with full dataset
+1. Model - Python class code & algorithm development
+2. Loss - model training & evaluation
 3. Workflow - automatic model update (reproduce steps 0.-2.)
-4. API - an interface to utilize your trained model
+4. API - an interface to interact with a trained model
 
 Each part has their own notebook template, that you can follow to plan and do your development.
 
@@ -84,11 +85,12 @@ The core structure of the repository is the following:
     LISENCE                 # lisence information
     MANIFEST.in             # metadata for building python distributable
     setup.py                # settings for the python module of your project
+    CODE_OF_CONDUCT.md      # code of conduct. Please review before contributing.
                                          
 
 ## How to install
 {% include note.html content='if you are doing a project on personal data for the City of Helsinki, contact the data and analytics team of the city before proceeding any further!' %}
-### 1. On your GitHub homepage:
+### 1. On your GitHub homepage
 
 0. (Create [GitHub account](https://github.com/) if you do not have one already. 
 1. Sign into your GitHub homepage
@@ -140,7 +142,7 @@ Few last tweaks before you are good to go:
 5. Make initial commit: `git add . && git commit -m "initialized repository from City-of-Helsinki/ml_project_template"`
 6. Push changes `git push -u origin master`
 
-You are now ready to begin your ML project development! Remember to track your changes with git!
+You are now ready to begin your ML project development. Remember to track your changes with git!
 
 
 ## How to use
@@ -184,13 +186,16 @@ pip-sync requirements.txt
 ```
 
 This way libraries you and other users will have the same Python environment.
-{% include note.html content='run `./update_install_dev_reqs.sh` for short - it contains the three above pip commands for updating and installing the requirements!' %}
-Warning: if you don't update package names and versions next time you or anybody else tries to use this project in another environment its code might not work. Worse, it might *seem to* work, but does so incorrectly.
+
+
+    NOTE: run `./update_install_dev_reqs.sh` for short - it contains the three above pip commands for updating and installing the requirements!
+
+    WARNING: if you don't update package names and versions next time you or anybody else tries to use this project in another environment its code might not work. Worse, it might *seem to* work, but does so incorrectly.
 
 
 ## Ethical aspects
 
-Please involve ethical consideration in the documentation ML application!
+Please involve ethical consideration in the documentation ML application.
 
 For example:
 * Can you recognize ethical issues with your ML project?
@@ -228,8 +233,11 @@ you may not use this project's files except in compliance with the License.
 A copy of the License is provided in the LICENSE file in this repository.
 
 The Helsinki logo is a registered trademark, and may only be used by the city of Helsinki.
-{% include note.html content='If you are using this template for other than city of Helsinki projects, remove the files `favicon.ico` and `company_logo.png` from `docs/assets/images/`.' %}
-    # to remove remove helsinki logo and favicon:
+    
+    NOTE: If you are using this template for other than city of Helsinki projects, remove the files `favicon.ico` and `company_logo.png` from `docs/assets/images/`.
+
+
+    # to remove remove helsinki logo and favicon, run:
     git rm docs/assets/images/favicon.ico docs/assets/images/company_logo.png
     git commit -m "removed Helsinki logo and favicon"
 
