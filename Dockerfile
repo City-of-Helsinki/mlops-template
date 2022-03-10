@@ -18,8 +18,8 @@ RUN python -m pip install -U pip
 
 RUN python -m pip install pip-tools
 
-# update and install dev requirements
-RUN ./update_install_dev_reqs.sh
+# Install Python requirements
+RUN pip install -r requirements.txt
 
 # for running the workflow
 RUN python -m ipykernel install --user --name python38myenv
