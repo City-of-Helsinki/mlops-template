@@ -1,65 +1,58 @@
-from pandera import DataFrameSchema, Column, Check, Index, MultiIndex
-
-schema = DataFrameSchema(
-    columns={
-        "sepal_length": Column(
-            dtype=pandera.engines.numpy_engine.Float64,
-            checks=None,
-            nullable=False,
-            unique=False,
-            coerce=False,
-            required=True,
-            regex=False,
-            description=None,
-            title=None,
-        ),
-        "sepal_width": Column(
-            dtype=pandera.engines.numpy_engine.Float64,
-            checks=None,
-            nullable=False,
-            unique=False,
-            coerce=False,
-            required=True,
-            regex=False,
-            description=None,
-            title=None,
-        ),
-        "petal_length": Column(
-            dtype=pandera.engines.numpy_engine.Float64,
-            checks=None,
-            nullable=False,
-            unique=False,
-            coerce=False,
-            required=True,
-            regex=False,
-            description=None,
-            title=None,
-        ),
-        "petal_width": Column(
-            dtype=pandera.engines.numpy_engine.Float64,
-            checks=None,
-            nullable=False,
-            unique=False,
-            coerce=False,
-            required=True,
-            regex=False,
-            description=None,
-            title=None,
-        ),
-    },
-    index=Index(
-        dtype=pandera.engines.numpy_engine.Int64,
-        checks=[
-            Check.greater_than_or_equal_to(min_value=0.0),
-            Check.less_than_or_equal_to(max_value=149.0),
-        ],
-        nullable=False,
-        coerce=False,
-        name=None,
-        description=None,
-        title=None,
-    ),
-    coerce=True,
-    strict=False,
-    name=None,
-)
+schema_type: dataframe
+version: 0.12.0
+columns:
+  sepal_length:
+    title: null
+    description: null
+    dtype: float64
+    nullable: false
+    checks: null
+    unique: false
+    coerce: false
+    required: true
+    regex: false
+  sepal_width:
+    title: null
+    description: null
+    dtype: float64
+    nullable: false
+    checks: null
+    unique: false
+    coerce: false
+    required: true
+    regex: false
+  petal_length:
+    title: null
+    description: null
+    dtype: float64
+    nullable: false
+    checks: null
+    unique: false
+    coerce: false
+    required: true
+    regex: false
+  petal_width:
+    title: null
+    description: null
+    dtype: float64
+    nullable: false
+    checks: null
+    unique: false
+    coerce: false
+    required: true
+    regex: false
+checks: null
+index:
+- title: null
+  description: null
+  dtype: int64
+  nullable: false
+  checks:
+    greater_than_or_equal_to: 0.0
+    less_than_or_equal_to: 149.0
+  name: null
+  unique: false
+  coerce: false
+coerce: true
+strict: false
+unique: null
