@@ -26,14 +26,19 @@ app.add_middleware(
 
 # x = [[...], [...]]
 @app.post("/predict", response_model=List[Prediction])
-def predict(x: Parameters):
-    logging.error(x)
-    # TODO: convert object x back to vector
-    predictions = model.predict([[x]])
+def predict(p_list: List[Parameters]):
+    logging.error('Parameters', p_list)
+    # loop trough parameter list
+    prediction_values = []
+    for p in p_list:
+        # convert parameter object to array for model
+        parameter_array = [getattr(p, k) for k in vars(p)]
+        prediction_values.append(model.predict([parameter_array]))
+    # Construct response
     response: List[Prediction] = []
-    for prediction_value in predictions:
-        print(prediction_value)
-        # typed_value =
-        prediction: Prediction = Prediction(value=prediction_value)
+    for predicted_value in prediction_values:
+        logging.error("Predicted value:", predicted_value)
+        typed_value = type(Prediction.schema()['properties']['value']['type'])(predicted_value)
+        prediction: Prediction = Prediction(value=typed_value)
         response.append(prediction)
     return response
