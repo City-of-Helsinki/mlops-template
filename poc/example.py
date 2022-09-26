@@ -1,6 +1,7 @@
-
+import pandera as pa
 import pandas as pd
 from pandas import DataFrame, Series
+from pandas.core.generic import NDFrame
 from sklearn import metrics
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
@@ -19,7 +20,7 @@ def export_to_class_template(classname: str, filename: str, dataframe: DataFrame
         columns = [series.name]
         types = [series.dtype]
     if columns is not None:
-        file_path = '{}.template'.format(filename)
+        file_path = '{}.text'.format(filename)
         with open(file_path, 'w') as f:
             f.write('from pydantic import BaseModel\n\n\n')
             f.write('class {}(BaseModel):\n'.format(classname))
@@ -29,6 +30,26 @@ def export_to_class_template(classname: str, filename: str, dataframe: DataFrame
             f.write('\n')
         print('Wrote file {}'.format(file_path))
 
+
+def export_to_yaml(filename: str, pandas_obj: NDFrame):
+    df = None
+    if isinstance(pandas_obj, pd.DataFrame):
+        df = DataFrame(pandas_obj)
+    elif isinstance(pandas_obj, pd.Series):
+        df = Series(pandas_obj).to_frame()
+
+    if df is not None:
+        schema = pa.infer_schema(df)
+        # remove checks
+        for c in schema.columns.keys():
+            schema.columns[c].checks = []
+        schema_script = schema.to_yaml()
+
+    if schema_script is not None:
+        file_path = '{}.yaml'.format(filename)
+        with open(file_path, 'w') as f:
+            f.write(schema_script)
+        print('Wrote file {}'.format(file_path))
 
 # Load sample dataset
 df = pd.read_csv('iris_dataset.csv')
@@ -48,7 +69,16 @@ y_pred = classifier.predict(X_test)
 export_to_class_template('Parameters', 'api_params', dataframe=X)
 export_to_class_template('Prediction', 'api_response', series=y)
 
+# Declare dataframe types to yaml
+export_to_yaml('api_params', X)
+export_to_yaml('api_response', y)
+
 # Metrics
 print(metrics.classification_report(y_test, y_pred))
 
 save_model(classifier, 'latest_model')
+
+
+
+
+

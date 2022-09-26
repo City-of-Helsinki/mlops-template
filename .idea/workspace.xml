@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="16554825-aebc-42b7-bbc4-f74de7e54761" name="Changes" comment="Initial import">
-      <change afterPath="$PROJECT_DIR$/poc/example.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/poc/iris_dataset.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api_params.py" beforeDir="false" afterPath="$PROJECT_DIR$/api_params.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api_response.py" beforeDir="false" afterPath="$PROJECT_DIR$/api_response.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/latest_model.pickle" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+    <list default="true" id="16554825-aebc-42b7-bbc4-f74de7e54761" name="Changes" comment="Reload api when model file is updated.">
+      <change afterPath="$PROJECT_DIR$/poc/api_params.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/poc/api_params.yaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/poc/api_response.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/poc/api_response.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/poc/api_params.template" beforeDir="false" afterPath="$PROJECT_DIR$/poc/api_params.text" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/poc/api_response.template" beforeDir="false" afterPath="$PROJECT_DIR$/poc/api_response.text" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/poc/example.py" beforeDir="false" afterPath="$PROJECT_DIR$/poc/example.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/poc/latest_model.pickle" beforeDir="false" afterPath="$PROJECT_DIR$/poc/latest_model.pickle" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -30,17 +32,40 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/poc" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/poc" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Python.api_params">
+    <configuration name="api_params" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="mlops_fast_api_poc" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/poc" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/poc/api_params.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="example" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="mlops_fast_api_poc" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -63,9 +88,33 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="mlops_fast_api_poc" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.api_params" />
         <item itemvalue="Python.example" />
+        <item itemvalue="Python.main" />
       </list>
     </recent_temporary>
   </component>
@@ -80,7 +129,7 @@
       <workItem from="1663660640135" duration="18000" />
       <workItem from="1663673909170" duration="1531000" />
       <workItem from="1663838170201" duration="1991000" />
-      <workItem from="1663850906854" duration="8933000" />
+      <workItem from="1663850906854" duration="18735000" />
     </task>
     <task id="LOCAL−00001" summary="Initial import">
       <created>1663677578134</created>
@@ -88,7 +137,31 @@
       <option name="presentableId" value="LOCAL−00001" />
       <updated>1663677578134</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL−00002" summary="Example that creates model and template for api classes. Not working yet.">
+      <created>1663939574397</created>
+      <option name="number" value="LOCAL−00002" />
+      <option name="presentableId" value="LOCAL−00002" />
+      <updated>1663939574397</updated>
+    </task>
+    <task id="LOCAL−00003" summary="Dynamic mapping between api parameter class definition and prediction model">
+      <created>1664175307201</created>
+      <option name="number" value="LOCAL−00003" />
+      <option name="presentableId" value="LOCAL−00003" />
+      <updated>1664175307201</updated>
+    </task>
+    <task id="LOCAL−00004" summary="Readme">
+      <created>1664175566468</created>
+      <option name="number" value="LOCAL−00004" />
+      <option name="presentableId" value="LOCAL−00004" />
+      <updated>1664175566468</updated>
+    </task>
+    <task id="LOCAL−00005" summary="Reload api when model file is updated.">
+      <created>1664178739285</created>
+      <option name="number" value="LOCAL−00005" />
+      <option name="presentableId" value="LOCAL−00005" />
+      <updated>1664178739285</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -107,30 +180,15 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Initial import" />
-    <option name="LAST_COMMIT_MESSAGE" value="Initial import" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/poc/example.py</url>
-          <line>51</line>
-          <option name="timeStamp" value="3" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/poc/example.py</url>
-          <line>22</line>
-          <option name="timeStamp" value="4" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/poc/example.py</url>
-          <line>14</line>
-          <option name="timeStamp" value="6" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
+    <MESSAGE value="Example that creates model and template for api classes. Not working yet." />
+    <MESSAGE value="Dynamic mapping between api parameter class definition and prediction model" />
+    <MESSAGE value="Readme" />
+    <MESSAGE value="Reload api when model file is updated." />
+    <option name="LAST_COMMIT_MESSAGE" value="Reload api when model file is updated." />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/mlops_fast_api_poc$example.coverage" NAME="example Coverage Results" MODIFIED="1663938998358" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/poc" />
+    <SUITE FILE_PATH="coverage/mlops_fast_api_poc$example.coverage" NAME="example Coverage Results" MODIFIED="1664200322643" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/poc" />
+    <SUITE FILE_PATH="coverage/mlops_fast_api_poc$main.coverage" NAME="main Coverage Results" MODIFIED="1664174900764" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/mlops_fast_api_poc$api_params.coverage" NAME="api_params Coverage Results" MODIFIED="1664200384252" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/poc" />
   </component>
 </project>
