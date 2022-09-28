@@ -2,11 +2,12 @@ import pandera as pa
 import pandas as pd
 from pandas import DataFrame, Series
 from pandas.core.generic import NDFrame
+from pandera.io import from_yaml
 from sklearn import metrics
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
 
-from model_util import save_model
+from model_util import save_model, pickle_all, load_schema
 
 
 def export_to_class_template(classname: str, filename: str, dataframe: DataFrame = None, series: Series = None,):
@@ -30,6 +31,20 @@ def export_to_class_template(classname: str, filename: str, dataframe: DataFrame
             f.write('\n')
         print('Wrote file {}'.format(file_path))
 
+
+def get_schema(pandas_obj: NDFrame):
+    df = None
+    if isinstance(pandas_obj, pd.DataFrame):
+        df = DataFrame(pandas_obj)
+    elif isinstance(pandas_obj, pd.Series):
+        df = Series(pandas_obj).to_frame()
+
+    if df is not None:
+        schema = pa.infer_schema(df)
+        # remove checks
+        for c in schema.columns.keys():
+            schema.columns[c].checks = []
+    return schema.to_yaml()
 
 def export_to_yaml(filename: str, pandas_obj: NDFrame):
     df = None
@@ -78,7 +93,11 @@ print(metrics.classification_report(y_test, y_pred))
 
 save_model(classifier, 'latest_model')
 
-
+schema_x = get_schema(X)
+schema_y = get_schema(y)
+pickle_all(classifier, 'bundle', schema_x, schema_y)
+sx = from_yaml(load_schema('bundle', 'schema_x'))
+print(sx)
 
 
 
