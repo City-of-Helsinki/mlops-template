@@ -1,4 +1,3 @@
-import logging
 from typing import List
 
 import numpy as np
@@ -8,13 +7,11 @@ from pandera.io import from_yaml
 from pydantic import create_model
 from starlette.middleware.cors import CORSMiddleware
 
-from api_response import Prediction
-from model_util import load_model
+from model_util import unpickle_bundle, ModelSchemaContainer
 
 
-def build_parameter_model_definition(yaml_file:str):
-    with open(yaml_file) as file:
-        yaml_schema = file.read()
+# Generates dynamically request and response classes for openapi schema and swagger documentation
+def build_parameter_model_definition(yaml_schema: str):
     schema = from_yaml(yaml_schema)
     fields = {}
     for col in schema.columns:
@@ -26,22 +23,27 @@ def build_parameter_model_definition(yaml_file:str):
         fields[name] = (t, ...)
     return fields
 
-DynamicApiRequest = create_model('DynamicApiRequest', **build_parameter_model_definition('poc/api_params.yaml'))
-DynamicApiResponse = create_model('DynamicApiResponse', **build_parameter_model_definition('poc/api_response.yaml'))
-# determine response object value field and type
+
+# Load model and schema definitions from pickled container class
+model_and_schema: ModelSchemaContainer = unpickle_bundle('bundle_latest')
+# ML model
+model = model_and_schema.model
+# Schema for request (X)
+DynamicApiRequest = create_model('DynamicApiRequest', **build_parameter_model_definition(model_and_schema.req_schema))
+# Schema for response (y)
+DynamicApiResponse = create_model('DynamicApiResponse', **build_parameter_model_definition(model_and_schema.res_schema))
+
+# Determine response object value field and type
 response_value_field = list(DynamicApiResponse.schema()['properties'])[0]
 response_value_type = type(DynamicApiResponse.schema()['properties'][response_value_field]['type'])
 
-app = FastAPI(title="DataHel ML API", description="Generic API for ML model", version="1.0")
-model = load_model('latest_model')
+# Start up API
+app = FastAPI(title="DataHel ML API", description="Generic API for ML model. \n\n{metrics}".format(metrics=model_and_schema.metrics), version="1.0")
 
-origins = [
-    "*",
-]
-
+# Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],    # allow all origins
     allow_credentials=True,
     allow_methods=["POST", "GET", "OPTIONS"],
     allow_headers=["*"],
@@ -49,7 +51,6 @@ app.add_middleware(
 )
 
 
-# x = [[...], [...]]
 @app.post("/predict", response_model=List[DynamicApiResponse])
 def predict(p_list: List[DynamicApiRequest]):
     # loop trough parameter list
@@ -61,6 +62,7 @@ def predict(p_list: List[DynamicApiRequest]):
     # Construct response
     response: List[DynamicApiResponse] = []
     for predicted_value in prediction_values:
+        # Cast predicted value to correct type and add response value to response array
         typed_value = response_value_type(predicted_value)
         response.append(DynamicApiResponse(**{response_value_field: typed_value}))
     return response

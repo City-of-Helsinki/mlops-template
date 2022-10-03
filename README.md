@@ -1,13 +1,13 @@
 # mlops_fast_api_poc
 
+This repository presents proof-of-concept for serving a machine learning model trough FastAPI rest api without coding.
+
 ## How to use
 
-0. Export your scikit-learn compatible machine learning model (BaseEstimator) to latest_model.pickle
-1. Define api parameters in api_params.py, include all feature columns in same order.
-2. Define api response in api_response.py, set value attribute to correct type. Default is string.
-3. Run server using uvicorn main:app --reload   
-4. Prediction api is available: http://127.0.0.1:8000/predict
-See example.py for reference.
+0. Run `example_build_model.py`
+1. Run server: `uvicorn main:app --reload   --reload-include *.pickle` 
+2. Prediction api is available: http://127.0.0.1:8000/predict
+3. Automatically generated online api documentation is available at: http://127.0.0.1:8000/predict
 
 ## Api documentation
 
