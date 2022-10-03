@@ -28,6 +28,10 @@ def build_parameter_model_definition(yaml_schema: str):
 model_and_schema: ModelSchemaContainer = unpickle_bundle('bundle_latest')
 # ML model
 model = model_and_schema.model
+
+# metrics
+metrics = model_and_schema.metrics
+
 # Schema for request (X)
 DynamicApiRequest = create_model('DynamicApiRequest', **build_parameter_model_definition(model_and_schema.req_schema))
 # Schema for response (y)
@@ -38,7 +42,7 @@ response_value_field = list(DynamicApiResponse.schema()['properties'])[0]
 response_value_type = type(DynamicApiResponse.schema()['properties'][response_value_field]['type'])
 
 # Start up API
-app = FastAPI(title="DataHel ML API", description="Generic API for ML model. \n\n{metrics}".format(metrics=model_and_schema.metrics), version="1.0")
+app = FastAPI(title="DataHel ML API", description="Generic API for ML model.", version="1.0")
 
 # Configure CORS
 app.add_middleware(
@@ -51,6 +55,11 @@ app.add_middleware(
 )
 
 
+@app.get("/metrics", response_model=str)
+def get_metrics():
+    return metrics
+
+
 @app.post("/predict", response_model=List[DynamicApiResponse])
 def predict(p_list: List[DynamicApiRequest]):
     # loop trough parameter list
@@ -61,6 +70,12 @@ def predict(p_list: List[DynamicApiRequest]):
         prediction_values.append(model.predict([parameter_array]))
     # Construct response
     response: List[DynamicApiResponse] = []
+    # TODO: Response is now array.
+    # [
+    #     {
+    #         "variety": "['Setosa']"
+    #     }
+    # ]
     for predicted_value in prediction_values:
         # Cast predicted value to correct type and add response value to response array
         typed_value = response_value_type(predicted_value)
