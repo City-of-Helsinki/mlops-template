@@ -4,16 +4,16 @@ import numpy as np
 import uvicorn
 from fastapi import FastAPI, Security, HTTPException
 from fastapi.params import Depends
+from fastapi.security.api_key import APIKeyHeader, APIKey
 from pandera.io import from_yaml
 from pydantic import create_model
 from starlette.middleware.cors import CORSMiddleware
 from starlette.status import HTTP_403_FORBIDDEN
 
 from model_util import unpickle_bundle, ModelSchemaContainer
-from fastapi.security.api_key import APIKeyQuery, APIKeyCookie, APIKeyHeader, APIKey
 
 # Authentication
-API_KEY = "apiKey123"   #TODO: where we want to keep api keys
+API_KEY = "apiKey123"   # TODO: where we want to keep api keys
 API_KEY_NAME = "X-API-KEY"
 
 api_key_header = APIKeyHeader(name=API_KEY_NAME, auto_error=False)
@@ -70,7 +70,6 @@ app.add_middleware(
     allow_headers=["*"],
     max_age=3600,
 )
-
 
 
 @app.get("/metrics", response_model=str)
