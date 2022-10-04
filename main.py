@@ -2,13 +2,30 @@ from typing import List
 
 import numpy as np
 import uvicorn
-from fastapi import FastAPI
+from fastapi import FastAPI, Security, HTTPException
+from fastapi.params import Depends
 from pandera.io import from_yaml
 from pydantic import create_model
 from starlette.middleware.cors import CORSMiddleware
+from starlette.status import HTTP_403_FORBIDDEN
 
 from model_util import unpickle_bundle, ModelSchemaContainer
+from fastapi.security.api_key import APIKeyQuery, APIKeyCookie, APIKeyHeader, APIKey
 
+# Authentication
+API_KEY = "apiKey123"   #TODO: where we want to keep api keys
+API_KEY_NAME = "api_key"
+
+api_key_header = APIKeyHeader(name=API_KEY_NAME, auto_error=False)
+
+async def get_api_key(api_key_header: str = Security(api_key_header)):
+    if api_key_header == API_KEY:
+        return api_key_header
+    else:
+        raise HTTPException(
+            status_code=HTTP_403_FORBIDDEN, detail="API key is missing or incorrect in header: {}.".format(API_KEY_NAME)
+        )
+# / authentication
 
 # Generates dynamically request and response classes for openapi schema and swagger documentation
 def build_parameter_model_definition(yaml_schema: str):
@@ -55,8 +72,9 @@ app.add_middleware(
 )
 
 
+
 @app.get("/metrics", response_model=str)
-def get_metrics():
+def get_metrics(api_key: APIKey = Depends(get_api_key)):
     return metrics
 
 
