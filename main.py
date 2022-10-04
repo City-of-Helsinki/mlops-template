@@ -14,7 +14,7 @@ from fastapi.security.api_key import APIKeyQuery, APIKeyCookie, APIKeyHeader, AP
 
 # Authentication
 API_KEY = "apiKey123"   #TODO: where we want to keep api keys
-API_KEY_NAME = "api_key"
+API_KEY_NAME = "X-API-KEY"
 
 api_key_header = APIKeyHeader(name=API_KEY_NAME, auto_error=False)
 
