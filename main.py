@@ -94,7 +94,7 @@ app.add_middleware(
 )
 
 
-@app.get("/metrics", response_model=str)
+@app.get("/metrics", response_model=dict)
 def get_metrics(api_key: APIKey = Depends(get_api_key)):
     return metrics
 
@@ -117,7 +117,7 @@ def predict(p_list: List[DynamicApiRequest]):
     # ]
     for predicted_value in prediction_values:
         # Cast predicted value to correct type and add response value to response array
-        typed_value = response_value_type(predicted_value)
+        typed_value = response_value_type(predicted_value[0])
         response.append(DynamicApiResponse(**{response_value_field: typed_value}))
     return response
 

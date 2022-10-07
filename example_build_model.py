@@ -41,7 +41,7 @@ classifier.fit(X_train, y_train)
 y_pred = classifier.predict(X_test)
 
 # Metrics
-metrics_data = metrics.classification_report(y_test, y_pred)
+metrics_data = metrics.classification_report(y_test, y_pred, output_dict=True)
 
 # Introspect schemas for request and response from dataset
 # schema_x = get_schema(X)
