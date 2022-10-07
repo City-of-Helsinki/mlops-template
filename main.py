@@ -41,6 +41,28 @@ def build_parameter_model_definition(yaml_schema: str):
     return fields
 
 
+def build_model_definition_from_schema(schema):
+    fields = {}
+    for col in schema.columns:
+        t = schema.dtypes[col].type.type
+        # convert object types to string
+        if t == np.object_ or t == object:
+            t = str
+        name = col
+        fields[name] = (t, ...)
+    return fields
+
+def build_model_definition_from_dict(column_types: List[dict]):
+    fields = {}
+    for coltype in column_types:
+        t = coltype['type']
+        # convert object types to string
+        if t == np.object_ or t == object:
+            t = str
+        name = coltype['name']
+        fields[name] = (t, ...)
+    return fields
+
 # Load model and schema definitions from pickled container class
 model_and_schema: ModelSchemaContainer = unpickle_bundle('bundle_latest')
 # ML model
@@ -50,9 +72,9 @@ model = model_and_schema.model
 metrics = model_and_schema.metrics
 
 # Schema for request (X)
-DynamicApiRequest = create_model('DynamicApiRequest', **build_parameter_model_definition(model_and_schema.req_schema))
+DynamicApiRequest = create_model('DynamicApiRequest', **build_model_definition_from_dict(model_and_schema.req_schema))
 # Schema for response (y)
-DynamicApiResponse = create_model('DynamicApiResponse', **build_parameter_model_definition(model_and_schema.res_schema))
+DynamicApiResponse = create_model('DynamicApiResponse', **build_model_definition_from_dict(model_and_schema.res_schema))
 
 # Determine response object value field and type
 response_value_field = list(DynamicApiResponse.schema()['properties'])[0]

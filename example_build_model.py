@@ -44,11 +44,16 @@ y_pred = classifier.predict(X_test)
 metrics_data = metrics.classification_report(y_test, y_pred)
 
 # Introspect schemas for request and response from dataset
-schema_x = get_schema(X)
-schema_y = get_schema(y)
+# schema_x = get_schema(X)
+# schema_y = get_schema(y)
 
+dtypes_x = [{'name': c, 'type': X[c].dtype.type} for c in X.columns]
+dtypes_y = [{'name': y.name, 'type': y.dtype.type}]
+
+print(dtypes_x)
+print(dtypes_y)
 # Pickle all in single file
-pickle_bundle(classifier, 'bundle_latest', schema_x, schema_y, metrics_data)
+pickle_bundle(classifier, 'bundle_latest', dtypes_x, dtypes_y, metrics_data)
 
 
 
