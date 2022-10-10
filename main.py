@@ -1,16 +1,14 @@
 from typing import List
 
-import numpy as np
 import uvicorn
 from fastapi import FastAPI, Security, HTTPException
 from fastapi.params import Depends
 from fastapi.security.api_key import APIKeyHeader, APIKey
-from pandera.io import from_yaml
 from pydantic import create_model
 from starlette.middleware.cors import CORSMiddleware
 from starlette.status import HTTP_403_FORBIDDEN
 
-from model_util import unpickle_bundle, ModelSchemaContainer
+from model_util import unpickle_bundle, ModelSchemaContainer, build_model_definition_from_dict
 
 # Authentication
 API_KEY = "apiKey123"   # TODO: where we want to keep api keys
@@ -26,42 +24,6 @@ async def get_api_key(api_key_header: str = Security(api_key_header)):
             status_code=HTTP_403_FORBIDDEN, detail="API key is missing or incorrect in header: {}.".format(API_KEY_NAME)
         )
 # / authentication
-
-# Generates dynamically request and response classes for openapi schema and swagger documentation
-def build_parameter_model_definition(yaml_schema: str):
-    schema = from_yaml(yaml_schema)
-    fields = {}
-    for col in schema.columns:
-        t = schema.dtypes[col].type.type
-        # convert object types to string
-        if t == np.object_ or t == object:
-            t = str
-        name = col
-        fields[name] = (t, ...)
-    return fields
-
-
-def build_model_definition_from_schema(schema):
-    fields = {}
-    for col in schema.columns:
-        t = schema.dtypes[col].type.type
-        # convert object types to string
-        if t == np.object_ or t == object:
-            t = str
-        name = col
-        fields[name] = (t, ...)
-    return fields
-
-def build_model_definition_from_dict(column_types: List[dict]):
-    fields = {}
-    for coltype in column_types:
-        t = coltype['type']
-        # convert object types to string
-        if t == np.object_ or t == object:
-            t = str
-        name = coltype['name']
-        fields[name] = (t, ...)
-    return fields
 
 # Load model and schema definitions from pickled container class
 model_and_schema: ModelSchemaContainer = unpickle_bundle('bundle_latest')
@@ -109,12 +71,7 @@ def predict(p_list: List[DynamicApiRequest]):
         prediction_values.append(model.predict([parameter_array]))
     # Construct response
     response: List[DynamicApiResponse] = []
-    # TODO: Response is now array.
-    # [
-    #     {
-    #         "variety": "['Setosa']"
-    #     }
-    # ]
+
     for predicted_value in prediction_values:
         # Cast predicted value to correct type and add response value to response array
         typed_value = response_value_type(predicted_value[0])
