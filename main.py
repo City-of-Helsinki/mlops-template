@@ -7,7 +7,8 @@ from fastapi.security.api_key import APIKeyHeader, APIKey
 from pydantic import create_model
 from starlette.middleware.cors import CORSMiddleware
 from starlette.status import HTTP_403_FORBIDDEN
-
+from fastapi.encoders import jsonable_encoder
+from log.sqlite_logging_handler import SQLiteLoggingHandler
 from model_util import unpickle_bundle, ModelSchemaContainer, build_model_definition_from_dict
 
 # Authentication
@@ -56,6 +57,9 @@ app.add_middleware(
     max_age=3600,
 )
 
+# Create logger
+logger = SQLiteLoggingHandler()
+
 
 @app.get("/metrics", response_model=dict)
 def get_metrics(api_key: APIKey = Depends(get_api_key)):
@@ -65,6 +69,7 @@ def get_metrics(api_key: APIKey = Depends(get_api_key)):
 @app.post("/predict", response_model=List[DynamicApiResponse])
 def predict(p_list: List[DynamicApiRequest]):
     # loop trough parameter list
+    logger.info(jsonable_encoder(p_list))
     prediction_values = []
     for p in p_list:
         # convert parameter object to array for model
