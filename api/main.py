@@ -4,9 +4,12 @@ import uvicorn
 from fastapi import FastAPI, Security, HTTPException
 from fastapi.params import Depends
 from fastapi.security.api_key import APIKeyHeader, APIKey
+from fastapi.responses import HTMLResponse
+from prometheus_client import Summary, Counter, Gauge, Enum, generate_latest
 from pydantic import create_model
 from starlette.middleware.cors import CORSMiddleware
 from starlette.status import HTTP_403_FORBIDDEN
+
 
 from model_util import unpickle_bundle, ModelSchemaContainer, build_model_definition_from_dict
 
@@ -59,7 +62,8 @@ app.add_middleware(
 
 @app.get("/metrics", response_model=dict)
 def get_metrics(api_key: APIKey = Depends(get_api_key)):
-    return metrics
+    def get_metrics():
+    return HTMLResponse(generate_latest())
 
 
 @app.post("/predict", response_model=List[DynamicApiResponse])

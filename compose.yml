@@ -1,11 +1,11 @@
 version: "3.8"
 services:
-  ml-api:
-    build: .
-    container_name: ml-api
+  api:
+    build: ./api/
+    container_name: mlops-fastapi-api
     restart: always
     volumes:
-      - .:/app
+      - ./api/:/app
     ports:
       - 8000:8000
     command: ['uvicorn',
@@ -15,4 +15,10 @@ services:
               '*.pickle',
               "--host",
               "0.0.0.0"]  
-    
+  prometheus:
+    image: prom/prometheus
+    container_name: mlops-fastapi-prometheus
+    volumes:
+      - ./prometheus-local/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports: 
+      - 9090:9090
