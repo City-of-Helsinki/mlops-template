@@ -9,6 +9,14 @@ This repository presents proof-of-concept for serving a machine learning model t
 2. Prediction api is available: http://127.0.0.1:8000/predict
 3. Automatically generated online api documentation is available at: http://127.0.0.1:8000/predict
 
+or via Docker:
+
+0. Run `docker-compose build`
+1. Run `docker-compose up`
+2.-3. as above
+4. To shut down run `docker-compose down`
+
+
 ## Api documentation
 
 Swagger online documentation is available at: http://127.0.0.1:8000/docs
