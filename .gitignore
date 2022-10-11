@@ -154,3 +154,8 @@ Snakefile
 
 # any scripts in the notebooks (see 03_workflow.ipynb)
 workflow.sh
+
+/.quarto/
+
+# intermediate notebooks for Quarto processing
+_proc/
