@@ -1,11 +1,8 @@
 from __future__ import annotations
-from typing import Iterable, Union
-from unicodedata import category
-from xml.etree.ElementInclude import include
+from typing import Iterable, Type, Union
 from prometheus_client import Summary, Counter, Gauge, Enum
 import datetime
-from pandas import Timestamp, Timedelta, Period, DateTime
-from numpy import datetime64, timedelta64
+import re
 
 import numpy as np
 import pandas as pd
@@ -36,20 +33,27 @@ class FifoOverwriteDataFrame:
         Return reference to self.
         """
         y_size = self.df.shape[0]
+        new_data = pd.DataFrame(rows, columns=self.columns)
+        if new_data.shape[0] >= self.maxsize:
+            new_data = new_data.iloc[-self.maxsize:]
         self.df = pd.concat(
-            (self.df.iloc[1:] if y_size == self.maxsizes else self.df,
-                pd.DataFrame(rows, columns=self.columns)),
+            (self.df.iloc[1:] if y_size == self.maxsize else self.df,
+                new_data),
             ignore_index=True)
+        if self.df.shape[0] == self.maxsize:
+            self.is_full = True
+        else:
+            self.is_full = False
 
         return self
 
     def flush(self)->pd.DataFrame:
         """
         If queue df is full, return copy.
-        If self.clear_at_flush, clear df before returning copy.
+        If self.clear_at_flush, clear df before returning copy. Queue is only cleared if full.
         Else, return false.
         """
-        if self.full(): return False
+        if not self.is_full: return False
         ret = self.df.copy()
         if self.clear_at_flush: self.df.drop(self.df.index, inplace=True)
         return ret
@@ -120,7 +124,8 @@ def model_creation_metrics(metrics: dict) -> None:
 #   - raw values (if not text or some other weird datatype)
 #   - hist/sumstat (a bit more private)
 
-def date_objects_to_seconds(feature, dtype):
+
+def convert_time_to_seconds(feature, dtype):
     """
     parse time objects to integer accuracy of seconds
     """
@@ -129,9 +134,59 @@ def date_objects_to_seconds(feature, dtype):
     elif dtype in [datetime64, timedelta64]:
         return (feature-timedelta64(datetime.datetime.min.timestamp())).total_seconds()
     elif dtype in [Timestamp, Timedelta, Period]:
-        return date_objects_to_seconds(feature.to_numpy(), datetime64)
+        return convert_time_to_seconds(feature.to_numpy(), datetime64)
     else:
         raise ValueError(f'unsupported dtype for time: {dtype}')
+
+def create_promql_metric_name(metric_name: str,
+                                dtype: Type,
+                                prefix: str = '',
+                                suffix: str = '',
+                                is_counter = False):
+    """
+    Create a promql compatible name for a metric.
+    Note that this does not perfectly ensure good naming,
+    but may help when auto-generating metrics.
+
+    See https://prometheus.io/docs/practices/naming/ for naming conventions.
+    """
+
+    ret = prefix.rstrip('_') # may not begin with underscore
+    if isinstance(dtype(),(datetime, pd.Timestamp, np.datetime64)):
+        # e.g. date_of_birth -> 'date_of_birth_timestamp_seconds'
+        metric_name =  metric_name.strip('_seconds').strip('_timestamp').strip('_seconds') + \
+            '_timestamp_seconds'
+    elif isinstance(dtype(),(pd.Timedelta, pd.Period,np.timedelta64)):
+        # e.g. time_on_site -> 'time_on_site_seconds'
+        metric_name = metric_name.strip('_seconds') + '_seconds'
+    elif isinstance(dtype(), (str, np.string_, np.unicode_, np.dtype('O'),
+                        pd.object, pd.CategoricalDtype, pd.StringDtype)):
+        # e.g. description -> description_count
+        metric_name += '_info'
+    else: # add more exceptions if needed
+        pass
+    
+    ret += metric_name + '_' + suffix
+
+    # remove metric types from metric name (a metric name should not contain these)
+    for metric_type in ['gauge', 'counter', 'summary', 'map']:
+        metric_name = metric_name.replace(metric_type, '')
+    
+    # remove reserved suffixes (a metric should not end with these)
+    for metric_suffix in ['_count', '_sum', '_bucket', '_total']:
+        metric_name = metric_name.strip(metric_suffix)
+
+    # however, counters should always have _total suffix
+    if is_counter: metric_name += '_total'
+
+    # clean extra underscores
+    metric_name = ''.join(['_' + val.strip('_') if val != '' else '' for val in metric_name.split('_')]).rstrip('_')
+    
+    # clean non-alphanumericals and underscores
+    metric_name = re.sub('[a-zA-Z_:][a-zA-Z0-9_:]*', '_', s)
+
+    return metric_name
+
 
 class SummaryStatisticsMetrics:
     """
@@ -148,7 +203,6 @@ class SummaryStatisticsMetrics:
         """
         self.columns = columns
         self.summary_statistics_function = summary_statistics_function
-        self.metric_name_prefix = metric_name_prefix
         
         # initialize metric names by calling summary statistics on an empty dataframe
         self.rownames = summary_statistics_function(pd.DataFrame(columns=dict)).index.values
@@ -159,49 +213,49 @@ class SummaryStatisticsMetrics:
             dtype = columns['colname']['dtype']
             for rowname in self.rownames:
                 metric_key = '_'.join([colname, rowname])
-                metric_name = metrics_name_prefix + key.replace(colname, '')
-                metric_name = metric_name.replace('%', 'quantile')
-                metric_description = ''
-                if dtype in [datetime, Timestamp, datetime64]:
-                    # e.g. date_of_birth, avg -> 'date_of_birth_timestamp_seconds_avg'
-                    metric_name =  metric_name.replace('_timestamp','').replace('_seconds') + \
-                        '_timestamp_seconds_' + colname
-                elif dtype in [Timedelta, Period, timedelta64]:
-                    # e.g. time_on_site, avg -> 'time_on_site_seconds_avg'
-                    metric_name =  metric_name.replace('_seconds') + \
-                        '_seconds_' + colname
-                elif dtype == str:
-                    # e.g. description, avg -> description_count_avg
-                    metric_name =  metric_name + '_info_' + colname
-                # TODO: how to check if value is of any possible integer or float type?
-                elif dtype in [int, pd.Categorical, object]: 
-                    # e.g. sex, avg -> sex_count_avg
-                    metric_name + '_count_' + colname
-                else: # numerical datatypes
-                    metric_name = metric_name + colname
-
-                self.metrics[metric_key] = Gauge(metric_name, metric_description)
+                metric_description = f'calculated using summary statistics function {summary_statistics_function.__name__}'
+                metric_name = create_promql_metric_name(metric_name=colname,
+                    dtype=dtype,
+                    prefix = metrics_name_prefix,
+                    postfix = rowname
+                )
+                # if category, create Enum
+                if isinstance(dtype(), (str, np.string_, np.unicode_, np.dtype('O'),
+                        pd.object, pd.CategoricalDtype, pd.StringDtype)):
+                    g = Enum(
+                        metric_name,
+                        metric_description,
+                        states = []
+                    )
+                # else Gauge
+                else:
+                    g = Gauge(metric_name, metric['description'])
+                self.metrics[metric_key] = g
 
     def set(self, df: pd.DataFrame):
         """
-        Turn table of summary statistics to Prometheus metrics
+        Set metrics to given value
         """
-        sumstat = sumstat_function(latest_records)
-
+        sumstat_df = self.summary_statistics_function(df)
+        # loop through metrics and 
         for colname in self.colnames:
             for rowname in self.rownames:
-                metrics_handle = '_'.join([colname, rowname])
-                metric_name = metrics_name_prefix + key.replace(metrics_name_prefix, '')
-                metric_description = ''
-                dtype = column['dtype']
-                if dtype in [datetime, Timestamp, Timedelta, Period, datetime64, timedelta64]:
-                    metric_value = date_objects_to_seconds(feature, dtype)
+                metric_key = '_'.join([colname, rowname])
+                metric_value = sumstat_df.loc[rowname, colname]
+                if isinstance(metric_value,(datetime, pd.Timestamp,
+                        pd.Timedelta, pd.Period, np.datetime64, np.timedelta64)):
+                    # convert all time formats to integer seconds
+                    metric_value = convert_time_to_seconds(feature, dtype)
+                elif isinstance(metric_value, (bool, np.bool_, pd.BooleanDtype)):
+                    metric_value = 1 if metric_value else 0
+                elif isinstance(metric_value, (str, np.string_, np.unicode_, np.dtype('O'),
+                        pd.object, pd.CategoricalDtype, pd.StringDtype)):
+                    metric_value = str(metric_value)
                 else:
-                    # TODO: define integerification to other data types
-                    pass # add other options
+                    pass # add other options if needed
                 # omit nan values
                 if metric_value is not None and not np.isnan(metric_value):
-                    self.metrics[metrics_handle].set(metric_value)
+                    self.metrics[metric_key].set(metric_value)
 
         
 
@@ -215,4 +269,76 @@ class SummaryStatisticsMetrics:
 #   - raw (if not text of some other weird datatype)
 #   - if category
 #   - hist/sumstat (a bit more private)
-    - live_scoring
+#   - live_scoring
+
+import unittest
+
+
+class testFifoOverwriteDataFrame(unittest.TestCase):
+
+    def test_init(self):
+        self.assertIsInstance(FifoOverwriteDataFrame({'x':int}), FifoOverwriteDataFrame)
+    def test_put(self):
+        fifof = FifoOverwriteDataFrame({'x':int})
+        fifof.put(np.arange(10))
+        self.assertEqual(fifof.df.shape[0], 10)
+        self.assertEqual(fifof.df.shape[1], 1)
+        # more data
+        fifof = FifoOverwriteDataFrame({'x':float, 'y':float})
+        fifof.put(np.random.rand(100, 2))
+        self.assertEqual(fifof.df.shape[0], 100)
+        self.assertEqual(fifof.df.shape[1], 2)
+    def test_put_overwrite(self):
+        fifof = FifoOverwriteDataFrame({'x':int}, maxsize=1)
+        fifof.put(np.arange(2))
+        self.assertEqual(fifof.df.iloc[0,0], 1)
+        #
+        fifof = FifoOverwriteDataFrame({'x':int})
+        fifof.put(np.arange(1001))
+        self.assertEqual(fifof.df.iloc[0,0], 1)
+        self.assertEqual(fifof.df.iloc[-1,0], 1000)
+        # 
+        fifof = FifoOverwriteDataFrame({'x':str}, maxsize=3)
+        fifof.put(['a','b','c','d'])
+        self.assertEqual(fifof.df.iloc[0,0], 'b')
+        self.assertEqual(fifof.df.iloc[-1,0], 'd')
+    def test_flush(self):
+        fifof = FifoOverwriteDataFrame({'x':int}, maxsize=1)
+        ret = fifof.flush()
+        self.assertEqual(ret, False)
+        #
+        fifof = FifoOverwriteDataFrame({'x':int}, maxsize=1)
+        fifof.put([1])
+        ret = fifof.flush()
+        self.assertEqual(ret.iloc[0,0], 1)
+        self.assertEqual(fifof.df.shape[0], 1)
+        #
+        fifof = FifoOverwriteDataFrame({'x':int}, maxsize=10)
+        fifof.put(range(11))
+        ret = fifof.flush()
+        self.assertEqual(ret.iloc[0,0], 1)
+        self.assertEqual(fifof.df.shape[0], 10)
+    def test_flush_clear(self):
+        fifof = FifoOverwriteDataFrame({'x':int}, maxsize=1, clear_at_flush=True)
+        fifof.put([1])
+        ret = fifof.flush()
+        self.assertEqual(ret.iloc[0,0], 1)
+        self.assertEqual(fifof.df.shape[0], 0)
+        #
+        fifof = FifoOverwriteDataFrame({'x':int}, maxsize=10, clear_at_flush=True)
+        fifof.put(range(11))
+        ret = fifof.flush()
+        self.assertEqual(ret.iloc[0,0], 1)
+        self.assertEqual(fifof.df.shape[0], 0)
+        #
+        fifof = FifoOverwriteDataFrame({'x':int}, maxsize=1, clear_at_flush=True)
+        ret = fifof.flush()
+        self.assertEqual(ret, False)
+        self.assertEqual(fifof.df.shape[0], 0)
+        #
+        fifof = FifoOverwriteDataFrame({'x':int}, maxsize=2, clear_at_flush=True)
+        fifof.put([1])
+        ret = fifof.flush()
+        self.assertEqual(ret, False)
+        self.assertEqual(fifof.df.shape[0], 1)
+
