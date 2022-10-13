@@ -1,7 +1,8 @@
 from __future__ import annotations
+from multiprocessing.sharedctypes import Value
 from typing import Iterable, Type, Union
 from prometheus_client import Summary, Counter, Gauge, Enum
-import datetime
+import datetime as dt
 import re
 
 import numpy as np
@@ -72,71 +73,33 @@ class FifoOverwriteDataFrame:
 # bits, bytes -> bytes
 
 
-def model_creation_metrics(metrics: dict) -> None:
-    """
-    Pass pre-recorded metrics from dict to Prometheus.
-    This allows recording two types of metrics
-        - numeric (int, float, etc.)
-        - categorical
-    Lists and matrices must be split so that each cell is their own metric.
-
-    For designing metrics, see Prometheus naming conventions see:
-        https://prometheus.io/docs/practices/naming/
-    For metadata (model version, data version etc. see:
-        https://www.robustperception.io/exposing-the-software-version-to-prometheus/
-
-    Format:
-    metrics = {
-        'metric_name':{
-            'value': int, float or str if 'type' = category,
-            'description': str,
-            'type': str -> 'numeric' or 'category',
-            'categories': [str], e.g. ['A', 'B', 'C']. only required if 'type' = category
-        }
-    }
-
-    Example: 
-
-    metrics = {
-        'train_loss':{'value':0.95, 'description': 'training loss (MSE)', 'type':'numeric'},
-        'test_loss':{'value':0.96, 'description': 'test loss (MSE)', 'type':'numeric'},
-        'optimizer':{'value':random.choice(['SGM', 'RMSProp', 'Adagrad']),
-            'description':'ml model optimizer function',
-            'type': 'category',
-            'categories':['SGD', 'RMSProp', 'Adagrad', 'Adam']}
-    """
-
-    for metric_name in metrics.keys():
-        metric = model_creation_metrics[metric_name]
-        if metric['type'] == 'numeric':
-            g = Gauge(metric_name, metric['description'])
-            g.set(metric['value'])
-        elif metric['type'] == 'category':
-            s = Enum(
-                metric_name,
-                metric['description'],
-                states = metric['categories']
-            )
-            s.state(metric['value'])
-
-# TODO: PROMEHEUS:
-# input:
-#   - raw values (if not text or some other weird datatype)
-#   - hist/sumstat (a bit more private)
-
-
-def convert_time_to_seconds(feature, dtype):
+def convert_time_to_seconds(t):
     """
     parse time objects to integer accuracy of seconds
     """
-    if dtype == datetime:
-        return feature.timestamp()
-    elif dtype in [datetime64, timedelta64]:
-        return (feature-timedelta64(datetime.datetime.min.timestamp())).total_seconds()
-    elif dtype in [Timestamp, Timedelta, Period]:
-        return convert_time_to_seconds(feature.to_numpy(), datetime64)
+    # datetime
+    if isinstance(t,dt.date):
+        return int(((t.year*12 + t.month)*31 + t.day)*24*60*60)
+    elif isinstance(t, dt.time):
+        return int((t.hour*60+ t.minute)*60 + t.second)
+    elif isinstance(t, dt.datetime):
+        return int((t-dt.datetime.min).timestamp()/dt.timedelta('s'))
+    elif isinstance(t, (dt.timedelta)):
+        return int(t/dt.timedelta(seconds=1))
+    # numpy
+    elif isinstance(t, np.datetime64):
+        return int((t-np.datetime64('1970-01-01'))/np.timedelta64(1, 's'))
+    elif isinstance(t, np.timedelta64):
+        return int(t/np.timedelta64(1, 's'))
+    # pandas
+    elif isinstance(t, (pd.Timestamp, pd.Timedelta)):
+        return convert_time_to_seconds(t.to_numpy())
+    elif isinstance(t, pd.Period):
+        return convert_time_to_seconds(t.to_timestamp().to_numpy())
+    # other
     else:
-        raise ValueError(f'unsupported dtype for time: {dtype}')
+        return int(t)
+        
 
 def create_promql_metric_name(metric_name: str,
                                 dtype: Type,
@@ -186,6 +149,76 @@ def create_promql_metric_name(metric_name: str,
     metric_name = re.sub('[a-zA-Z_:][a-zA-Z0-9_:]*', '_', s)
 
     return metric_name
+
+
+def model_development_metrics(metrics: dict) -> None:
+    """
+    Pass pre-recorded metrics from dict to Prometheus.
+
+    This allows recording three types of metrics
+        - numeric (int, float, etc.)
+        - categorical
+        - info (metadata)
+    Lists and matrices must be split so that each cell is their own metric.
+
+    For designing metrics, see Prometheus naming conventions see:
+        https://prometheus.io/docs/practices/naming/
+    For metadata (model version, data version etc. see:
+        https://www.robustperception.io/exposing-the-software-version-to-prometheus/
+
+    Format:
+    metrics = {
+        'metric_name':{
+            'value': int, float or str if 'type' = category,
+            'description': str,
+            'type': str -> 'numeric', 'category' or 'info' (metadata / pseudo metrics),
+            'categories': [str], e.g. ['A', 'B', 'C']. only required if 'type' = category,
+            'label_names': [str], optional. for info type metrics
+            'label_values': [str], optional. for info type metrics
+        }
+    }
+
+    Example: 
+
+    metrics = {
+        'train_loss':{'value':0.95, 'description': 'training loss (MSE)', 'type':'numeric'},
+        'test_loss':{'value':0.96, 'description': 'test loss (MSE)', 'type':'numeric'},
+        'optimizer':{'value':random.choice(['SGM', 'RMSProp', 'Adagrad']),
+            'description':'ml model optimizer function',
+            'type': 'category',
+            'categories':['SGD', 'RMSProp', 'Adagrad', 'Adam']}
+        'model_build_info':{'description': 'dev information', type: 'info',
+            label_names = ['origin', 'branch', 'commit'],
+            label_values = ['city-of-helsinki@github.com/ml-app', 'main', '12354568']}
+            }
+    """
+    # TODO: make use of create_promql_metric_name
+
+    for metric_name in metrics.keys():
+        metric = metrics[metric_name]
+        if metric['type'] == 'numeric':
+            g = Gauge(metric_name, metric['description'])
+            g.set(metric['value'])
+        elif metric['type'] == 'category':
+            s = Enum(
+                metric_name,
+                metric['description'],
+                states = metric['categories']
+            )
+            s.state(metric['value'])
+        elif metric['type'] == 'info':
+            g = Gauge(metric_name.strip('_info') + '_info', metric['description'], 
+                metric['label_names'])
+            # note that each new metric-label combination creates a new time series!
+            g.labels(metric['label_values']).set(1)
+        else:
+            raise ValueError(f'metric of unknown type: {metric}')
+
+# TODO: PROMEHEUS:
+# input:
+#   - raw values (if not text or some other weird datatype)
+#   - hist/sumstat (a bit more private)
+
 
 
 class SummaryStatisticsMetrics:
