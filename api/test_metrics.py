@@ -79,29 +79,29 @@ import datetime as dt
 class test_convert_time_to_seconds(unittest.TestCase):
     
     def test_time(self):
-        self.assertIsInstance(convert_time_to_seconds(time.time()), int)
+        self.assertIsInstance(convert_time_to_seconds(time.time()), float)
 
     def test_datetime(self):
-        self.assertIsInstance(convert_time_to_seconds(dt.date(1,1,1)), int)
-        self.assertIsInstance(convert_time_to_seconds(dt.time(1,1,1)), int)
-        self.assertIsInstance(convert_time_to_seconds(dt.datetime.min), int)
-        self.assertIsInstance(convert_time_to_seconds(dt.datetime(2022, 1, 1, 12, 4, 4)), int)
-        self.assertIsInstance(convert_time_to_seconds(dt.datetime.max-dt.datetime.min), int)
-        self.assertEqual(convert_time_to_seconds(dt.timedelta(seconds = 1.2)), 1)
+        self.assertIsInstance(convert_time_to_seconds(dt.date(1,1,1)), float)
+        self.assertIsInstance(convert_time_to_seconds(dt.time(1,1,1)), float)
+        self.assertIsInstance(convert_time_to_seconds(dt.datetime.min), float)
+        self.assertIsInstance(convert_time_to_seconds(dt.datetime(2022, 1, 1, 12, 4, 4)), float)
+        self.assertIsInstance(convert_time_to_seconds(dt.datetime.max-dt.datetime.min), float)
+        self.assertEqual(convert_time_to_seconds(dt.timedelta(seconds = 1.2)), 1.2)
 
     def test_numpy(self):
-        self.assertIsInstance(convert_time_to_seconds(np.datetime64('2022-01-01')), int)
-        self.assertIsInstance(convert_time_to_seconds(np.datetime64('2022-01-01')-np.datetime64('2021-01-01')), int)
-        self.assertEqual(convert_time_to_seconds(np.timedelta64(1,'s')),1)
+        self.assertIsInstance(convert_time_to_seconds(np.datetime64('2022-01-01')), float)
+        self.assertIsInstance(convert_time_to_seconds(np.datetime64('2022-01-01')-np.datetime64('2021-01-01')), float)
+        self.assertEqual(convert_time_to_seconds(np.timedelta64(1,'s')),1.)
 
     def test_pandas(self):
-        self.assertIsInstance(convert_time_to_seconds(pd.to_datetime('2022-01-01')), int)
-        self.assertIsInstance(convert_time_to_seconds(pd.to_datetime('2022-01-01')-pd.to_datetime('2021-01-01')), int)
-        self.assertIsInstance(convert_time_to_seconds(pd.Period('4Q2005')), int)
+        self.assertIsInstance(convert_time_to_seconds(pd.to_datetime('2022-01-01')), float)
+        self.assertIsInstance(convert_time_to_seconds(pd.to_datetime('2022-01-01')-pd.to_datetime('2021-01-01')), float)
+        self.assertIsInstance(convert_time_to_seconds(pd.Period('4Q2005')), float)
 
     def test_float_integer(self):
-        self.assertEqual(convert_time_to_seconds(1), 1)
-        self.assertEqual(convert_time_to_seconds(1.2), 1)
+        self.assertEqual(convert_time_to_seconds(1), 1.)
+        self.assertEqual(convert_time_to_seconds(1.2), 1.2)
 
     def test_invalid_formats(self):
         with self.assertRaises(ValueError):
