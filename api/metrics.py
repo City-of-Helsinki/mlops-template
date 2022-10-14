@@ -1,5 +1,4 @@
 from __future__ import annotations
-from multiprocessing.sharedctypes import Value
 from typing import Iterable, Type, Union
 from parser import ParserError
 from prometheus_client import Summary, Counter, Gauge, Enum
