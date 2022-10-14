@@ -45,3 +45,16 @@ Test request using example model:
 ### Startup development api server
 
      uvicorn main:app --reload   --reload-include *.pickle  
+
+
+### Locust load testing
+
+Run:
+
+    locust -f locustfile.py -H http://127.0.0.1:8000
+
+Then open http://127.0.0.1:8000 in browser
+
+Change log_mode in main.py to test how logging method affects to troughput.
+
+Locust settings:  Users 1000 spawn rate: 100

@@ -1,15 +1,50 @@
+
+import logging
 from typing import List
 
+import structlog
 import uvicorn
 from fastapi import FastAPI, Security, HTTPException
+
 from fastapi.params import Depends
 from fastapi.security.api_key import APIKeyHeader, APIKey
+from pandas._testing import makeTimeSeries
 from pydantic import create_model
 from starlette.middleware.cors import CORSMiddleware
 from starlette.status import HTTP_403_FORBIDDEN
-from fastapi.encoders import jsonable_encoder
+
 from log.sqlite_logging_handler import SQLiteLoggingHandler
 from model_util import unpickle_bundle, ModelSchemaContainer, build_model_definition_from_dict
+
+# Structlog to file structlog.log
+log_file = open("structlog.log", "w", encoding="utf-8")
+structlog.configure(
+    processors=[
+        structlog.contextvars.merge_contextvars,
+        structlog.processors.add_log_level,
+        structlog.processors.StackInfoRenderer(),
+        structlog.dev.set_exc_info,
+        structlog.processors.TimeStamper(),
+        structlog.dev.ConsoleRenderer()
+    ],
+    wrapper_class=structlog.make_filtering_bound_logger(logging.NOTSET),
+    context_class=dict,
+    logger_factory=structlog.WriteLoggerFactory(file=log_file),
+    cache_logger_on_first_use=False,
+
+)
+structlogging = structlog.get_logger().bind()
+
+# Logging to sqlite db: sqlite_logger_db.db
+sqlite_logging_handler = SQLiteLoggingHandler()
+logging.getLogger().addHandler(sqlite_logging_handler)
+logging.getLogger().setLevel(logging.INFO)
+
+# Log mode 0=Both, 1=Struct&file, 2=Logging+SQLiteHandler
+log_mode = 1
+
+# How to use SQLiteLoggingHandler with structlog?
+
 
 # Authentication
 API_KEY = "apiKey123"   # TODO: where we want to keep api keys
@@ -57,9 +92,9 @@ app.add_middleware(
     max_age=3600,
 )
 
-# Create logger
-logger = SQLiteLoggingHandler()
-
+# Dummy payload for load testing logger
+# TODO: Note structlog truncates 1000-size dummy data
+dummy_data = makeTimeSeries(1000)
 
 @app.get("/metrics", response_model=dict)
 def get_metrics(api_key: APIKey = Depends(get_api_key)):
@@ -69,12 +104,19 @@ def get_metrics(api_key: APIKey = Depends(get_api_key)):
 @app.post("/predict", response_model=List[DynamicApiResponse])
 def predict(p_list: List[DynamicApiRequest]):
     # loop trough parameter list
-    logger.info(jsonable_encoder(p_list))
     prediction_values = []
     for p in p_list:
         # convert parameter object to array for model
         parameter_array = [getattr(p, k) for k in vars(p)]
-        prediction_values.append(model.predict([parameter_array]))
+        prediction = model.predict([parameter_array])
+        prediction_values.append(prediction)
+        # Structlog
+        if log_mode == 0 or log_mode == 1:
+            structlogging.info({'dummy_data': dummy_data, 'request_parameters': p_list, 'prediction': prediction})
+        # Normal log
+        if log_mode == 0 or log_mode == 2:
+            logging.info({'dummy_data': dummy_data, 'request_parameters': p_list, 'prediction': prediction})
+
     # Construct response
     response: List[DynamicApiResponse] = []
 
@@ -86,4 +128,4 @@ def predict(p_list: List[DynamicApiRequest]):
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8001)
