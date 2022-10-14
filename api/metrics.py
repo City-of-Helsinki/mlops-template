@@ -76,7 +76,8 @@ class FifoOverwriteDataFrame:
 
 def convert_time_to_seconds(t, errors: str = 'raise', pd_infer_datetime_format: bool = True, pd_str_parse_format: bool = None):
     """
-    Parse time expressions to seconds in accuracy of floats.
+    Prometheus standard is to express all time in seconds.
+    This function parses time expressions to seconds in accuracy of floats.
 
     Recursive function, parses:
         strings -> pandas -> numpy -> float
@@ -93,7 +94,7 @@ def convert_time_to_seconds(t, errors: str = 'raise', pd_infer_datetime_format: 
         pd_infer_datetime_format: bool, default True
             
         pd_str_parse_format: str, default none
-        
+
     By default try to infer format from string inputs. This is slower compared to parsing defined format.
     Overwrite by passing custom format to parameter pd_str_parse_format.
     Force custom format by setting pd_infer_datetime_format to False.
