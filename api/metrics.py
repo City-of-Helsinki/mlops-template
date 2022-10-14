@@ -83,12 +83,12 @@ def convert_time_to_seconds(t):
     elif isinstance(t, dt.time):
         return int((t.hour*60+ t.minute)*60 + t.second)
     elif isinstance(t, dt.datetime):
-        return int((t-dt.datetime.min).timestamp()/dt.timedelta('s'))
+        return convert_time_to_seconds((t-dt.datetime.min).timestamp())
     elif isinstance(t, (dt.timedelta)):
         return int(t/dt.timedelta(seconds=1))
     # numpy
     elif isinstance(t, np.datetime64):
-        return int((t-np.datetime64('1970-01-01'))/np.timedelta64(1, 's'))
+        return convert_time_to_seconds(t-np.datetime64('1970-01-01'))
     elif isinstance(t, np.timedelta64):
         return int(t/np.timedelta64(1, 's'))
     # pandas
