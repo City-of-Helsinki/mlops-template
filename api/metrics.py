@@ -83,9 +83,8 @@ def convert_time_to_seconds(t, pd_infer_datetime_format: bool = True, pd_str_par
         datetime -> float
         int -> float
 
-    By default try to infer format from string inputs.
-    Overwrite by setting pd_infer_datetime_format = False and pass custom
-    format to pd_str_parse_format
+    By default try to infer format from string inputs. This is slower compared to parsing defined format.
+    Overwrite by passing custom format to parameter pd_str_parse_format
     """
     # strings
     if isinstance(t, (str, pd.StringDtype)):
@@ -93,7 +92,7 @@ def convert_time_to_seconds(t, pd_infer_datetime_format: bool = True, pd_str_par
             try:
                 ret = pd.to_datetime(t, infer_datetime_format=pd_infer_datetime_format,
                     format = pd_str_parse_format)
-            except pd.errors.ParserError:
+            except (pd.errors.ParserError, ValueError):
                 try:
                     ret = pd.to_timedelta(t)
                 except pd.errors.ParserError:

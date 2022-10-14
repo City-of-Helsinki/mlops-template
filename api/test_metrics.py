@@ -103,6 +103,19 @@ class test_convert_time_to_seconds(unittest.TestCase):
         self.assertEqual(convert_time_to_seconds(1), 1.)
         self.assertEqual(convert_time_to_seconds(1.2), 1.2)
 
+    def test_string_parse(self):
+        # timestamp
+        self.assertIsInstance(convert_time_to_seconds('2022-01-01'), float)
+        self.assertIsInstance(convert_time_to_seconds('2022/01/01'), float)
+        self.assertIsInstance(convert_time_to_seconds('01-01-2022'), float)
+        self.assertIsInstance(convert_time_to_seconds('01/01/2022'), float)
+        self.assertIsInstance(convert_time_to_seconds('01/01/2022', pd_str_parse_format='%d/%m/%Y'), float)
+        # timedelta
+        self.assertIsInstance(convert_time_to_seconds('1 days 06:05:01.00003'), float)
+        # period
+        self.assertIsInstance(convert_time_to_seconds('4Q2005'), float)
+
     def test_invalid_formats(self):
         with self.assertRaises(ValueError):
             convert_time_to_seconds('this should raise an error!')
+            self.assertIsInstance(convert_time_to_seconds('01-01-2022', pd_str_parse_format='%d/%m/%Y'))
