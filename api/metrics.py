@@ -74,7 +74,7 @@ class FifoOverwriteDataFrame:
 # bits, bytes -> bytes
 
 
-def convert_time_to_seconds(t, pd_infer_datetime_format: bool = True, pd_str_parse_format: bool = None):
+def convert_time_to_seconds(t, errors: str = 'raise', pd_infer_datetime_format: bool = True, pd_str_parse_format: bool = None):
     """
     Parse time expressions to seconds in accuracy of floats.
 
@@ -82,51 +82,74 @@ def convert_time_to_seconds(t, pd_infer_datetime_format: bool = True, pd_str_par
         strings -> pandas -> numpy -> float
         datetime -> float
         int -> float
-
-    By default try to infer format from string inputs. This is slower compared to parsing defined format.
-    Overwrite by passing custom format to parameter pd_str_parse_format
-    """
-    # strings
-    if isinstance(t, (str, pd.StringDtype)):
-        try:
-            try:
-                ret = pd.to_datetime(t, infer_datetime_format=pd_infer_datetime_format,
-                    format = pd_str_parse_format)
-            except (pd.errors.ParserError, ValueError):
-                try:
-                    ret = pd.to_timedelta(t)
-                except pd.errors.ParserError:
-                    ret = pd.Period(t)
-        except ValueError:
-            raise ValueError(f'Unsupported expression of time: {t}' + \
-                '\nDo you have a metric with name *time* or *date* that is not an expression of time?')
-        return convert_time_to_seconds(ret)
     
-    # pandas
-    elif isinstance(t, (pd.Timestamp, pd.Timedelta)):
-        return convert_time_to_seconds(t.to_numpy())
-    elif isinstance(t, pd.Period):
-        return convert_time_to_seconds(t.to_timestamp(how='E')-t.to_timestamp(how='S'))
+    Parameters:
 
-    # numpy
-    elif isinstance(t, np.datetime64):
-        return convert_time_to_seconds(t-np.datetime64('1970-01-01'))
-    elif isinstance(t, np.timedelta64):
-        return t/np.timedelta64(1, 's')
+        errors: {‘ignore’, ‘raise’, ‘coerce’}, default ‘raise’
+            - If 'raise', raise an exception.
+            - If 'coerce', return np.nan.
+            - If 'ignore', return the input.
 
-    # datetime
-    elif isinstance(t,dt.date):
-        return float(((t.year*12 + t.month)*31 + t.day)*24*60*60)
-    elif isinstance(t, dt.time):
-        return float((t.hour*60+ t.minute)*60 + t.second)
-    elif isinstance(t, dt.datetime):
-        return convert_time_to_seconds((t-dt.datetime.min).timestamp())
-    elif isinstance(t, dt.timedelta):
-        return t/dt.timedelta(seconds=1)
-    # other (int, float)
-    else:
-        return float(t)
+        pd_infer_datetime_format: bool, default True
+            
+        pd_str_parse_format: str, default none
         
+    By default try to infer format from string inputs. This is slower compared to parsing defined format.
+    Overwrite by passing custom format to parameter pd_str_parse_format.
+    Force custom format by setting pd_infer_datetime_format to False.
+    """
+    
+    if errors not in ['raise', 'ignore', 'coerce']:
+        raise ValueError(f'{errors} is not a valid argument for parameter errors!')
+
+    try:
+        # strings
+        if isinstance(t, (str, pd.StringDtype)):
+            try:
+                try:
+                    ret = pd.to_datetime(t, infer_datetime_format=pd_infer_datetime_format,
+                        format = pd_str_parse_format)
+                except (pd.errors.ParserError, ValueError):
+                    try:
+                        ret = pd.to_timedelta(t)
+                    except pd.errors.ParserError:
+                        ret = pd.Period(t)
+            except ValueError:
+                raise ValueError(f'Unsupported expression of time: {t}' + \
+                    '\nDo you have a metric with name *time* or *date* that is not an expression of time?')
+            return convert_time_to_seconds(ret)
+        
+        # pandas
+        elif isinstance(t, (pd.Timestamp, pd.Timedelta)):
+            return convert_time_to_seconds(t.to_numpy())
+        elif isinstance(t, pd.Period):
+            return convert_time_to_seconds(t.to_timestamp(how='E')-t.to_timestamp(how='S'))
+
+        # numpy
+        elif isinstance(t, np.datetime64):
+            return convert_time_to_seconds(t-np.datetime64('1970-01-01'))
+        elif isinstance(t, np.timedelta64):
+            return t/np.timedelta64(1, 's')
+
+        # datetime
+        elif isinstance(t,dt.date):
+            return float(((t.year*12 + t.month)*31 + t.day)*24*60*60)
+        elif isinstance(t, dt.time):
+            return float((t.hour*60+ t.minute)*60 + t.second)
+        elif isinstance(t, dt.datetime):
+            return convert_time_to_seconds((t-dt.datetime.min).timestamp())
+        elif isinstance(t, dt.timedelta):
+            return t/dt.timedelta(seconds=1)
+        # other (int, float)
+        else:
+            return float(t)
+    except Exception as e:
+        if errors == 'raise':
+            raise e
+        elif errors == 'coerce':
+            return np.nan
+        else:
+            return t
 
 def create_promql_metric_name(metric_name: str,
                                 dtype: Type,

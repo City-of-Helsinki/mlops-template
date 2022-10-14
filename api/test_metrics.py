@@ -114,8 +114,17 @@ class test_convert_time_to_seconds(unittest.TestCase):
         self.assertIsInstance(convert_time_to_seconds('1 days 06:05:01.00003'), float)
         # period
         self.assertIsInstance(convert_time_to_seconds('4Q2005'), float)
+        self.assertIsInstance(convert_time_to_seconds('01-01-2022', pd_str_parse_format='%d/%m/%Y'), float)
 
-    def test_invalid_formats(self):
+    def test_error_handling(self):
         with self.assertRaises(ValueError):
             convert_time_to_seconds('this should raise an error!')
-            self.assertIsInstance(convert_time_to_seconds('01-01-2022', pd_str_parse_format='%d/%m/%Y'))
+        with self.assertRaises(ValueError):
+            convert_time_to_seconds('01-01-2022', pd_str_parse_format='%d/%m/%Y', pd_infer_datetime_format=False)
+        with self.assertRaises(TypeError):
+            convert_time_to_seconds(['this should raise an error'])
+        with self.assertRaises(TypeError):
+            convert_time_to_seconds({'as_should':'this'})
+        
+        self.assertIsInstance(convert_time_to_seconds({'as_should':'this'}, errors='ignore'), dict)
+        self.assertTrue(np.isnan(convert_time_to_seconds({'as_should':'this'}, errors='coerce')))
