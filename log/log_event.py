@@ -1,4 +1,3 @@
-import logging
 from datetime import datetime
 from typing import Optional
 
@@ -11,10 +10,12 @@ class LogEvent(SQLModel, table=True):
     timestamp: datetime
     severity: str
     message: str
+    # request: object
+    # response: object
 
-    def __init__(self, record:logging.LogRecord):
+    def __init__(self, record: dict):
         self.timestamp = datetime.now()
-        self.severity = record.levelname
+        self.severity = 'INFO'
         # TODO: msg = dict
-        self.message = str(record.msg)
+        self.message = str(record)
 
