@@ -14,7 +14,7 @@ class SQLiteLoggingHandler(logging.Handler):
 
     def __init__(self):
         logging.Handler.__init__(self)
-        self.engine = create_engine("sqlite:///sqlite_logger_db.db")
+        self.engine = create_engine("sqlite:///logs.sqlite")
         SQLModel.metadata.create_all(self.engine)
 
     def emit(self, record: logging.LogRecord):

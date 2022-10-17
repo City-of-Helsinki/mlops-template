@@ -1,5 +1,4 @@
 
-import logging
 from typing import List
 
 import structlog
@@ -8,44 +7,31 @@ from fastapi import FastAPI, Security, HTTPException
 import logging
 from fastapi.params import Depends
 from fastapi.security.api_key import APIKeyHeader, APIKey
-from pandas._testing import makeTimeSeries
 from pydantic import create_model
 from starlette.middleware.cors import CORSMiddleware
 from starlette.status import HTTP_403_FORBIDDEN
 
 from log.sqlite_logging_handler import SQLiteLoggingHandler
-from log.sqlite_processor import SQLiteProcessor
 from model_util import unpickle_bundle, ModelSchemaContainer, build_model_definition_from_dict
 
-# Structlog to file structlog.log
-log_file = open("structlog.log", "w", encoding="utf-8")
+# Logging configuration
 structlog.configure(
     processors=[
-    #    SQLiteProcessor(),  # Save message to SQLITE
         structlog.contextvars.merge_contextvars,
         structlog.processors.add_log_level,
         structlog.processors.StackInfoRenderer(),
-        structlog.dev.set_exc_info,
         structlog.processors.TimeStamper(),
-        structlog.dev.ConsoleRenderer()
+        structlog.processors.JSONRenderer()
     ],
     wrapper_class=structlog.make_filtering_bound_logger(logging.INFO),
     context_class=dict,
     logger_factory=structlog.stdlib.LoggerFactory(),
-    #logger_factory=structlog.WriteLoggerFactory(file=log_file), # Save message to log file
     cache_logger_on_first_use=False,
-
 )
 
-sqlite_logging_handler = SQLiteLoggingHandler()
-logging.getLogger().addHandler(sqlite_logging_handler)
+logging.getLogger().addHandler(SQLiteLoggingHandler())
 logging.getLogger().setLevel(logging.INFO)
-
-
-structlogging = structlog.get_logger().bind()
-
-# Log mode 0=Both, 1=Struct&file, 2=Logging+SQLiteHandler
-log_mode = 1
+log = structlog.get_logger().bind()
 
 # Authentication
 API_KEY = "apiKey123"   # TODO: where we want to keep api keys
@@ -93,9 +79,6 @@ app.add_middleware(
     max_age=3600,
 )
 
-# Dummy payload for load testing logger
-# TODO: Note structlog truncates 1000-size dummy data
-dummy_data = makeTimeSeries(1000)
 
 @app.get("/metrics", response_model=dict)
 def get_metrics(api_key: APIKey = Depends(get_api_key)):
@@ -111,12 +94,7 @@ def predict(p_list: List[DynamicApiRequest]):
         parameter_array = [getattr(p, k) for k in vars(p)]
         prediction = model.predict([parameter_array])
         prediction_values.append(prediction)
-        # Structlog
-        if log_mode == 0 or log_mode == 1:
-            structlogging.info({'prediction': prediction, 'request_parameters': p_list})
-        # Normal log
-        if log_mode == 0 or log_mode == 2:
-            logging.info({'prediction': prediction, 'request_parameters': p_list})
+        log.info({'prediction': prediction, 'request_parameters': p_list})
 
     # Construct response
     response: List[DynamicApiResponse] = []
