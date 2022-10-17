@@ -10,6 +10,7 @@ from log.log_event import LogEvent
 # logging.getLogger().addHandler(sqlite_logging_handler)
 # logging.getLogger().setLevel(logging.INFO)
 
+
 class SQLiteLoggingHandler(logging.Handler):
 
     def __init__(self):

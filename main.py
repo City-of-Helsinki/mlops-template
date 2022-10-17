@@ -92,9 +92,10 @@ def predict(p_list: List[DynamicApiRequest]):
     for p in p_list:
         # convert parameter object to array for model
         parameter_array = [getattr(p, k) for k in vars(p)]
-        prediction = model.predict([parameter_array])
+        prediction = model.predict([parameter_array])[0]
         prediction_values.append(prediction)
-        log.info({'prediction': prediction, 'request_parameters': p_list})
+        log.info({'prediction': prediction, 'request_parameters': p})
+        logging.info({'prediction': prediction, 'request_parameters': p})
 
     # Construct response
     response: List[DynamicApiResponse] = []
