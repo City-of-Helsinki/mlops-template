@@ -195,7 +195,7 @@ def create_promql_metric_name(metric_name: str,
     # remove reserved suffixes (a metric should not end with these)
     for reserved_suffix in ['_count', '_sum', '_bucket', '_total']:
         l = len(reserved_suffix)
-        while ret[-l:] == reserved_suffix:#ret.endswith(reserved_suffix):
+        while ret.endswith(reserved_suffix):
             ret = ret[:-l]
     
     # however, counters should always have _total suffix
