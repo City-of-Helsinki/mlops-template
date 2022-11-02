@@ -5,7 +5,7 @@ import unittest
 from metrics import FifoOverwriteDataFrame, convert_time_to_seconds
 
 
-class testFifoOverwriteDataFrame(unittest.TestCase):
+class TestFifoOverwriteDataFrame(unittest.TestCase):
 
     def test_init(self):
         self.assertIsInstance(FifoOverwriteDataFrame({'x':int}), FifoOverwriteDataFrame)
@@ -76,7 +76,7 @@ class testFifoOverwriteDataFrame(unittest.TestCase):
 import time
 import datetime as dt
 
-class test_convert_time_to_seconds(unittest.TestCase):
+class TestConvertTime(unittest.TestCase):
     
     def test_time(self):
         self.assertIsInstance(convert_time_to_seconds(time.time()), float)
@@ -128,3 +128,85 @@ class test_convert_time_to_seconds(unittest.TestCase):
         
         self.assertIsInstance(convert_time_to_seconds({'as_should':'this'}, errors='ignore'), dict)
         self.assertTrue(np.isnan(convert_time_to_seconds({'as_should':'this'}, errors='coerce')))
+
+# TODO: test_create_promql_metric_name
+
+from metrics import create_promql_metric_name
+
+class TestConvertName(unittest.TestCase):
+
+    def test_illegal_character_removal(self):
+        self.assertEqual(create_promql_metric_name('te$st', None), 'te_st')
+        self.assertEqual(create_promql_metric_name('test%', None), 'test')
+        self.assertEqual(create_promql_metric_name('&test', None), 'test')
+    
+    def test_extra_undescore_removal(self):
+        self.assertEqual(create_promql_metric_name('te_st', None), 'te_st')
+        self.assertEqual(create_promql_metric_name('te__st', None), 'te_st')
+        self.assertEqual(create_promql_metric_name('test_', None), 'test')
+        self.assertEqual(create_promql_metric_name('test__', None), 'test')
+        self.assertEqual(create_promql_metric_name('_test', None), 'test')
+        self.assertEqual(create_promql_metric_name('__test', None), 'test')
+
+    def test_prefix(self):
+        # normal
+        self.assertEqual(create_promql_metric_name('page_visit_time', dt.date, prefix = 'test'),
+            'test_page_visit_time_timestamp_seconds')
+        # prefixing underscore removal
+        self.assertEqual(create_promql_metric_name('page_visit_time', dt.date, prefix = '_test'),
+            'test_page_visit_time_timestamp_seconds')
+        # extra underscore removal
+        self.assertEqual(create_promql_metric_name('page_visit_time', dt.date, prefix = 'test_'),
+            'test_page_visit_time_timestamp_seconds')
+        # illegal character removal
+        self.assertEqual(create_promql_metric_name('page_visit_time', dt.date, prefix = 'test#'),
+            'test_page_visit_time_timestamp_seconds')
+    
+    def test_suffix(self):
+        # normal
+        self.assertEqual(create_promql_metric_name('value_generated', None, suffix = 'euros'),
+            'value_generated_euros')
+        #illegal character removal
+        self.assertEqual(create_promql_metric_name('value_generated', None, suffix = 'euros_€'),
+            'value_generated_euros')
+
+    def test_timestamp(self):
+        self.assertEqual(create_promql_metric_name('page_visit_time', dt.date),
+            'page_visit_time_timestamp_seconds')
+        self.assertEqual(create_promql_metric_name('page_visit_time_timestamp', dt.date),
+            'page_visit_time_timestamp_seconds')
+        self.assertEqual(create_promql_metric_name('page_visit_timestamp_time', dt.date),
+            'page_visit_time_timestamp_seconds')
+        self.assertEqual(create_promql_metric_name('page_visit_time_seconds_timestamp', dt.date),
+            'page_visit_time_timestamp_seconds')
+
+    def test_timedelta(self):
+        self.assertEqual(create_promql_metric_name('page_visit_time', dt.timedelta),
+            'page_visit_time_seconds')
+        self.assertEqual(create_promql_metric_name('page_visit_time_seconds', dt.timedelta),
+            'page_visit_time_seconds')
+        self.assertEqual(create_promql_metric_name('page_visit_seconds_time', dt.timedelta),
+            'page_visit_time_seconds')
+
+    def test_string(self):
+        self.assertEqual(create_promql_metric_name('optimization_function', str),
+            'optimization_function_info')
+
+    def test_remove_metric_types(self):
+        self.assertEqual(create_promql_metric_name('test_map', None),
+            'test')
+
+    def test_remove_reserved_suffixes(self):
+        create_promql_metric_name('test_count', None)
+
+        self.assertEqual(create_promql_metric_name('test_count', None),'test')
+        self.assertEqual(create_promql_metric_name('test_count_count', None),'test')
+        # not removed from beginning or middle
+        self.assertEqual(create_promql_metric_name('count_test', None),'count_test')
+        self.assertEqual(create_promql_metric_name('test_count_test', None),'test_count_test')
+    
+        
+    def test_counter_suffix(self):
+        self.assertEqual(create_promql_metric_name('test', None, is_counter=True),'test_total')
+        self.assertEqual(create_promql_metric_name('test_total', None, is_counter=True),'test_total')
+        self.assertEqual(create_promql_metric_name('total_test', None, is_counter=True),'total_test_total')

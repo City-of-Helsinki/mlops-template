@@ -152,7 +152,7 @@ def convert_time_to_seconds(t, errors: str = 'raise', pd_infer_datetime_format: 
             return t
 
 def create_promql_metric_name(metric_name: str,
-                                dtype: Type,
+                                dtype: Type = None,
                                 prefix: str = '',
                                 suffix: str = '',
                                 is_counter = False):
@@ -163,42 +163,50 @@ def create_promql_metric_name(metric_name: str,
 
     See https://prometheus.io/docs/practices/naming/ for naming conventions.
     """
+    
+    ret = prefix + '_' + metric_name + '_' + suffix
+    # must be lowercase
+    ret = ret.lower().strip('_')
 
-    ret = prefix.rstrip('_') # may not begin with underscore
-    if isinstance(dtype(),(datetime, pd.Timestamp, np.datetime64)):
+    if np.any([dtype is tp for tp in [dt.date,dt.time, dt.datetime, pd.Timestamp, np.datetime64]]):
         # e.g. date_of_birth -> 'date_of_birth_timestamp_seconds'
-        metric_name =  metric_name.strip('_seconds').strip('_timestamp').strip('_seconds') + \
-            '_timestamp_seconds'
-    elif isinstance(dtype(),(pd.Timedelta, pd.Period,np.timedelta64)):
+        ret =  ret.replace('seconds','').replace('timestamp','') + '_timestamp_seconds'
+    
+    elif np.any([dtype is tp for tp in [dt.timedelta, pd.Timedelta, pd.Period,np.timedelta64]]):
         # e.g. time_on_site -> 'time_on_site_seconds'
-        metric_name = metric_name.strip('_seconds') + '_seconds'
-    elif isinstance(dtype(), (str, np.string_, np.unicode_, np.dtype('O'),
-                        pd.object, pd.CategoricalDtype, pd.StringDtype)):
+        ret = ret.replace('seconds', '') + '_seconds'
+    elif np.any([dtype is tp for tp in [str, pd.CategoricalDtype, pd.StringDtype]]):
         # e.g. description -> description_count
-        metric_name += '_info'
+        ret += '_info'
     else: # add more exceptions if needed
         pass
     
-    ret += metric_name + '_' + suffix
-
+    
     # remove metric types from metric name (a metric name should not contain these)
     for metric_type in ['gauge', 'counter', 'summary', 'map']:
-        metric_name = metric_name.replace(metric_type, '')
+        ret = ret.replace('_' + metric_type + '_', '')
+        while ret.startswith(metric_type + '_'):
+            ret = ret[:-(len(metric_type)+1)]
+        while ret.endswith('_' + metric_type):
+            ret = ret[:-(len(metric_type)+1)]
     
-    # remove reserved suffixes (a metric should not end with these)
-    for metric_suffix in ['_count', '_sum', '_bucket', '_total']:
-        metric_name = metric_name.strip(metric_suffix)
+    ret = ret.strip('_')
 
+    # remove reserved suffixes (a metric should not end with these)
+    for reserved_suffix in ['_count', '_sum', '_bucket', '_total']:
+        l = len(reserved_suffix)
+        while ret[-l:] == reserved_suffix:#ret.endswith(reserved_suffix):
+            ret = ret[:-l]
+    
     # however, counters should always have _total suffix
-    if is_counter: metric_name += '_total'
+    if is_counter: ret += '_total'
+    # clean non-alphanumericals except underscores
+    ret = re.sub(r'[^\w'+'_'+']', '_', ret)
 
     # clean extra underscores
-    metric_name = ''.join(['_' + val.strip('_') if val != '' else '' for val in metric_name.split('_')]).rstrip('_')
-    
-    # clean non-alphanumericals and underscores
-    metric_name = re.sub('[a-zA-Z_:][a-zA-Z0-9_:]*', '_', s)
+    ret = ''.join(['_' + val.strip('_') if val != '' else '' for val in ret.split('_')]).strip('_')
 
-    return metric_name
+    return ret
 
 
 def model_development_metrics(metrics: dict) -> None:
