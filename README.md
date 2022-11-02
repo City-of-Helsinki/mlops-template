@@ -16,6 +16,7 @@ or via Docker:
 2.-3. as above
 4. To shut down run `docker-compose down`
 
+Run tests with 'docker exec mlops-fastapi-api python -m unittest test_metrics.py'
 
 ## Api documentation
 
