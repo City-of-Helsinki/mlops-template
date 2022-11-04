@@ -9,4 +9,4 @@ pip-compile --upgrade --generate-hashes --allow-unsafe -o requirements.txt base-
 pip-compile --upgrade --generate-hashes --allow-unsafe -o min-requirements.txt base-requirements.in project-requirements.in
 
 ## install updated requirements
-#pip-sync requirements.txt
+pip-sync requirements.txt
