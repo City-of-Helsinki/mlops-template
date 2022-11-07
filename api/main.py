@@ -5,16 +5,20 @@ from fastapi import FastAPI, Security, HTTPException
 from fastapi.params import Depends
 from fastapi.security.api_key import APIKeyHeader, APIKey
 from fastapi.responses import HTMLResponse
-from prometheus_client import Summary, Counter, Gauge, Enum, generate_latest
 from pydantic import create_model
 from starlette.middleware.cors import CORSMiddleware
 from starlette.status import HTTP_403_FORBIDDEN
 
+from model_util import (
+    unpickle_bundle,
+    ModelSchemaContainer,
+    build_model_definition_from_dict,
+)
 
-from model_util import unpickle_bundle, ModelSchemaContainer, build_model_definition_from_dict
+from prometheus_client import generate_latest
 
 # Authentication
-API_KEY = "apiKey123"   # TODO: where we want to keep api keys
+API_KEY = "apiKey123"  # TODO: where we want to keep api keys
 API_KEY_NAME = "X-API-KEY"
 
 api_key_header = APIKeyHeader(name=API_KEY_NAME, auto_error=False)
@@ -25,34 +29,52 @@ async def get_api_key(api_key_header: str = Security(api_key_header)):
         return api_key_header
     else:
         raise HTTPException(
-            status_code=HTTP_403_FORBIDDEN, detail="API key is missing or incorrect in header: {}.".format(API_KEY_NAME)
+            status_code=HTTP_403_FORBIDDEN,
+            detail="API key is missing or incorrect in header: {}.".format(
+                API_KEY_NAME
+            ),
         )
+
+
 # / authentication
 
 # Load model and schema definitions from pickled container class
-model_and_schema: ModelSchemaContainer = unpickle_bundle('bundle_latest')
+model_and_schema: ModelSchemaContainer = unpickle_bundle("bundle_latest")
 # ML model
 model = model_and_schema.model
 
+
+# TODO: PROMEHEUS:
 # metrics
+# - numeric
+# - category
 metrics = model_and_schema.metrics
 
 # Schema for request (X)
-DynamicApiRequest = create_model('DynamicApiRequest', **build_model_definition_from_dict(model_and_schema.req_schema))
+DynamicApiRequest = create_model(
+    "DynamicApiRequest", **build_model_definition_from_dict(model_and_schema.req_schema)
+)
 # Schema for response (y)
-DynamicApiResponse = create_model('DynamicApiResponse', **build_model_definition_from_dict(model_and_schema.res_schema))
+DynamicApiResponse = create_model(
+    "DynamicApiResponse",
+    **build_model_definition_from_dict(model_and_schema.res_schema)
+)
 
 # Determine response object value field and type
-response_value_field = list(DynamicApiResponse.schema()['properties'])[0]
-response_value_type = type(DynamicApiResponse.schema()['properties'][response_value_field]['type'])
+response_value_field = list(DynamicApiResponse.schema()["properties"])[0]
+response_value_type = type(
+    DynamicApiResponse.schema()["properties"][response_value_field]["type"]
+)
 
 # Start up API
-app = FastAPI(title="DataHel ML API", description="Generic API for ML model.", version="1.0")
+app = FastAPI(
+    title="DataHel ML API", description="Generic API for ML model.", version="1.0"
+)
 
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],    # allow all origins
+    allow_origins=["*"],  # allow all origins
     allow_credentials=True,
     allow_methods=["POST", "GET", "OPTIONS"],
     allow_headers=["*"],
@@ -62,10 +84,21 @@ app.add_middleware(
 
 @app.get("/metrics", response_model=dict)
 def get_metrics(api_key: APIKey = Depends(get_api_key)):
-    def get_metrics():
     return HTMLResponse(generate_latest())
 
 
+# TODO: PROMEHEUS:
+# input:
+#   - raw values (if not text or some other weird datatype)
+#   - hist/sumstat (a bit more private)
+# processing:
+#   - time (total / hist )
+#   - general resource usage
+#   - request counter
+# output:
+#   - raw (if not text of some other weird datatype)
+#   - if category
+#   - hist/sumstat (a bit more private)
 @app.post("/predict", response_model=List[DynamicApiResponse])
 def predict(p_list: List[DynamicApiRequest]):
     # loop trough parameter list
