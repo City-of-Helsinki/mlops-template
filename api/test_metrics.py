@@ -342,4 +342,8 @@ class TestRecordDict(unittest.TestCase):
 
     def test_no_promql_convert(self):
         clean_registry()
-        record_metrics_from_dict(metrics=self.metrics, convert_names_to_promql=False)
+        m = record_metrics_from_dict(
+            metrics=self.metrics, convert_names_to_promql=False
+        )
+
+        self.assertEqual(str(m[4]), "gauge:model_update_time")
