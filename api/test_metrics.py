@@ -1,3 +1,4 @@
+from metrics import record_metrics_from_dict
 import numpy as np
 import pandas as pd
 import unittest
@@ -282,3 +283,63 @@ class TestConvertName(unittest.TestCase):
             create_promql_metric_name("total_test", None, is_counter=True),
             "total_test_total",
         )
+
+
+from prometheus_client import Summary, Counter, Gauge, Enum, REGISTRY
+
+
+def clean_registry():
+    collectors = list(REGISTRY._collector_to_names.keys())
+    for collector in collectors:
+        REGISTRY.unregister(collector)
+
+
+class TestRecordDict(unittest.TestCase):
+    metrics = {
+        "train_loss": {
+            "value": 0.95,
+            "description": "training loss (MSE)",
+            "type": "numeric",
+        },
+        "test_loss": {
+            "value": 0.96,
+            "description": "test loss (MSE)",
+            "type": "numeric",
+        },
+        "optimizer": {
+            "value": np.random.choice(["SGD", "RMSProp", "Adagrad"]),
+            "description": "ml model optimizer function",
+            "type": "category",
+            "categories": ["SGD", "RMSProp", "Adagrad", "Adam"],
+        },
+        "model_build_info": {
+            "description": "dev information",
+            "type": "info",
+            "value": {
+                "origin": "city-of-helsinki@github.com/ml-app",
+                "branch": "main",
+                "commit": "12345678",
+            },
+        },
+        "model_update_time": {
+            "value": dt.datetime.now(),
+            "description": "model update workflow finish time",
+            "type": "numeric",
+        },
+    }
+
+    def test_metrics(self):
+        clean_registry()
+        m = record_metrics_from_dict(metrics=self.metrics)
+
+        self.assertEqual(str(m[0]), "gauge:train_loss")
+
+        self.assertEqual(str(m[2]), "stateset:optimizer")
+
+        self.assertEqual(str(m[3]), "info:model_build_info")
+
+        self.assertEqual(str(m[4]), "gauge:model_update_time_timestamp_seconds")
+
+    def test_no_promql_convert(self):
+        clean_registry()
+        record_metrics_from_dict(metrics=self.metrics, convert_names_to_promql=False)

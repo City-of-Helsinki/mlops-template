@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import Iterable, Type, Union
 from parser import ParserError
-from prometheus_client import Summary, Counter, Gauge, Enum
+from prometheus_client import Summary, Counter, Gauge, Enum, Info
 import datetime as dt
 import re
 
@@ -243,9 +243,28 @@ def create_promql_metric_name(
     return ret
 
 
+def is_time_format(dtype):
+    return np.any(
+        [
+            dtype is tp
+            for tp in [
+                dt.date,
+                dt.time,
+                dt.datetime,
+                pd.Timestamp,
+                np.datetime64,
+                dt.timedelta,
+                pd.Timedelta,
+                pd.Period,
+                np.timedelta64,
+            ]
+        ]
+    )
+
+
 def record_metrics_from_dict(
-    metrics: dict, convert_names_to_promql: bool == True
-) -> None:
+    metrics: dict, convert_names_to_promql: bool = True
+) -> list:
     """
     Read pre-recorded metrics from dict to Prometheus.
     Use case: pass model train/val pipeline metrics to prometheus.
@@ -274,48 +293,70 @@ def record_metrics_from_dict(
     }
 
     Example:
-
     metrics = {
-        'train_loss':{'value':0.95, 'description': 'training loss (MSE)', 'type':'numeric'},
-        'test_loss':{'value':0.96, 'description': 'test loss (MSE)', 'type':'numeric'},
-        'optimizer':{'value':random.choice(['SGM', 'RMSProp', 'Adagrad']),
-            'description':'ml model optimizer function',
-            'type': 'category',
-            'categories':['SGD', 'RMSProp', 'Adagrad', 'Adam']}
-        'model_build_info':{'description': 'dev information', type: 'info',
-            label_names = ['origin', 'branch', 'commit'],
-            label_values = ['city-of-helsinki@github.com/ml-app', 'main', '12354568']}
-            }
+        "train_loss": {
+            "value": 0.95,
+            "description": "training loss (MSE)",
+            "type": "numeric",
+        },
+        "test_loss": {
+            "value": 0.96,
+            "description": "test loss (MSE)",
+            "type": "numeric",
+        },
+        "optimizer": {
+            "value": np.random.choice(["SGD", "RMSProp", "Adagrad"]),
+            "description": "ml model optimizer function",
+            "type": "category",
+            "categories": ["SGD", "RMSProp", "Adagrad", "Adam"],
+        },
+        "model_build_info": {
+            "description": "dev information",
+            "type": "info",
+            "value": {'origin':'city-of-helsinki@github.com/ml-app', 'branch':'main', 'commit':'12345678'}
+        },
+    }
+
     """
-    # TODO: make use of create_promql_metric_name
+    ret = []  # return metric handles. In normal use these are not needed.
 
     for metric_name in metrics.keys():
-
+        metric = metrics[metric_name]
+        dtype = type(metric["value"])
+        # prometheus name for metric
         metric_handle = (
-            create_promql_metric_name(
-                metric_name=metric_name, dtype=Type(metric["value"])
-            )
+            create_promql_metric_name(metric_name=metric_name, dtype=dtype)
             if convert_names_to_promql
             else metric_name
         )
 
-        metric = metrics[metric_name]
+        value = metric["value"]
+        # convert time formats to seconds
+        value = (
+            convert_time_to_seconds(value)
+            if is_time_format(type(value))
+            or metric_handle.endswith(("seconds", "timestamp"))
+            else metric["value"]
+        )
+
         if metric["type"] == "numeric":
-            g = Gauge(metric_name, metric["description"])
-            g.set(metric["value"])
+            m = Gauge(metric_handle, metric["description"])
+            m.set(value)
         elif metric["type"] == "category":
-            s = Enum(metric_name, metric["description"], states=metric["categories"])
-            s.state(metric["value"])
+            m = Enum(metric_handle, metric["description"], states=metric["categories"])
+            m.state(value)
         elif metric["type"] == "info":
-            g = Gauge(
-                metric_name.strip("_info") + "_info",
+            m = Info(
+                metric_handle,
                 metric["description"],
-                metric["label_names"],
             )
-            # note that each new metric-label combination creates a new time series!
-            g.labels(metric["label_values"]).set(1)
+            # WARNING: each new metric-label combination creates a new time series!
+            m.info(value)
         else:
             raise ValueError(f"metric of unknown type: {metric}")
+        ret.append(m)
+
+    return ret
 
 
 # TODO: PROMEHEUS:
