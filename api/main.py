@@ -24,6 +24,7 @@ app = FastAPI()
 
 security = HTTPBasic()
 
+
 def get_current_username(credentials: HTTPBasicCredentials = Depends(security)):
     current_username_bytes = credentials.username.encode("utf8")
     correct_username_bytes = b"stanleyjobson"
@@ -93,6 +94,8 @@ app.add_middleware(
     allow_headers=["*"],
     max_age=3600,
 )
+
+# TODO: create & collect metrics using metrics module!
 
 
 @app.get("/metrics", response_model=dict)
