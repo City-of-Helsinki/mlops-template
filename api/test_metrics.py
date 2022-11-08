@@ -1,4 +1,3 @@
-from metrics import record_metrics_from_dict
 import numpy as np
 import pandas as pd
 import unittest
@@ -285,6 +284,8 @@ class TestConvertName(unittest.TestCase):
         )
 
 
+from metrics import record_metrics_from_dict
+
 from prometheus_client import Summary, Counter, Gauge, Enum, REGISTRY
 
 
@@ -347,3 +348,62 @@ class TestRecordDict(unittest.TestCase):
         )
 
         self.assertEqual(str(m[4]), "gauge:model_update_time")
+
+
+from metrics import SummaryStatisticsMetrics, is_numeric_dtype
+
+
+class TestSummaryStatistics(unittest.TestCase):
+    class stringable_object:
+        def __str__():
+            return "hello_world"
+
+    class non_stringable_object:
+        a = 1
+
+    columns = {
+        "numeric_float": float,
+        "numeric_int": int,
+        "bool": pd.BooleanDtype,
+        "datetime": dt.datetime,
+        "category": pd.CategoricalDtype,
+        "string": str,
+        "stringable_object": stringable_object,
+        "non_stringable_object": non_stringable_object,
+    }
+
+    values1 = [
+        [
+            0.1,
+            1,
+            True,
+            dt.datetime.now(),
+            pd.Series(["a", "b", "c", "a"], dtype="category").iloc[0],
+            "string",
+            stringable_object(),
+            non_stringable_object(),
+        ]
+    ]
+
+    df1 = pd.DataFrame(columns=columns, data=values1)
+
+    def test_init(self):
+        clean_registry()
+        ssm = SummaryStatisticsMetrics(columns=self.columns)
+        for key in self.columns.keys():
+            self.assertTrue(
+                np.any(
+                    [
+                        metricname.startswith(create_promql_metric_name(key))
+                        for metricname in ssm.metrics.keys()
+                    ]
+                )
+            )
+
+    def test_set(self):
+        clean_registry()
+        ssm = SummaryStatisticsMetrics(columns=self.columns)
+
+        ssm.set(self.df1)
+        # reset
+        ssm.set(self.df1)
