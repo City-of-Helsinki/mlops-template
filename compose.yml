@@ -19,6 +19,6 @@ services:
     image: prom/prometheus
     container_name: mlops-fastapi-prometheus
     volumes:
-      - ./prometheus-local/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
     ports: 
       - 9090:9090

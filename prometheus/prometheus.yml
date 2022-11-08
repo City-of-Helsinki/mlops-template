@@ -3,8 +3,8 @@ global:
 
   # Attach these labels to any time series or alerts when communicating with
   # external systems (federation, remote storage, Alertmanager).
-  external_labels:
-    monitor: 'prometheus-on-prem-local'
+  #external_labels:
+  #  monitor: 'prometheus-on-prem-local'
 
 # A scrape configuration containing exactly one endpoint to scrape:
 # Here it's Prometheus itself.
@@ -13,6 +13,10 @@ scrape_configs:
   - job_name: 'mlops-fastapi-api'
 
     scrape_interval: 5s
+
+    basic_auth: # TODO: how to use secrets?
+      username: 'stanleyjobson'
+      password: 'swordfish'
 
     static_configs:
       - targets: ['mlops-fastapi-api:8000']

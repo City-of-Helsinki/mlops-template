@@ -1,9 +1,8 @@
 from typing import List
 
 import uvicorn
-from fastapi import FastAPI, Security, HTTPException
+from fastapi import FastAPI, Security, HTTPException, status
 from fastapi.params import Depends
-from fastapi.security.api_key import APIKeyHeader, APIKey
 from fastapi.responses import HTMLResponse
 from pydantic import create_model
 from starlette.middleware.cors import CORSMiddleware
@@ -18,22 +17,36 @@ from model_util import (
 from prometheus_client import generate_latest
 
 # Authentication
-API_KEY = "apiKey123"  # TODO: where we want to keep api keys
-API_KEY_NAME = "X-API-KEY"
+import secrets
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
 
-api_key_header = APIKeyHeader(name=API_KEY_NAME, auto_error=False)
+app = FastAPI()
 
+security = HTTPBasic()
 
-async def get_api_key(api_key_header: str = Security(api_key_header)):
-    if api_key_header == API_KEY:
-        return api_key_header
-    else:
+def get_current_username(credentials: HTTPBasicCredentials = Depends(security)):
+    current_username_bytes = credentials.username.encode("utf8")
+    correct_username_bytes = b"stanleyjobson"
+    is_correct_username = secrets.compare_digest(
+        current_username_bytes, correct_username_bytes
+    )
+    current_password_bytes = credentials.password.encode("utf8")
+    correct_password_bytes = b"swordfish"
+    is_correct_password = secrets.compare_digest(
+        current_password_bytes, correct_password_bytes
+    )
+    if not (is_correct_username and is_correct_password):
         raise HTTPException(
-            status_code=HTTP_403_FORBIDDEN,
-            detail="API key is missing or incorrect in header: {}.".format(
-                API_KEY_NAME
-            ),
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect email or password",
+            headers={"WWW-Authenticate": "Basic"},
         )
+    return credentials.username
+
+
+@app.get("/users/me")
+def read_current_user(username: str = Depends(get_current_username)):
+    return {"username": username}
 
 
 # / authentication
@@ -83,7 +96,7 @@ app.add_middleware(
 
 
 @app.get("/metrics", response_model=dict)
-def get_metrics(api_key: APIKey = Depends(get_api_key)):
+def get_metrics(username: str = Depends(get_current_username)):
     return HTMLResponse(generate_latest())
 
 
