@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import Iterable, Type, Union
+from numbers import Number
 from parser import ParserError
 from prometheus_client import Summary, Counter, Gauge, Enum, Info
 import datetime as dt
@@ -11,6 +12,74 @@ import pandas as pd
 # For some metrics, we may want to keep a FIFO que for
 # calculating summary statistics over fixed number of records
 # instead of a period of time that is the standard for Prometheus:
+
+def is_timedelta_dtype(dtype)->bool:
+    """
+    check if datatype is timedelta or period
+    """
+    return np.any(
+        [
+            dtype is tp
+            for tp in [
+                dt.timedelta,
+                pd.Timedelta,
+                pd.Period,
+                np.timedelta64,
+            ]
+        ]
+    )
+
+def is_timestamp_dtype(dtype)->bool:
+    """
+    check if given datatype is a timestamp
+    """
+    return np.any(
+        [
+            dtype is tp
+            for tp in [
+                dt.date,
+                dt.time,
+                dt.datetime,
+                pd.Timestamp,
+                np.datetime64
+            ]
+        ]
+    )
+
+def is_time_dtype(dtype)->bool:
+    """
+    check if given data type is of any time format
+    """
+    return is_timedelta_dtype(dtype) or is_timestamp_dtype(dtype)
+
+
+def is_numeric_dtype(dtype):
+    """
+    check if given datatype is numeric.
+    isinstance numbers.Number does not work with pandas or numpy
+    """
+    try:
+        dtype(1)/1 # if numeric, should not crash
+        return True
+    except:
+        return False
+
+def is_bool_dtype(dtype):
+    """
+    Check if data type is boolean
+    """
+    return np.any([dtype is tp for tp in [bool, np.bool_, pd.BooleanDtype]])
+
+def is_str_dtype(dtype):
+    """
+    check if given datatype is string
+    """
+    return np.any([dtype is tp for tp in [str, np.string_, pd.StringDtype]])
+
+def is_categorical_dtype(dtype):
+    return dtype is pd.CategoricalDtype
+
+
 
 
 class FifoOverwriteDataFrame:
@@ -119,7 +188,7 @@ def convert_time_to_seconds(
 
     try:
         # strings
-        if isinstance(t, (str, pd.StringDtype)):
+        if is_str_dtype(type(t)):
             try:
                 try:
                     ret = pd.to_datetime(
@@ -193,21 +262,14 @@ def create_promql_metric_name(
     # must be lowercase
     ret = ret.lower().strip("_")
 
-    if np.any(
-        [
-            dtype is tp
-            for tp in [dt.date, dt.time, dt.datetime, pd.Timestamp, np.datetime64]
-        ]
-    ):
+    if is_timestamp_dtype(dtype):
         # e.g. date_of_birth -> 'date_of_birth_timestamp_seconds'
         ret = ret.replace("seconds", "").replace("timestamp", "") + "_timestamp_seconds"
 
-    elif np.any(
-        [dtype is tp for tp in [dt.timedelta, pd.Timedelta, pd.Period, np.timedelta64]]
-    ):
+    elif is_timedelta_dtype(dtype):
         # e.g. time_on_site -> 'time_on_site_seconds'
         ret = ret.replace("seconds", "") + "_seconds"
-    elif np.any([dtype is tp for tp in [str, pd.CategoricalDtype, pd.StringDtype]]):
+    elif is_str_dtype(dtype):
         # e.g. description -> description_count
         ret += "_info"
     else:  # add more exceptions if needed
@@ -242,24 +304,6 @@ def create_promql_metric_name(
 
     return ret
 
-
-def is_time_format(dtype):
-    return np.any(
-        [
-            dtype is tp
-            for tp in [
-                dt.date,
-                dt.time,
-                dt.datetime,
-                pd.Timestamp,
-                np.datetime64,
-                dt.timedelta,
-                pd.Timedelta,
-                pd.Period,
-                np.timedelta64,
-            ]
-        ]
-    )
 
 
 def record_metrics_from_dict(
@@ -334,11 +378,12 @@ def record_metrics_from_dict(
         # convert time formats to seconds
         value = (
             convert_time_to_seconds(value)
-            if is_time_format(type(value))
+            if is_time_dtype(type(value))
             or metric_handle.endswith(("seconds", "timestamp"))
             else metric["value"]
         )
 
+        # TODO: consider inferring types from dtype instead of user definition
         if metric["type"] == "numeric":
             m = Gauge(metric_handle, metric["description"])
             m.set(value)
@@ -359,26 +404,51 @@ def record_metrics_from_dict(
     return ret
 
 
+
 # TODO: PROMEHEUS:
 # input:
 #   - raw values (if not text or some other weird datatype)
 #   - hist/sumstat (a bit more private)
 
-
+# TODO: unittest
 class SummaryStatisticsMetrics:
     """
-    Class for wrapping metrics based on dataframe summary statistics,
-    for example FifoOverwriteDataFrame.flush()
+    Class wrapper for generic drift monitoring. 
+    
+    Generate and update prometheus metrics based on a dataframe,
+    using a summary statistics function.
+    
+    By default, uses pd.DataFrame.describe(), but custom summary statistics may be used.
+
+    Designed to be used to calculate summary statistics of input data collected to
+    FifoOverwriteDataFrame and pass them to prometheus. 
+
+    Workflow example:
+
+    0. SummaryStatisticsMetrics creates prometheus metrics for drift detection when api is launched.
+    1. Input features from requests to api collected to FifoOverwriteDataFrame.
+    2.0 FODF flushed when full or periodically.
+    2.1 (optional) Flush data can be anonymized if needed, for example with Helsinki tabular anonymizer.
+    3. SummaryStatisticsMetrics calculates summary statistics from flush and updates them to prometheus.
+    4. Return to step 1. 
     """
 
     def init(
         self,
         columns: dict,
         summary_statistics_function: function = lambda df: df.describe(include="all"),
+        convert_names_to_promql: bool = True,
         metrics_name_prefix: str = "",
     ):
         """
-        metric_name_prefix is a common prefix for metric names, e.g. 'input_feature_'
+        Parameters:
+
+        columns: dict of column-datatype pairs similar to when creating pd.DataFrame
+        summary_statistics_function: function that takes in pd.DataFrame returns 
+            a dataframe containing summary statistics for each column.
+        convert_names_to_promql: metric names are inferred from given column and summary statistic function.
+            If true, inferred names are auto-corrected to promql.
+        metrics_name_prefix: an optional prefix to prometheus metric names created, e.g. 'input_'
         """
         self.columns = columns
         self.summary_statistics_function = summary_statistics_function
@@ -396,73 +466,49 @@ class SummaryStatisticsMetrics:
                 metric_key = "_".join([colname, rowname])
                 metric_description = f"calculated using summary statistics function {summary_statistics_function.__name__}"
                 metric_name = create_promql_metric_name(
-                    metric_name=colname,
+                    metric_name=metric_key,
                     dtype=dtype,
-                    prefix=metrics_name_prefix,
-                    postfix=rowname,
-                )
+                    prefix=metrics_name_prefix
+                ) if convert_names_to_promql else metric_name
                 # if category, create Enum
-                if isinstance(
-                    dtype(),
-                    (
-                        str,
-                        np.string_,
-                        np.unicode_,
-                        np.dtype("O"),
-                        pd.object,
-                        pd.CategoricalDtype,
-                        pd.StringDtype,
-                    ),
-                ):
+                if is_time_dtype(dtype) or is_numeric_dtype(dtype) or is_bool_dtype(dtype):
+                    g = Gauge(metric_name, metric_description)
+                else: # string, categories & objects
                     g = Enum(metric_name, metric_description, states=[])
-                # else Gauge
-                else:
-                    g = Gauge(metric_name, metric["description"])
+                
+                # record created metric in a dict
                 self.metrics[metric_key] = g
 
     def set(self, df: pd.DataFrame):
         """
-        Set metrics to given value
+        Calculate summary statistics and set metrics accordingly
         """
         sumstat_df = self.summary_statistics_function(df)
-        # loop through metrics and
+        # loop through dataframe and calculate summary statistics
         for colname in self.colnames:
             for rowname in self.rownames:
                 metric_key = "_".join([colname, rowname])
                 metric_value = sumstat_df.loc[rowname, colname]
-                if isinstance(
-                    metric_value,
-                    (
-                        datetime,
-                        pd.Timestamp,
-                        pd.Timedelta,
-                        pd.Period,
-                        np.datetime64,
-                        np.timedelta64,
-                    ),
-                ):
-                    # convert all time formats to integer seconds
-                    metric_value = convert_time_to_seconds(feature, dtype)
-                elif isinstance(metric_value, (bool, np.bool_, pd.BooleanDtype)):
-                    metric_value = 1 if metric_value else 0
-                elif isinstance(
-                    metric_value,
-                    (
-                        str,
-                        np.string_,
-                        np.unicode_,
-                        np.dtype("O"),
-                        pd.object,
-                        pd.CategoricalDtype,
-                        pd.StringDtype,
-                    ),
-                ):
-                    metric_value = str(metric_value)
-                else:
-                    pass  # add other options if needed
-                # omit nan values
-                if metric_value is not None and not np.isnan(metric_value):
+                dtype = type(metric_value)
+                if is_time_dtype(dtype): # convert all time formats to integer seconds
+                    metric_value = convert_time_to_seconds(metric_value, type(metric_value))
                     self.metrics[metric_key].set(metric_value)
+                elif is_bool_dtype(dtype): # convert boolean to 1-0
+                    metric_value = 1 if metric_value else 0
+                    self.metrics[metric_key].set(metric_value)
+                elif is_numeric_dtype(dtype): # numeric pass as is
+                    self.metrics[metric_key].set(metric_value)
+                elif dtype is pd.CategoricalDtype: # categoricals -> enum
+                    self.metrics[metric_key].state(metric_value)
+                elif metric_value is None or np.isnan(metric_value): # do not record nans
+                    pass
+                else:
+                    try: # other values should be convertable to string
+                        metric_value = str(metric_value)
+                        self.metrics[metric_key].info(metric_value)
+                    except: 
+                        pass # do not record non-numeric, boolean, categorical or non-convertable to str
+                    
 
 
 # processing:
