@@ -241,7 +241,7 @@ def convert_time_to_seconds(
             return t
 
 
-def create_promql_metric_name(
+def convert_metric_name_to_promql(
     metric_name: str,
     dtype: Type = None,
     prefix: str = "",
@@ -366,7 +366,7 @@ def record_metrics_from_dict(
         dtype = type(metric["value"])
         # prometheus name for metric
         metric_handle = (
-            create_promql_metric_name(metric_name=metric_name, dtype=dtype)
+            convert_metric_name_to_promql(metric_name=metric_name, dtype=dtype)
             if convert_names_to_promql
             else metric_name
         )
@@ -467,7 +467,7 @@ class SummaryStatisticsMetrics:
                 metric_key = "_".join([colname, rowname])
                 metric_description = f"calculated using summary statistics function {summary_statistics_function.__name__}"
                 metric_name = (
-                    create_promql_metric_name(
+                    convert_metric_name_to_promql(
                         metric_name=metric_key, dtype=dtype, prefix=metrics_name_prefix
                     )
                     if convert_names_to_promql
