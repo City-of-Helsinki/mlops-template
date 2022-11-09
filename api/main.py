@@ -6,7 +6,9 @@ from fastapi.params import Depends
 from fastapi.responses import HTMLResponse
 from pydantic import create_model
 from starlette.middleware.cors import CORSMiddleware
-from starlette.status import HTTP_403_FORBIDDEN
+
+import secrets
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
 
 from model_util import (
     unpickle_bundle,
@@ -14,11 +16,17 @@ from model_util import (
     build_model_definition_from_dict,
 )
 
+from metrics import (
+    FifoOverwriteDataFrame,
+    convert_time_to_seconds,
+    convert_metric_name_to_promql,
+    record_metrics_from_dict,
+    SummaryStatisticsMetrics
+)
+
 from prometheus_client import generate_latest
 
 # Authentication
-import secrets
-from fastapi.security import HTTPBasic, HTTPBasicCredentials
 
 app = FastAPI()
 
@@ -45,24 +53,17 @@ def get_current_username(credentials: HTTPBasicCredentials = Depends(security)):
     return credentials.username
 
 
-@app.get("/users/me")
-def read_current_user(username: str = Depends(get_current_username)):
-    return {"username": username}
-
-
 # / authentication
 
-# Load model and schema definitions from pickled container class
+# Load model and schema definitions & train/val workflow metrics from pickled container class
 model_and_schema: ModelSchemaContainer = unpickle_bundle("bundle_latest")
 # ML model
 model = model_and_schema.model
 
-
-# TODO: PROMEHEUS:
 # metrics
-# - numeric
-# - category
 metrics = model_and_schema.metrics
+# pass metrics to prometheus
+_ = record_metrics_from_dict(metrics)
 
 # Schema for request (X)
 DynamicApiRequest = create_model(
