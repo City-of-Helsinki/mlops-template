@@ -221,12 +221,13 @@ def convert_time_to_seconds(
             return t / np.timedelta64(1, "s")
 
         # datetime
-        elif isinstance(t, dt.date):
+        elif type(t) is dt.date: # isinstance catches non-dates too!
+            print('here!')
             return float(((t.year * 12 + t.month) * 31 + t.day) * 24 * 60 * 60)
-        elif isinstance(t, dt.time):
+        elif type(t) is dt.time: # isinstance catches non-times too!
             return float((t.hour * 60 + t.minute) * 60 + t.second)
         elif isinstance(t, dt.datetime):
-            return convert_time_to_seconds((t - dt.datetime.min).timestamp())
+            return convert_time_to_seconds((t - dt.datetime.min))
         elif isinstance(t, dt.timedelta):
             return t / dt.timedelta(seconds=1)
         # other (int, float)
@@ -375,7 +376,7 @@ def record_metrics_from_dict(
         # convert time formats to seconds
         value = (
             convert_time_to_seconds(value)
-            if is_time_dtype(type(value))
+            if is_time_dtype(dtype)
             or metric_handle.endswith(("seconds", "timestamp"))
             else metric["value"]
         )
