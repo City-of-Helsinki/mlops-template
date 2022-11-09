@@ -6,10 +6,22 @@ from sklearn.base import BaseEstimator
 
 
 class ModelSchemaContainer:
+    """
+    req & res schema: [{'name': value, 'type': dtype}]
+    """
     model: BaseEstimator
     req_schema: str
     res_schema: str
     metrics: str
+
+def schema_to_pandas_columns(schema):
+    """
+    Convert ModelSchemaContainer schemas to pandas column definitions
+    """
+    ret = {}
+    for row in schema:
+        ret[row['name']] = row['type']
+    return ret
 
 
 def unpickle_bundle(model_id: str) -> ModelSchemaContainer:

@@ -127,11 +127,14 @@ class FifoOverwriteDataFrame:
         If self.clear_at_flush, clear df before returning copy. Queue is only cleared if full.
         Else, return false.
         """
-        if not self.is_full:
-            return False
         ret = self.df.copy()
+
+        if not self.is_full:
+            ret.drop(ret.index, inplace=True)
+        
         if self.clear_at_flush:
             self.df.drop(self.df.index, inplace=True)
+            self.is_full = False
         return ret
 
 
@@ -222,7 +225,6 @@ def convert_time_to_seconds(
 
         # datetime
         elif type(t) is dt.date: # isinstance catches non-dates too!
-            print('here!')
             return float(((t.year * 12 + t.month) * 31 + t.day) * 24 * 60 * 60)
         elif type(t) is dt.time: # isinstance catches non-times too!
             return float((t.hour * 60 + t.minute) * 60 + t.second)
@@ -454,51 +456,59 @@ class SummaryStatisticsMetrics:
         """
         self.columns = columns
         self.summary_statistics_function = summary_statistics_function
-
-        # initialize metric names by calling summary statistics on an empty dataframe
-        ss = summary_statistics_function(pd.DataFrame(columns=columns))
-        self.rownames = ss.index.values
-        self.dtypes = ss.dtypes  # data types after summary statistics calculation
-        self.colnames = ss.columns  # columns may be changed
+        self.convert_names_to_promql = convert_names_to_promql
+        self.metrics_name_prefix = metrics_name_prefix
 
         self.metrics = {}  # store metric handles in a dict
-        for colname, dtype in zip(self.colnames, self.dtypes):
-            dtype = columns[colname]
-            for rowname in self.rownames:
-                metric_key = "_".join([colname, rowname])
-                metric_description = f"calculated using summary statistics function {summary_statistics_function.__name__}"
-                metric_name = (
-                    convert_metric_name_to_promql(
-                        metric_name=metric_key, dtype=dtype, prefix=metrics_name_prefix
-                    )
-                    if convert_names_to_promql
-                    else metric_name
-                )
-                # if category, create Enum
-                if (
-                    is_time_dtype(dtype)
-                    or is_numeric_dtype(dtype)
-                    or is_bool_dtype(dtype)
-                ):
-                    m = Gauge(metric_name, metric_description)
-                elif is_categorical_dtype:  # string, categories & objects
-                    m = Enum(metric_name, metric_description, states=[""])
-                else:  # string & rest
-                    m = Info(metric_name, metric_description)
-
-                # record created metric in a dict
-                self.metrics[metric_key] = m
-
-    def set(self, df: pd.DataFrame):
+    
+    def _create_metric(self, colname, rowname, dtype, summary_statistics_function):
         """
-        Calculate summary statistics and set metrics accordingly
+        Internal: not to be called directly but by 'calculate'.
+        Create new metric if it does not already exist.
+        """
+        metric_key = "_".join([colname, rowname])
+        metric_description = f"calculated using summary statistics function {summary_statistics_function.__name__}"
+        metric_name = (
+            convert_metric_name_to_promql(
+                metric_name=metric_key, dtype=dtype, prefix=self.metrics_name_prefix
+                )
+            if self.convert_names_to_promql
+            else metric_name
+        )
+        # if category, create Enum
+        if (
+            is_time_dtype(dtype)
+            or is_numeric_dtype(dtype)
+            or is_bool_dtype(dtype)
+        ):
+            m = Gauge(metric_name, metric_description)
+        elif is_categorical_dtype:  # string, categories & objects
+            m = Enum(metric_name, metric_description, states=[""])
+        else:  # string & rest
+            m = Info(metric_name, metric_description)
+
+        # record created metric in a dict
+        self.metrics[metric_key] = m
+
+    def calculate(self, df: pd.DataFrame):
+        """
+        Calculate summary statistics and set metrics accordingly. Create new metric if needed.
         """
         sumstat_df = self.summary_statistics_function(df)
+        colnames = sumstat_df.columns
+        dtypes = sumstat_df.dtypes
+        rownames = sumstat_df.index.values
         # loop through dataframe and calculate summary statistics
-        for colname, dtype in zip(self.colnames, self.dtypes):
-            for rowname in self.rownames:
+        for colname, dtype in zip(colnames, dtypes):
+            for rowname in rownames:
                 metric_key = "_".join([colname, rowname])
+
+                # create new metric if needed
+                if metric_key not in self.metrics.keys():
+                    self._create_metric(colname, rowname, dtype, self.summary_statistics_function)
                 metric_value = sumstat_df.loc[rowname, colname]
+                
+                # record metric values and do necessary type conversions
                 if is_time_dtype(dtype):  # convert all time formats to integer seconds
                     metric_value = convert_time_to_seconds(metric_value)
                     self.metrics[metric_key].set(metric_value)
@@ -513,7 +523,6 @@ class SummaryStatisticsMetrics:
                     metric_value
                 ):  # do not record nans
                     pass
-
                 else:
                     try:  # other values should be convertable to string
                         metric_value = str(metric_value)

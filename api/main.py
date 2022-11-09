@@ -14,6 +14,7 @@ from model_util import (
     unpickle_bundle,
     ModelSchemaContainer,
     build_model_definition_from_dict,
+    schema_to_pandas_columns
 )
 
 from metrics import (
@@ -96,11 +97,25 @@ app.add_middleware(
     max_age=3600,
 )
 
-# TODO: create & collect metrics using metrics module!
+# DRIFT DETECTION
+# store maxsize inputs in a temporal fifo que for drift detection
+input_columns = schema_to_pandas_columns(model_and_schema.req_schema)
+input_fifo = FifoOverwriteDataFrame(columns = input_columns, 
+    maxsize = 10)
+# create summary statistics metrics for the input
+input_sumstat = SummaryStatisticsMetrics(columns = input_columns, metrics_name_prefix = "input_drift_")
+# calculate summary statistics either periodically or when metrics is called
+# example in get_metrics below
+# /drift detection
 
-
+# metrics endpoint for prometheus
 @app.get("/metrics", response_model=dict)
 def get_metrics(username: str = Depends(get_current_username)):
+    # if enough data / new data, calculate and record input summary statistics
+    latest_input = input_fifo.flush()
+    if not latest_input.empty:
+        input_sumstat.calculate(latest_input)
+    
     return HTMLResponse(generate_latest())
 
 
@@ -116,6 +131,8 @@ def get_metrics(username: str = Depends(get_current_username)):
 #   - raw (if not text of some other weird datatype)
 #   - if category
 #   - hist/sumstat (a bit more private)
+
+
 @app.post("/predict", response_model=List[DynamicApiResponse])
 def predict(p_list: List[DynamicApiRequest]):
     # loop trough parameter list
@@ -124,6 +141,8 @@ def predict(p_list: List[DynamicApiRequest]):
         # convert parameter object to array for model
         parameter_array = [getattr(p, k) for k in vars(p)]
         prediction_values.append(model.predict([parameter_array]))
+        # store input in fifo
+        input_fifo.put([parameter_array])
     # Construct response
     response: List[DynamicApiResponse] = []
 
