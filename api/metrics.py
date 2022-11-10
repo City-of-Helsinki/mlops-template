@@ -3,6 +3,7 @@ from typing import Iterable, Type, Union
 from numbers import Number
 from parser import ParserError
 from prometheus_client import Summary, Counter, Gauge, Enum, Info
+import pyarrow.feather as feather
 import datetime as dt
 import re
 
@@ -78,64 +79,6 @@ def is_str_dtype(dtype):
 
 def is_categorical_dtype(dtype):
     return dtype is pd.CategoricalDtype
-
-
-class FifoOverwriteDataFrame:
-    """
-    A FIFO Queue for storing maxsize latest items.
-
-    Properties:
-     - if full, will replace the oldest value with the newest
-     - can only be emptied if completely full (flush)
-     - optionally clear (drop all) at flush
-    """
-
-    def __init__(
-        self, columns: dict, maxsize: int = 1000, clear_at_flush: bool = False
-    ):
-        self.is_full = False
-        self.maxsize = maxsize
-        self.columns = columns
-        self.clear_at_flush = clear_at_flush
-        self.df = pd.DataFrame(columns=columns)
-
-    def put(
-        self, rows: Union[np.ndarray, Iterable, dict, pd.DataFrame]
-    ) -> FifoOverwriteDataFrame:
-        """
-        Put new items to queue. If full, overwrite the oldest value.
-        Return reference to self.
-        """
-        y_size = self.df.shape[0]
-        new_data = pd.DataFrame(rows, columns=self.columns)
-        if new_data.shape[0] >= self.maxsize:
-            new_data = new_data.iloc[-self.maxsize :]
-        self.df = pd.concat(
-            (self.df.iloc[1:] if y_size == self.maxsize else self.df, new_data),
-            ignore_index=True,
-        )
-        if self.df.shape[0] == self.maxsize:
-            self.is_full = True
-        else:
-            self.is_full = False
-
-        return self
-
-    def flush(self) -> pd.DataFrame:
-        """
-        If queue df is full, return copy.
-        If self.clear_at_flush, clear df before returning copy. Queue is only cleared if full.
-        Else, return false.
-        """
-        ret = self.df.copy()
-
-        if not self.is_full:
-            ret.drop(ret.index, inplace=True)
-        
-        if self.clear_at_flush:
-            self.df.drop(self.df.index, inplace=True)
-            self.is_full = False
-        return ret
 
 
 # Prometheus naming conventions:
@@ -403,6 +346,82 @@ def record_metrics_from_dict(
 
     return ret
 
+
+# FifoQueue
+# FifoOverwriteQueue
+# FifoOverwrite
+# DriftQueue
+# DriftDetectionQueue
+class FifoOverwriteDataFrame:
+    """
+    A FIFO Queue for storing maxsize latest items.
+
+    Properties:
+     - if full, will replace the oldest value with the newest
+     - can only be emptied if completely full (flush)
+     - optionally clear (drop all) at flush. This must be set when 
+        creating the queue for consistent data handling.
+     - if given a backup file, will try to initialize and back up the queue to given file.
+        This is to avoid data loss due to container failures etc.
+    """
+
+    def __init__(
+        self, columns: dict, backup_file: str = '', maxsize: int = 1000, clear_at_flush: bool = False
+    ):
+        self.is_full = False
+        self.maxsize = maxsize
+        self.columns = columns
+        self.clear_at_flush = clear_at_flush
+        self.backup_file = backup_file
+        if backup_file != '':
+            try: # initialize with stored data if available
+                with open(backup_file, 'rb') as f:
+                    self.df = feather.read_feather(f)
+            except FileNotFoundError: # just initialize new
+                self.df = pd.DataFrame(columns=columns)
+        else:
+            self.df = pd.DataFrame(columns=columns)
+
+    def put(
+        self, rows: Union[np.ndarray, Iterable, dict, pd.DataFrame]
+    ) -> FifoOverwriteDataFrame:
+        """
+        Put new items to queue. If full, overwrite the oldest value.
+        Return reference to self.
+        """
+        y_size = self.df.shape[0]
+        new_data = pd.DataFrame(rows, columns=self.columns)
+        if new_data.shape[0] >= self.maxsize:
+            new_data = new_data.iloc[-self.maxsize :]
+        self.df = pd.concat(
+            (self.df.iloc[1:] if y_size == self.maxsize else self.df, new_data),
+            ignore_index=True,
+        )
+        if self.df.shape[0] == self.maxsize:
+            self.is_full = True
+        else:
+            self.is_full = False
+        # write backup for queue
+        if self.backup_file != '':
+            with open(self.backup_file, 'wb') as f:
+                feather.write_feather(self.df, f)
+        return self
+
+    def flush(self) -> pd.DataFrame:
+        """
+        If queue df is full, return copy.
+        If self.clear_at_flush, clear df before returning copy. Queue is only cleared if full.
+        Else, return empty dataframe.
+        """
+        ret = self.df.copy()
+
+        if not self.is_full:
+            ret.drop(ret.index, inplace=True)
+        
+        if self.clear_at_flush:
+            self.df.drop(self.df.index, inplace=True)
+            self.is_full = False
+        return ret
 
 # input:
 #   - raw values (if not text or some other weird datatype)
