@@ -7,119 +7,104 @@ import pyarrow.feather as feather
 import datetime as dt
 import re
 
+from itertools import product
+
 import numpy as np
 import pandas as pd
 
 # functions for checking data types:
 
 
-def is_timedelta_dtype(dtype) -> bool:
+def is_timedelta(dtypename) -> bool:
     """
     check if datatype is timedelta or period
     """
     return np.any(
         [
-            dtype is tp
+            dtypename == tp
             for tp in [
-                dt.timedelta,
-                pd.Timedelta,
-                pd.Period,
-                np.timedelta64,
+                "timedelta",
+                "Timedelta",
+                "Period",
+                "timedelta64",
             ]
         ]
     )
 
 
-def is_timestamp_dtype(dtype) -> bool:
+def is_timestamp(dtypename) -> bool:
     """
     check if given datatype is a timestamp
     """
     return np.any(
         [
-            dtype is tp
-            for tp in [dt.date, dt.time, dt.datetime, pd.Timestamp, np.datetime64]
+            dtypename == tp
+            for tp in ["date", "time", "datetime", "Timestamp", "datetime64"]
         ]
     )
 
 
-def is_time_dtype(dtype) -> bool:
+def is_time(dtypename) -> bool:
     """
     check if given data type is of any time format
     """
-    return is_timedelta_dtype(dtype) or is_timestamp_dtype(dtype)
+    return is_timedelta(dtypename) or is_timestamp(dtypename)
 
 
-def is_numeric_dtype(dtype) -> bool:
+def is_numeric(dtypename) -> bool:
     """
     check if given datatype is numeric.
     isinstance numbers.Number does not work with pandas or numpy
     """
-    print(type(1).__name__)
-    print(np.array([1])[0].dtype)
-    print(pd.DataFrame(np.array([1])).astype("int32").iloc[0].dtype)
-    print(dtype.kind)
-    print(np.dtype("float64"))  # .replace('\'', ''))
     return np.any(
         [
-            dtype.__name__ in tp.__name__.replace("'", "")
-            for tp in [
-                int,
-                float,
-                np.int_,
-                np.int,
-                np.int8,
-                np.int16,
-                np.int32,
-                np.int64,
-                np.uint,
-                np.uint8,
-                np.uint16,
-                np.uint32,
-                np.uint64,
-                np.longlong,
-                np.ulonglong,
-                np.float_,
-                np.double,
-                np.longdouble,
-                np.float,
-                np.float16,
-                np.float32,
-                np.float64,
-                np.float128,
-                pd.Int8Dtype,
-                pd.Int16Dtype,
-                pd.Int32Dtype,
-                pd.Int64Dtype,
-                pd.UInt8Dtype,
-                pd.UInt16Dtype,
-                pd.UInt32Dtype,
-                pd.UInt64Dtype,
-                pd.Float32Dtype,
-                pd.Float64Dtype,
-            ]
+            dtypename == "".join(x)
+            for x in product(
+                ["int", "uint", "float"], ["", "_", "8", "16", "32", "64", "128"]
+            )
         ]
     )
 
 
-def is_bool_dtype(dtype) -> bool:
+def is_bool(dtypename) -> bool:
     """
     Check if data type is boolean
     """
-    return np.any([dtype is tp for tp in [bool, np.bool_, pd.BooleanDtype]])
+    return np.any([dtypename == tp for tp in ["bool", "bool_", "BooleanDtype"]])
 
 
-def is_str_dtype(dtype) -> bool:
+def is_str(dtypename) -> bool:
     """
     check if given datatype is string
     """
-    return np.any([dtype is tp for tp in [str, np.string_, pd.StringDtype]])
+    return np.any(
+        [dtypename == tp for tp in ["str", "str_", "string", "string_", "StringDtype"]]
+    )
 
 
-def is_categorical_dtype(dtype) -> bool:
-    return dtype is pd.CategoricalDtype
+def is_categorical(dtypename) -> bool:
+    return dtypename == "CategoricalDtype"
 
 
-# def get
+def get_dtypename(dtype) -> str:
+    """
+    return datatype name for given datatype
+    """
+    try:
+        return dtype.__name__
+    except AttributeError:
+        return str(dtype)
+
+
+def value_dtypename(value) -> str:
+    """
+    return datatype name for given value
+    """
+    try:
+        return get_dtypename(value.dtype)
+    except AttributeError:
+        return get_dtypename(type(value))
+
 
 # / data types
 
@@ -127,7 +112,7 @@ def is_categorical_dtype(dtype) -> bool:
 
 
 def convert_time_to_seconds(
-    t,
+    value,
     errors: str = "raise",
     pd_infer_datetime_format: bool = True,
     pd_str_parse_format: bool = None,
@@ -160,61 +145,64 @@ def convert_time_to_seconds(
     if errors not in ["raise", "ignore", "coerce"]:
         raise ValueError(f"{errors} is not a valid argument for parameter errors!")
 
+    dtypename = value_dtypename(value)
     try:
         # strings
-        if is_str_dtype(type(t)):
+        if is_str(dtypename):
             try:
                 try:
                     ret = pd.to_datetime(
-                        t,
+                        value,
                         infer_datetime_format=pd_infer_datetime_format,
                         format=pd_str_parse_format,
                     )
                 except (pd.errors.ParserError, ValueError):
                     try:
-                        ret = pd.to_timedelta(t)
+                        ret = pd.to_timedelta(value)
                     except pd.errors.ParserError:
-                        ret = pd.Period(t)
+                        ret = pd.Period(value)
             except ValueError:
                 raise ValueError(
-                    f"Unsupported expression of time: {t}"
+                    f"Unsupported expression of time: {value}"
                     + "\nDo you have a metric with name *time* or *date* that is not an expression of time?"
                 )
             return convert_time_to_seconds(ret)
 
         # pandas
-        elif isinstance(t, (pd.Timestamp, pd.Timedelta)):
+        elif isinstance(value, (pd.Timestamp, pd.Timedelta)):
             return convert_time_to_seconds(t.to_numpy())
-        elif isinstance(t, pd.Period):
+        elif isinstance(value, pd.Period):
             return convert_time_to_seconds(
-                t.to_timestamp(how="E") - t.to_timestamp(how="S")
+                value.to_timestamp(how="E") - value.to_timestamp(how="S")
             )
 
         # numpy
-        elif isinstance(t, np.datetime64):
-            return convert_time_to_seconds(t - np.datetime64("1970-01-01"))
-        elif isinstance(t, np.timedelta64):
-            return float(t / np.timedelta64(1, "s"))
+        elif isinstance(value, np.datetime64):
+            return convert_time_to_seconds(value - np.datetime64("1970-01-01"))
+        elif isinstance(value, np.timedelta64):
+            return float(value / np.timedelta64(1, "s"))
 
         # datetime
-        elif type(t) is dt.date:  # isinstance catches non-dates too!
-            return float(((t.year * 12 + t.month) * 31 + t.day) * 24 * 60 * 60)
-        elif type(t) is dt.time:  # isinstance catches non-times too!
-            return float((t.hour * 60 + t.minute) * 60 + t.second)
-        elif isinstance(t, dt.datetime):
-            return convert_time_to_seconds((t - dt.datetime.min))
-        elif isinstance(t, dt.timedelta):
-            return t / dt.timedelta(seconds=1)
+        elif dtypename == "date":  # isinstance catches non-dates too!
+            return float(
+                ((value.year * 12 + value.month) * 31 + value.day) * 24 * 60 * 60
+            )
+        elif dtypename == "time":  # isinstance catches non-times too!
+            return float((value.hour * 60 + value.minute) * 60 + value.second)
+        elif isinstance(value, dt.datetime):
+            return convert_time_to_seconds((value - dt.datetime.min))
+        elif isinstance(value, dt.timedelta):
+            return value / dt.timedelta(seconds=1)
         # other (int, float)
         else:
-            return float(t)
+            return float(value)
     except Exception as e:
         if errors == "raise":
             raise e
         elif errors == "coerce":
             return np.nan
         else:
-            return t
+            return value
 
 
 # correct metric names to prometheus naming conventions:
@@ -250,15 +238,15 @@ def convert_metric_name_to_promql(
     ret = prefix + "_" + metric_name + "_" + suffix
     # must be lowercase
     ret = ret.lower().strip("_")
-
-    if is_timestamp_dtype(dtype):
+    dtypename = get_dtypename(dtype)
+    if is_timestamp(dtypename):
         # e.g. date_of_birth -> 'date_of_birth_timestamp_seconds'
         ret = ret.replace("seconds", "").replace("timestamp", "") + "_timestamp_seconds"
 
-    elif is_timedelta_dtype(dtype):
+    elif is_timedelta(dtypename):
         # e.g. time_on_site -> 'time_on_site_seconds'
         ret = ret.replace("seconds", "") + "_seconds"
-    elif is_str_dtype(dtype):
+    elif is_str(dtypename):
         # e.g. description -> description_count
         ret += "_info"
     else:  # add more exceptions if needed
@@ -364,10 +352,11 @@ def record_metrics_from_dict(
         )
 
         value = metric["value"]
+        dtypename = value_dtypename(value)
         # convert time formats to seconds
         value = (
             convert_time_to_seconds(value)
-            if is_time_dtype(dtype) or metric_handle.endswith(("seconds", "timestamp"))
+            if is_time(dtypename) or metric_handle.endswith(("seconds", "timestamp"))
             else metric["value"]
         )
 
@@ -541,13 +530,12 @@ class SummaryStatisticsMetrics:
             if self.convert_names_to_promql
             else metric_name
         )
-        # print(dtype.__name__)
-        # print(np.dtype['float64'])
+        dtypename = get_dtypename(dtype)
+
         # if category, create Enum
-        print(is_numeric_dtype(dtype))
-        if is_time_dtype(dtype) or is_numeric_dtype(dtype) or is_bool_dtype(dtype):
+        if is_time(dtypename) or is_numeric(dtypename) or is_bool(dtypename):
             m = Gauge(metric_name, metric_description)
-        elif is_categorical_dtype(dtype):  # string, categories & objects
+        elif is_categorical(dtypename):  # string, categories & objects
             m = Enum(metric_name, metric_description, states=[""])
         else:  # string & rest
             m = Info(metric_name, metric_description)
@@ -580,31 +568,30 @@ class SummaryStatisticsMetrics:
         """
         sumstat_df = self.sumstat_df
         colnames = sumstat_df.columns
-        dtypes = [type(t) for t in sumstat_df.dtypes]
-        # print(dtypes)
+        dtypenames = [get_dtypename(t) for t in sumstat_df.dtypes]
         rownames = sumstat_df.index.values
         # loop through dataframe and calculate summary statistics
-        for colname, dtype in zip(colnames, dtypes):
+        for colname, dtypename in zip(colnames, dtypenames):
             for rowname in rownames:
                 metric_key = "_".join([colname, rowname])
-
+                metric_value = sumstat_df.loc[rowname, colname]
+                dtype = type(metric_value)
                 # create new metric if needed
                 if metric_key not in self.metrics.keys():
                     self._create_metric(
                         colname, rowname, dtype, self.summary_statistics_function
                     )
-                metric_value = sumstat_df.loc[rowname, colname]
-                # print(f'{metric_key}: {metric_value}')
+
                 # record metric values and do necessary type conversions
-                if is_time_dtype(dtype):  # convert all time formats to integer seconds
+                if is_time(dtypename):  # convert all time formats to integer seconds
                     metric_value = convert_time_to_seconds(metric_value)
                     self.metrics[metric_key].set(metric_value)
-                elif is_bool_dtype(dtype):  # convert boolean to 1-0
+                elif is_bool(dtypename):  # convert boolean to 1-0
                     metric_value = 1 if metric_value else 0
                     self.metrics[metric_key].set(metric_value)
-                elif is_numeric_dtype(dtype):  # numeric pass as is
+                elif is_numeric(dtypename):  # numeric pass as is
                     self.metrics[metric_key].set(metric_value)
-                elif is_categorical_dtype(dtype):  # categoricals -> enum
+                elif is_categorical(dtypename):  # categoricals -> enum
                     self.metrics[metric_key].state(metric_value)
                 elif metric_value is None or pd.isnull(
                     metric_value

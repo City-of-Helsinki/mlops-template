@@ -29,17 +29,17 @@ metrics_parsed = {}
 for species in list(metrics_raw.keys()):
     if isinstance(metrics_raw[species], dict):
         for metric_name in list(metrics_raw[species].keys()):
-                metrics_parsed[species + '_' + metric_name] = {
-                    'value':metrics_raw[species][metric_name],
-                    'description':'',
-                    'type':'numeric'
-                }
+            metrics_parsed[species + "_" + metric_name] = {
+                "value": metrics_raw[species][metric_name],
+                "description": "",
+                "type": "numeric",
+            }
 
 # we can also pass metadata
-metrics_parsed['model_update_time'] = {
-    'value':dt.datetime.now(),
-    'description':'',
-    'type':'numeric'
+metrics_parsed["model_update_time"] = {
+    "value": dt.datetime.now(),
+    "description": "",
+    "type": "numeric",
 }
 
 # Use dtypes to determine api request and response models

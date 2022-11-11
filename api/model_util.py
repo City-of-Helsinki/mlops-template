@@ -9,10 +9,12 @@ class ModelSchemaContainer:
     """
     req & res schema: [{'name': value, 'type': dtype}]
     """
+
     model: BaseEstimator
     req_schema: str
     res_schema: str
     metrics: str
+
 
 def schema_to_pandas_columns(schema):
     """
@@ -20,7 +22,7 @@ def schema_to_pandas_columns(schema):
     """
     ret = {}
     for row in schema:
-        ret[row['name']] = row['type']
+        ret[row["name"]] = row["type"]
     return ret
 
 
