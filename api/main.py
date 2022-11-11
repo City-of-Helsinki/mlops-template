@@ -14,7 +14,7 @@ from model_util import (
     unpickle_bundle,
     ModelSchemaContainer,
     build_model_definition_from_dict,
-    schema_to_pandas_columns
+    schema_to_pandas_columns,
 )
 
 from metrics import (
@@ -22,7 +22,7 @@ from metrics import (
     convert_time_to_seconds,
     convert_metric_name_to_promql,
     record_metrics_from_dict,
-    SummaryStatisticsMetrics
+    SummaryStatisticsMetrics,
 )
 
 from prometheus_client import generate_latest
@@ -100,11 +100,13 @@ app.add_middleware(
 # DRIFT DETECTION
 # store maxsize inputs in a temporal fifo que for drift detection
 input_columns = schema_to_pandas_columns(model_and_schema.req_schema)
-input_fifo = FifoOverwriteDataFrame(columns = input_columns, 
-    maxsize = 10, 
-    backup_file = 'input_fifo.feather')
+input_fifo = FifoOverwriteDataFrame(
+    columns=input_columns, maxsize=10, backup_file="input_fifo.feather"
+)
 # create summary statistics metrics for the input
-input_sumstat = SummaryStatisticsMetrics(columns = input_columns, metrics_name_prefix = "input_drift_")
+input_sumstat = SummaryStatisticsMetrics(
+    columns=input_columns, metrics_name_prefix="input_drift_"
+)
 # calculate summary statistics either periodically or when metrics is called
 # example in get_metrics below
 # /drift detection
@@ -115,23 +117,17 @@ def get_metrics(username: str = Depends(get_current_username)):
     # if enough data / new data, calculate and record input summary statistics
     latest_input = input_fifo.flush()
     if not latest_input.empty:
-        input_sumstat.calculate(latest_input)
-    
+        input_sumstat.calculate(latest_input).set_metrics()
+    # print(input_sumstat.get_sumstat())
     return HTMLResponse(generate_latest())
 
 
 # TODO: PROMEHEUS:
-# input:
-#   - raw values (if not text or some other weird datatype)
-#   - hist/sumstat (a bit more private)
+# input / output drift DONE
 # processing:
 #   - time (total / hist )
 #   - general resource usage
 #   - request counter
-# output:
-#   - raw (if not text of some other weird datatype)
-#   - if category
-#   - hist/sumstat (a bit more private)
 
 
 @app.post("/predict", response_model=List[DynamicApiResponse])

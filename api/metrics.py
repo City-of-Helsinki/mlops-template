@@ -10,9 +10,7 @@ import re
 import numpy as np
 import pandas as pd
 
-# For some metrics, we may want to keep a FIFO que for
-# calculating summary statistics over fixed number of records
-# instead of a period of time that is the standard for Prometheus:
+# functions for checking data types:
 
 
 def is_timedelta_dtype(dtype) -> bool:
@@ -51,49 +49,81 @@ def is_time_dtype(dtype) -> bool:
     return is_timedelta_dtype(dtype) or is_timestamp_dtype(dtype)
 
 
-def is_numeric_dtype(dtype):
+def is_numeric_dtype(dtype) -> bool:
     """
     check if given datatype is numeric.
     isinstance numbers.Number does not work with pandas or numpy
     """
-    try:
-        dtype(1) / 1  # if numeric, should not crash
-        return True
-    except:
-        return False
+    print(type(1).__name__)
+    print(np.array([1])[0].dtype)
+    print(pd.DataFrame(np.array([1])).astype("int32").iloc[0].dtype)
+    print(dtype.kind)
+    print(np.dtype("float64"))  # .replace('\'', ''))
+    return np.any(
+        [
+            dtype.__name__ in tp.__name__.replace("'", "")
+            for tp in [
+                int,
+                float,
+                np.int_,
+                np.int,
+                np.int8,
+                np.int16,
+                np.int32,
+                np.int64,
+                np.uint,
+                np.uint8,
+                np.uint16,
+                np.uint32,
+                np.uint64,
+                np.longlong,
+                np.ulonglong,
+                np.float_,
+                np.double,
+                np.longdouble,
+                np.float,
+                np.float16,
+                np.float32,
+                np.float64,
+                np.float128,
+                pd.Int8Dtype,
+                pd.Int16Dtype,
+                pd.Int32Dtype,
+                pd.Int64Dtype,
+                pd.UInt8Dtype,
+                pd.UInt16Dtype,
+                pd.UInt32Dtype,
+                pd.UInt64Dtype,
+                pd.Float32Dtype,
+                pd.Float64Dtype,
+            ]
+        ]
+    )
 
 
-def is_bool_dtype(dtype):
+def is_bool_dtype(dtype) -> bool:
     """
     Check if data type is boolean
     """
     return np.any([dtype is tp for tp in [bool, np.bool_, pd.BooleanDtype]])
 
 
-def is_str_dtype(dtype):
+def is_str_dtype(dtype) -> bool:
     """
     check if given datatype is string
     """
     return np.any([dtype is tp for tp in [str, np.string_, pd.StringDtype]])
 
 
-def is_categorical_dtype(dtype):
+def is_categorical_dtype(dtype) -> bool:
     return dtype is pd.CategoricalDtype
 
 
-# Prometheus naming conventions:
-#
-# suffix describing base unit, plural form
-# _total for unitless count
-# _unit_total for unit accumulating count
-# _info for metadata
-# _timestamp_seconds for timestamps
-# rule of thumb: either sum() or avg() of metric must be meaningful, or metric has to be split up
-#
-# commonly used: (elsewhere -> in prometheus)
-# time -> seconds
-# percent -> ratio  0-1
-# bits, bytes -> bytes
+# def get
+
+# / data types
+
+# convert time expressions to seconds (prometheus convention)
 
 
 def convert_time_to_seconds(
@@ -101,7 +131,7 @@ def convert_time_to_seconds(
     errors: str = "raise",
     pd_infer_datetime_format: bool = True,
     pd_str_parse_format: bool = None,
-):
+) -> float:
     """
     Prometheus standard is to express all time in seconds.
     This function parses time expressions to seconds in accuracy of floats.
@@ -164,12 +194,12 @@ def convert_time_to_seconds(
         elif isinstance(t, np.datetime64):
             return convert_time_to_seconds(t - np.datetime64("1970-01-01"))
         elif isinstance(t, np.timedelta64):
-            return t / np.timedelta64(1, "s")
+            return float(t / np.timedelta64(1, "s"))
 
         # datetime
-        elif type(t) is dt.date: # isinstance catches non-dates too!
+        elif type(t) is dt.date:  # isinstance catches non-dates too!
             return float(((t.year * 12 + t.month) * 31 + t.day) * 24 * 60 * 60)
-        elif type(t) is dt.time: # isinstance catches non-times too!
+        elif type(t) is dt.time:  # isinstance catches non-times too!
             return float((t.hour * 60 + t.minute) * 60 + t.second)
         elif isinstance(t, dt.datetime):
             return convert_time_to_seconds((t - dt.datetime.min))
@@ -187,13 +217,28 @@ def convert_time_to_seconds(
             return t
 
 
+# correct metric names to prometheus naming conventions:
+
+# Prometheus naming conventions:
+#
+# suffix describing base unit, plural form
+# _total for unitless count
+# _unit_total for unit accumulating count
+# _info for metadata
+# _timestamp_seconds for timestamps
+# rule of thumb: either sum() or avg() of metric must be meaningful, or metric has to be split up
+# time -> seconds
+# percent -> ratio  0-1
+# bits, bytes -> bytes
+
+
 def convert_metric_name_to_promql(
     metric_name: str,
     dtype: Type = None,
     prefix: str = "",
     suffix: str = "",
     is_counter=False,
-):
+) -> str:
     """
     Create a promql compatible name for a metric.
     Note that this does not perfectly ensure good naming,
@@ -249,6 +294,9 @@ def convert_metric_name_to_promql(
     return ret
 
 
+# function for passing pre-recorded metrics to prometheus
+
+
 def record_metrics_from_dict(
     metrics: dict, convert_names_to_promql: bool = True
 ) -> list:
@@ -273,9 +321,7 @@ def record_metrics_from_dict(
             'value': int, float or str if 'type' = category,
             'description': str,
             'type': str -> 'numeric', 'category' or 'info' (metadata / pseudo metrics),
-            'categories': [str], e.g. ['A', 'B', 'C']. only required if 'type' = category,
-            'label_names': [str], optional. for info type metrics
-            'label_values': [str], optional. for info type metrics
+            'categories': [str], e.g. ['A', 'B', 'C']. only required if 'type' = category
         }
     }
 
@@ -321,8 +367,7 @@ def record_metrics_from_dict(
         # convert time formats to seconds
         value = (
             convert_time_to_seconds(value)
-            if is_time_dtype(dtype)
-            or metric_handle.endswith(("seconds", "timestamp"))
+            if is_time_dtype(dtype) or metric_handle.endswith(("seconds", "timestamp"))
             else metric["value"]
         )
 
@@ -354,33 +399,42 @@ def record_metrics_from_dict(
 # DriftDetectionQueue
 class FifoOverwriteDataFrame:
     """
-    A FIFO Queue for storing maxsize latest items.
+    A FIFO Queue for storing [maxsize] latest items.
 
     Properties:
      - if full, will replace the oldest value with the newest
      - can only be emptied if completely full (flush)
-     - optionally clear (drop all) at flush. This must be set when 
+     - optionally clear (drop all) at flush. This must be set when
         creating the queue for consistent data handling.
      - if given a backup file, will try to initialize and back up the queue to given file.
         This is to avoid data loss due to container failures etc.
     """
 
     def __init__(
-        self, columns: dict, backup_file: str = '', maxsize: int = 1000, clear_at_flush: bool = False
+        self,
+        columns: dict,
+        backup_file: str = "",
+        maxsize: int = 1000,
+        clear_at_flush: bool = False,
     ):
-        self.is_full = False
         self.maxsize = maxsize
         self.columns = columns
         self.clear_at_flush = clear_at_flush
         self.backup_file = backup_file
-        if backup_file != '':
-            try: # initialize with stored data if available
-                with open(backup_file, 'rb') as f:
+        if backup_file != "":
+            try:  # initialize with stored data if available
+                with open(backup_file, "rb") as f:
                     self.df = feather.read_feather(f)
-            except FileNotFoundError: # just initialize new
+            except FileNotFoundError:  # just initialize new
                 self.df = pd.DataFrame(columns=columns)
         else:
             self.df = pd.DataFrame(columns=columns)
+
+    def is_full(self) -> bool:
+        if self.df.shape[0] >= self.maxsize:
+            return True
+        else:
+            return False
 
     def put(
         self, rows: Union[np.ndarray, Iterable, dict, pd.DataFrame]
@@ -397,13 +451,10 @@ class FifoOverwriteDataFrame:
             (self.df.iloc[1:] if y_size == self.maxsize else self.df, new_data),
             ignore_index=True,
         )
-        if self.df.shape[0] == self.maxsize:
-            self.is_full = True
-        else:
-            self.is_full = False
+
         # write backup for queue
-        if self.backup_file != '':
-            with open(self.backup_file, 'wb') as f:
+        if self.backup_file != "":
+            with open(self.backup_file, "wb") as f:
                 feather.write_feather(self.df, f)
         return self
 
@@ -415,17 +466,13 @@ class FifoOverwriteDataFrame:
         """
         ret = self.df.copy()
 
-        if not self.is_full:
+        if not self.is_full():
             ret.drop(ret.index, inplace=True)
-        
+
         if self.clear_at_flush:
             self.df.drop(self.df.index, inplace=True)
             self.is_full = False
         return ret
-
-# input:
-#   - raw values (if not text or some other weird datatype)
-#   - hist/sumstat (a bit more private)
 
 
 class SummaryStatisticsMetrics:
@@ -477,9 +524,9 @@ class SummaryStatisticsMetrics:
         self.summary_statistics_function = summary_statistics_function
         self.convert_names_to_promql = convert_names_to_promql
         self.metrics_name_prefix = metrics_name_prefix
-
+        self.sumstat_df = pd.DataFrame()
         self.metrics = {}  # store metric handles in a dict
-    
+
     def _create_metric(self, colname, rowname, dtype, summary_statistics_function):
         """
         Internal: not to be called directly but by 'calculate'.
@@ -490,18 +537,17 @@ class SummaryStatisticsMetrics:
         metric_name = (
             convert_metric_name_to_promql(
                 metric_name=metric_key, dtype=dtype, prefix=self.metrics_name_prefix
-                )
+            )
             if self.convert_names_to_promql
             else metric_name
         )
+        # print(dtype.__name__)
+        # print(np.dtype['float64'])
         # if category, create Enum
-        if (
-            is_time_dtype(dtype)
-            or is_numeric_dtype(dtype)
-            or is_bool_dtype(dtype)
-        ):
+        print(is_numeric_dtype(dtype))
+        if is_time_dtype(dtype) or is_numeric_dtype(dtype) or is_bool_dtype(dtype):
             m = Gauge(metric_name, metric_description)
-        elif is_categorical_dtype:  # string, categories & objects
+        elif is_categorical_dtype(dtype):  # string, categories & objects
             m = Enum(metric_name, metric_description, states=[""])
         else:  # string & rest
             m = Info(metric_name, metric_description)
@@ -509,13 +555,33 @@ class SummaryStatisticsMetrics:
         # record created metric in a dict
         self.metrics[metric_key] = m
 
-    def calculate(self, df: pd.DataFrame):
+    def get_metrics(self) -> dict:
         """
-        Calculate summary statistics and set metrics accordingly. Create new metric if needed.
+        Return summary statistics metrics in a dict
         """
-        sumstat_df = self.summary_statistics_function(df)
+        return self.metrics
+
+    def get_sumstat(self) -> pd.DataFrame:
+        """
+        Return copy of summary statistics in a dataframe
+        """
+        return self.sumstat_df.copy()
+
+    def calculate(self, df: pd.DataFrame) -> SummaryStatisticsMetrics:
+        """
+        Calculate summary statistics and store to self.sumstat_df. Return self.
+        """
+        self.sumstat_df = self.summary_statistics_function(df)
+        return self
+
+    def set_metrics(self) -> SummaryStatisticsMetrics:
+        """
+        Set metrics from sumstat_df. Create new metric if needed. Return self.
+        """
+        sumstat_df = self.sumstat_df
         colnames = sumstat_df.columns
-        dtypes = sumstat_df.dtypes
+        dtypes = [type(t) for t in sumstat_df.dtypes]
+        # print(dtypes)
         rownames = sumstat_df.index.values
         # loop through dataframe and calculate summary statistics
         for colname, dtype in zip(colnames, dtypes):
@@ -524,9 +590,11 @@ class SummaryStatisticsMetrics:
 
                 # create new metric if needed
                 if metric_key not in self.metrics.keys():
-                    self._create_metric(colname, rowname, dtype, self.summary_statistics_function)
+                    self._create_metric(
+                        colname, rowname, dtype, self.summary_statistics_function
+                    )
                 metric_value = sumstat_df.loc[rowname, colname]
-                
+                # print(f'{metric_key}: {metric_value}')
                 # record metric values and do necessary type conversions
                 if is_time_dtype(dtype):  # convert all time formats to integer seconds
                     metric_value = convert_time_to_seconds(metric_value)
@@ -536,7 +604,7 @@ class SummaryStatisticsMetrics:
                     self.metrics[metric_key].set(metric_value)
                 elif is_numeric_dtype(dtype):  # numeric pass as is
                     self.metrics[metric_key].set(metric_value)
-                elif dtype is pd.CategoricalDtype:  # categoricals -> enum
+                elif is_categorical_dtype(dtype):  # categoricals -> enum
                     self.metrics[metric_key].state(metric_value)
                 elif metric_value is None or pd.isnull(
                     metric_value
@@ -552,14 +620,4 @@ class SummaryStatisticsMetrics:
                             self.metrics[metric_key].set(metric_value)
                         except:
                             pass  # do not record non-numeric, boolean, categorical or non-convertable to str
-
-
-# processing:
-#   - time (total / hist )
-#   - general resource usage
-#   - request counter
-# output:
-#   - raw (if not text of some other weird datatype)
-#   - if category
-#   - hist/sumstat (a bit more private)
-#   - live_scoring
+        return self
