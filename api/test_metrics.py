@@ -2,77 +2,172 @@ import numpy as np
 import pandas as pd
 import unittest
 
-from metrics import FifoOverwriteDataFrame, convert_time_to_seconds
+from metrics import (
+    is_timedelta,
+    is_timestamp,
+    is_time,
+    is_numeric,
+    is_bool,
+    is_str,
+    is_categorical,
+    is_object,
+    get_dtypename,
+    value_dtypename,
+)
+
+import datetime as dt
+
+# data type samples
+PY_NUMERIC = [[1, 1.0, 1.1], [2, 2.0, 2.2]]
+
+NP_INT64 = np.ones(1).astype("int")
+NP_FLOAT64 = NP_INT64.astype("float")
+NP_BOOL = np.array([True]).astype("bool")
+NP_STR = np.array(["test_string"]).astype("str")
+NP_DT = np.array([np.datetime64("2020-10-01")])
+NP_TD = np.array([np.timedelta64(1, "D")])
+
+PD_INT64 = pd.DataFrame([1]).astype("int64")
+PD_FLOAT64 = pd.DataFrame([1]).astype("float64")
+PD_BOOL = pd.DataFrame([True]).astype("bool")
+PD_BOOLEAN = pd.DataFrame([True]).astype("boolean")
+PD_STR = pd.DataFrame(["string it is"]).astype("str")
+PD_STRING = pd.DataFrame(["string it is"]).astype("string")
+PD_DT = pd.to_datetime(["2020-10-1"])
+PD_TD = pd.to_timedelta(["1d"])
+PD_PERIOD = pd.DataFrame([pd.Period("2020Q1")])
 
 
-class TestFifoOverwriteDataFrame(unittest.TestCase):
+class TestTypeChecks(unittest.TestCase):
+    def test_dtypename(self):
+        # built-in data types
+        self.assertEqual(value_dtypename(1), "int")
+        self.assertEqual(value_dtypename(1.0), "float")
+        self.assertEqual(value_dtypename(True), "bool")
+        self.assertEqual(value_dtypename("this is string"), "str")
+        self.assertEqual(value_dtypename(dt.datetime.now()), "datetime")
+        # numpy
+        self.assertEqual(value_dtypename(NP_INT64[0]), "int64")
+        self.assertEqual(value_dtypename(NP_FLOAT64[0]), "float64")
+        self.assertEqual(value_dtypename(NP_BOOL[0]), "bool")
+        self.assertEqual(value_dtypename(NP_STR[0]), "<U11")
+        self.assertEqual(value_dtypename(NP_DT[0]), "datetime64[D]")
+        self.assertEqual(value_dtypename(NP_TD[0]), "timedelta64[D]")
+        # pandas
+        self.assertEqual(value_dtypename(PD_INT64.iloc[0]), "int64")
+        self.assertEqual(value_dtypename(PD_FLOAT64.iloc[0]), "float64")
+        self.assertEqual(value_dtypename(PD_BOOL.iloc[0]), "bool")
+        self.assertEqual(value_dtypename(PD_BOOLEAN.iloc[0]), "boolean")
+        self.assertEqual(value_dtypename(PD_STR.iloc[0]), "object")
+        self.assertEqual(value_dtypename(PD_STRING.iloc[0]), "string")
+        self.assertEqual(value_dtypename(PD_DT[0]), "Timestamp")
+        self.assertEqual(value_dtypename(PD_TD[0]), "Timedelta")
+        self.assertEqual(value_dtypename(PD_PERIOD.iloc[0]), "period[Q-DEC]")
+
+    def test_dtypename_checks(self):
+        # built-in data types
+        self.assertTrue(is_numeric(value_dtypename(1)))
+        self.assertTrue(is_numeric(value_dtypename(1.0)))
+        self.assertTrue(is_bool(value_dtypename(True)))
+        self.assertTrue(is_str(value_dtypename("this is string")))
+        self.assertTrue(is_time(value_dtypename(dt.datetime.now())))
+        # numpy
+        self.assertTrue(is_numeric(value_dtypename(NP_INT64[0])))
+        self.assertTrue(is_numeric(value_dtypename(NP_FLOAT64[0])))
+        self.assertTrue(is_bool(value_dtypename(NP_BOOL[0])))
+        self.assertTrue(is_str(value_dtypename(NP_STR[0])))
+        self.assertTrue(is_timestamp(value_dtypename(NP_DT[0])))
+        self.assertTrue(is_timedelta(value_dtypename(NP_TD[0])))
+        # pandas
+        self.assertTrue(is_numeric(value_dtypename(PD_INT64.iloc[0])))
+        self.assertTrue(is_numeric(value_dtypename(PD_FLOAT64.iloc[0])))
+        self.assertTrue(is_bool(value_dtypename(PD_BOOL.iloc[0])))
+        self.assertTrue(is_bool(value_dtypename(PD_BOOLEAN.iloc[0])))
+        self.assertTrue(is_str(value_dtypename(PD_STR.iloc[0])))
+        self.assertTrue(is_str(value_dtypename(PD_STRING.iloc[0])))
+        self.assertTrue(is_timestamp(value_dtypename(PD_DT[0])))
+        self.assertTrue(is_timedelta(value_dtypename(PD_TD[0])))
+        self.assertTrue(is_timedelta(value_dtypename(PD_PERIOD.iloc[0])))
+        # misc
+        self.assertTrue(is_object(value_dtypename({"this": "is a dict"})))
+        # negative
+        self.assertFalse(is_time(value_dtypename(1)))
+        self.assertFalse(is_timedelta(value_dtypename(PD_DT[0])))
+        self.assertFalse(is_timestamp(value_dtypename(PD_TD[0])))
+        self.assertFalse(is_bool(value_dtypename(1)))
+        self.assertFalse(is_numeric(value_dtypename("string")))
+        self.assertFalse(is_object(value_dtypename(1)))
+
+
+from metrics import DriftQueue, convert_time_to_seconds
+
+
+class TestDriftQueue(unittest.TestCase):
     def test_init(self):
-        self.assertIsInstance(
-            FifoOverwriteDataFrame({"x": int}), FifoOverwriteDataFrame
-        )
+        self.assertIsInstance(DriftQueue({"x": int}), DriftQueue)
 
     def test_put(self):
-        fifof = FifoOverwriteDataFrame({"x": int})
+        fifof = DriftQueue({"x": int})
         fifof.put(np.arange(10))
         self.assertEqual(fifof.df.shape[0], 10)
         self.assertEqual(fifof.df.shape[1], 1)
         # more data
-        fifof = FifoOverwriteDataFrame({"x": float, "y": float})
+        fifof = DriftQueue({"x": float, "y": float})
         fifof.put(np.random.rand(100, 2))
         self.assertEqual(fifof.df.shape[0], 100)
         self.assertEqual(fifof.df.shape[1], 2)
 
     def test_put_overwrite(self):
-        fifof = FifoOverwriteDataFrame({"x": int}, maxsize=1)
+        fifof = DriftQueue({"x": int}, maxsize=1)
         fifof.put(np.arange(2))
         self.assertEqual(fifof.df.iloc[0, 0], 1)
         #
-        fifof = FifoOverwriteDataFrame({"x": int})
+        fifof = DriftQueue({"x": int})
         fifof.put(np.arange(1001))
         self.assertEqual(fifof.df.iloc[0, 0], 1)
         self.assertEqual(fifof.df.iloc[-1, 0], 1000)
         #
-        fifof = FifoOverwriteDataFrame({"x": str}, maxsize=3)
+        fifof = DriftQueue({"x": str}, maxsize=3)
         fifof.put(["a", "b", "c", "d"])
         self.assertEqual(fifof.df.iloc[0, 0], "b")
         self.assertEqual(fifof.df.iloc[-1, 0], "d")
 
     def test_flush(self):
-        fifof = FifoOverwriteDataFrame({"x": int}, maxsize=1)
+        fifof = DriftQueue({"x": int}, maxsize=1)
         ret = fifof.flush()
         self.assertEqual(ret, False)
         #
-        fifof = FifoOverwriteDataFrame({"x": int}, maxsize=1)
+        fifof = DriftQueue({"x": int}, maxsize=1)
         fifof.put([1])
         ret = fifof.flush()
         self.assertEqual(ret.iloc[0, 0], 1)
         self.assertEqual(fifof.df.shape[0], 1)
         #
-        fifof = FifoOverwriteDataFrame({"x": int}, maxsize=10)
+        fifof = DriftQueue({"x": int}, maxsize=10)
         fifof.put(range(11))
         ret = fifof.flush()
         self.assertEqual(ret.iloc[0, 0], 1)
         self.assertEqual(fifof.df.shape[0], 10)
 
     def test_flush_clear(self):
-        fifof = FifoOverwriteDataFrame({"x": int}, maxsize=1, clear_at_flush=True)
+        fifof = DriftQueue({"x": int}, maxsize=1, clear_at_flush=True)
         fifof.put([1])
         ret = fifof.flush()
         self.assertEqual(ret.iloc[0, 0], 1)
         self.assertEqual(fifof.df.shape[0], 0)
         #
-        fifof = FifoOverwriteDataFrame({"x": int}, maxsize=10, clear_at_flush=True)
+        fifof = DriftQueue({"x": int}, maxsize=10, clear_at_flush=True)
         fifof.put(range(11))
         ret = fifof.flush()
         self.assertEqual(ret.iloc[0, 0], 1)
         self.assertEqual(fifof.df.shape[0], 0)
         #
-        fifof = FifoOverwriteDataFrame({"x": int}, maxsize=1, clear_at_flush=True)
+        fifof = DriftQueue({"x": int}, maxsize=1, clear_at_flush=True)
         ret = fifof.flush()
         self.assertEqual(ret, False)
         self.assertEqual(fifof.df.shape[0], 0)
         #
-        fifof = FifoOverwriteDataFrame({"x": int}, maxsize=2, clear_at_flush=True)
+        fifof = DriftQueue({"x": int}, maxsize=2, clear_at_flush=True)
         fifof.put([1])
         ret = fifof.flush()
         self.assertEqual(ret, False)
@@ -355,7 +450,7 @@ class TestRecordDict(unittest.TestCase):
         self.assertEqual(str(m[4]), "gauge:model_update_time")
 
 
-from metrics import SummaryStatisticsMetrics, is_numeric_dtype
+from metrics import SummaryStatisticsMetrics, is_numeric
 
 
 class TestSummaryStatistics(unittest.TestCase):

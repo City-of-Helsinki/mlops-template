@@ -21,10 +21,11 @@ def is_timedelta(dtypename) -> bool:
     """
     return np.any(
         [
-            dtypename == tp
+            tp in dtypename
             for tp in [
                 "timedelta",
                 "Timedelta",
+                "period",
                 "Period",
                 "timedelta64",
             ]
@@ -38,8 +39,15 @@ def is_timestamp(dtypename) -> bool:
     """
     return np.any(
         [
-            dtypename == tp
-            for tp in ["date", "time", "datetime", "Timestamp", "datetime64"]
+            tp in dtypename
+            for tp in [
+                "date",
+                "time",
+                "datetime",
+                "timestamp",
+                "Timestamp",
+                "datetime64",
+            ]
         ]
     )
 
@@ -70,7 +78,9 @@ def is_bool(dtypename) -> bool:
     """
     Check if data type is boolean
     """
-    return np.any([dtypename == tp for tp in ["bool", "bool_", "BooleanDtype"]])
+    return np.any(
+        [dtypename == tp for tp in ["bool", "bool_", "boolean", "BooleanDtype"]]
+    )
 
 
 def is_str(dtypename) -> bool:
@@ -78,12 +88,41 @@ def is_str(dtypename) -> bool:
     check if given datatype is string
     """
     return np.any(
-        [dtypename == tp for tp in ["str", "str_", "string", "string_", "StringDtype"]]
+        [
+            dtypename == tp
+            for tp in [
+                "<U11",
+                "str",
+                "str_",
+                "string",
+                "string_",
+                "object",
+                "StringDtype",
+            ]
+        ]
     )
 
 
+# NOTE: CATEGORIES, pd.Categorical can not be extracted outside pandas:
+# it is always converted back to it's original form
+# therefore we can not check from a single value wheather or not it is categorical:
+# it must be checked from the dataframe itself on a higher level
 def is_categorical(dtypename) -> bool:
-    return dtypename == "CategoricalDtype"
+    raise NotImplementedError(
+        "Categorical values are typecasted back to their original dtype outside pandas.\nCheck categorical columns straight from the dataframe instead."
+    )
+
+
+def is_object(dtypename) -> bool:
+    """
+    if nothing else, treat as an generic object data type
+    """
+    return not (
+        is_time(dtypename)
+        or is_numeric(dtypename)
+        or is_bool(dtypename)
+        or is_str(dtypename)
+    )
 
 
 def get_dtypename(dtype) -> str:
@@ -404,12 +443,20 @@ class DriftQueue:
 
     Properties:
      - if full, will replace the oldest value with the newest
-     - can only be emptied (flushed) if completely full by default. Can be overriden.
+     - can only be emptied (flushed) if completely full by default
      - clear df (drop all) at non-empty flush by default. This helps to limit the cost
         of computing drift metrics, as they will only need to be calculated every [maxsize]
         datapoints
      - if given a filename for backup, will try to initialize and back up the queue to given file.
         This is to avoid data loss due to container failures etc.
+
+    Parameters:
+        columns: dict of name-type pairs to build a pd.DataFrame
+        backup_file: str, a complete filepath. .feather suffix recommended. if empty, no backup used.
+        maxsize: int, size of the fifo queue (dataframe rows)
+        clear_at_flush: bool, if true, clear queue at flush if non-empty dataframe is returned
+        only_flush_full: bool, if true, you can only get values from full queue
+
     """
 
     def __init__(
@@ -465,17 +512,18 @@ class DriftQueue:
         """
         Return queue contents as dataframe if full or non-full flush permitted,
         else return an empty dataframe.
-        Clear dqueue after flushing if required.
+        Clear queue after flushing if required.
+        If empty dataframe would be returned, but queue is not empty,
+        queue is not cleared to not to loose data.
         """
         ret = self.df.copy()
 
         # return empty dataframe if not completely full
         if self.only_flush_full and not self.is_full():
             ret.drop(ret.index, inplace=True)
-
-        if self.clear_at_flush:
+        # only allow clear queue if return is not empty
+        elif ret.shape[0] > 0 and self.clear_at_flush:
             self.df.drop(self.df.index, inplace=True)
-            self.is_full = False
 
         return ret
 
@@ -500,7 +548,7 @@ class SummaryStatisticsMetrics:
 
     0. SummaryStatisticsMetrics creates prometheus metrics for drift detection when api is launched.
     1. Input features from requests to api collected to DriftQueue.
-    2.0 FODF flushed when full or periodically.
+    2.0 DriftQueue flushed when full.
     2.1 (optional) Flush data can be anonymized if needed, for example with Helsinki tabular anonymizer.
     3. SummaryStatisticsMetrics calculates summary statistics from flush and updates them to prometheus.
     4. Return to step 1.
