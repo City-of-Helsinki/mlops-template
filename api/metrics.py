@@ -397,16 +397,18 @@ def record_metrics_from_dict(
 # FifoOverwrite
 # DriftQueue
 # DriftDetectionQueue
-class FifoOverwriteDataFrame:
+class DriftQueue:
     """
-    A FIFO Queue for storing [maxsize] latest items.
+    A FIFO overwrite queue for storing [maxsize] latest items.
+    Intented for computing drift metrics for ML input, output & model performance.
 
     Properties:
      - if full, will replace the oldest value with the newest
-     - can only be emptied if completely full (flush)
-     - optionally clear (drop all) at flush. This must be set when
-        creating the queue for consistent data handling.
-     - if given a backup file, will try to initialize and back up the queue to given file.
+     - can only be emptied (flushed) if completely full by default. Can be overriden.
+     - clear df (drop all) at non-empty flush by default. This helps to limit the cost
+        of computing drift metrics, as they will only need to be calculated every [maxsize]
+        datapoints
+     - if given a filename for backup, will try to initialize and back up the queue to given file.
         This is to avoid data loss due to container failures etc.
     """
 
@@ -415,11 +417,13 @@ class FifoOverwriteDataFrame:
         columns: dict,
         backup_file: str = "",
         maxsize: int = 1000,
-        clear_at_flush: bool = False,
+        clear_at_flush: bool = True,
+        only_flush_full: bool = True,
     ):
         self.maxsize = maxsize
         self.columns = columns
         self.clear_at_flush = clear_at_flush
+        self.only_flush_full = only_flush_full
         self.backup_file = backup_file
         if backup_file != "":
             try:  # initialize with stored data if available
@@ -436,9 +440,7 @@ class FifoOverwriteDataFrame:
         else:
             return False
 
-    def put(
-        self, rows: Union[np.ndarray, Iterable, dict, pd.DataFrame]
-    ) -> FifoOverwriteDataFrame:
+    def put(self, rows: Union[np.ndarray, Iterable, dict, pd.DataFrame]) -> DriftQueue:
         """
         Put new items to queue. If full, overwrite the oldest value.
         Return reference to self.
@@ -461,18 +463,20 @@ class FifoOverwriteDataFrame:
 
     def flush(self) -> pd.DataFrame:
         """
-        If queue df is full, return copy.
-        If self.clear_at_flush, clear df before returning copy. Queue is only cleared if full.
-        Else, return empty dataframe.
+        Return queue contents as dataframe if full or non-full flush permitted,
+        else return an empty dataframe.
+        Clear dqueue after flushing if required.
         """
         ret = self.df.copy()
 
-        if not self.is_full():
+        # return empty dataframe if not completely full
+        if self.only_flush_full and not self.is_full():
             ret.drop(ret.index, inplace=True)
 
         if self.clear_at_flush:
             self.df.drop(self.df.index, inplace=True)
             self.is_full = False
+
         return ret
 
 
@@ -490,12 +494,12 @@ class SummaryStatisticsMetrics:
     or string or they will not be recorded.
 
     Designed to be used to calculate summary statistics of input data collected to
-    FifoOverwriteDataFrame and pass them to prometheus.
+    DriftQueue and pass them to prometheus.
 
     Workflow example:
 
     0. SummaryStatisticsMetrics creates prometheus metrics for drift detection when api is launched.
-    1. Input features from requests to api collected to FifoOverwriteDataFrame.
+    1. Input features from requests to api collected to DriftQueue.
     2.0 FODF flushed when full or periodically.
     2.1 (optional) Flush data can be anonymized if needed, for example with Helsinki tabular anonymizer.
     3. SummaryStatisticsMetrics calculates summary statistics from flush and updates them to prometheus.
