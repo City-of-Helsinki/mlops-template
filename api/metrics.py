@@ -205,6 +205,17 @@ def convert_time_to_seconds(
             return value
 
 
+def string_is_time(s: str) -> bool:
+    """
+    Check if given string is a valid time expression
+    """
+    try:
+        convert_time_to_seconds(s)
+        return True
+    except ValueError:
+        return False
+
+
 # correct metric names to prometheus naming conventions:
 
 # Prometheus naming conventions:
@@ -436,6 +447,7 @@ class FifoOverwriteDataFrame:
         new_data = pd.DataFrame(rows, columns=self.columns)
         if new_data.shape[0] >= self.maxsize:
             new_data = new_data.iloc[-self.maxsize :]
+        # TODO tsekkaa
         self.df = pd.concat(
             (self.df.iloc[1:] if y_size == self.maxsize else self.df, new_data),
             ignore_index=True,
