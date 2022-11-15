@@ -209,7 +209,7 @@ def convert_time_to_seconds(
 
         # pandas
         elif isinstance(value, (pd.Timestamp, pd.Timedelta)):
-            return convert_time_to_seconds(t.to_numpy())
+            return convert_time_to_seconds(value.to_numpy())
         elif isinstance(value, pd.Period):
             return convert_time_to_seconds(
                 value.to_timestamp(how="E") - value.to_timestamp(how="S")
