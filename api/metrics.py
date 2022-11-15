@@ -251,7 +251,7 @@ def string_is_time(s: str) -> bool:
     try:
         convert_time_to_seconds(s)
         return True
-    except ValueError:
+    except ValueError as e:
         return False
 
 

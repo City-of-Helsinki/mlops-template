@@ -99,7 +99,7 @@ class TestTypeChecks(unittest.TestCase):
         self.assertFalse(is_object(value_dtypename(1)))
 
 
-from metrics import DriftQueue, convert_time_to_seconds
+from metrics import DriftQueue, convert_time_to_seconds, string_is_time
 
 
 class TestDriftQueue(unittest.TestCase):
@@ -316,8 +316,13 @@ class TestConvertTime(unittest.TestCase):
             np.isnan(convert_time_to_seconds({"as_should": "this"}, errors="coerce"))
         )
 
+    def test_string_is_time(self):
+        self.assertTrue(convert_time_to_seconds("2020-01-01"))
+        self.assertTrue(convert_time_to_seconds("1d"))
+        self.assertTrue(convert_time_to_seconds("2020/01/01"))
+        with self.assertRaises(ValueError):
+            convert_time_to_seconds("this is not time!")
 
-# TODO: test_convert_metric_name_to_promql
 
 from metrics import convert_metric_name_to_promql
 
