@@ -543,10 +543,10 @@ class TestSummaryStatistics(unittest.TestCase):
     columns = {
         "numeric_float": float,
         "numeric_int": int,
-        "bool": pd.BooleanDtype,
+        "bool": "boolean",
         "datetime": dt.datetime,
-        "category": pd.CategoricalDtype,
-        "string": str,
+        "category": "category",
+        "string": "string",
         "stringable_object": stringable_object,
         "non_stringable_object": non_stringable_object,
     }
@@ -568,21 +568,25 @@ class TestSummaryStatistics(unittest.TestCase):
 
     def test_init(self):
         clean_registry()
-        ssm = SummaryStatisticsMetrics(columns=self.columns)
+        ssm = (
+            SummaryStatisticsMetrics(columns=self.columns)
+            .calculate(self.df1)
+            .set_metrics()
+        )
         for key in self.columns.keys():
             self.assertTrue(
                 np.any(
                     [
                         metricname.startswith(convert_metric_name_to_promql(key))
+                        # print(metricname)
                         for metricname in ssm.metrics.keys()
                     ]
                 )
             )
 
-    def test_set(self):
+    def test_calculate_and_set(self):
         clean_registry()
         ssm = SummaryStatisticsMetrics(columns=self.columns)
-
-        ssm.set(self.df1)
+        ssm.calculate(self.df1).set_metrics()
         # reset
-        ssm.set(self.df1)
+        ssm.set_metrics()

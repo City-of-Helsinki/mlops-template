@@ -436,11 +436,6 @@ def record_metrics_from_dict(
     return ret
 
 
-# FifoQueue
-# FifoOverwriteQueue
-# FifoOverwrite
-# DriftQueue
-# DriftDetectionQueue
 class DriftQueue:
     """
     A FIFO overwrite queue for storing [maxsize] latest items.
@@ -604,7 +599,7 @@ class SummaryStatisticsMetrics:
         # if category, create Enum
         if is_time(dtypename) or is_numeric(dtypename) or is_bool(dtypename):
             m = Gauge(metric_name, metric_description)
-        elif is_categorical(dtypename):  # string, categories & objects
+        elif dtypename == "category":  # string, categories & objects
             m = Enum(metric_name, metric_description, states=[""])
         else:  # string & rest
             m = Info(metric_name, metric_description)
@@ -660,7 +655,7 @@ class SummaryStatisticsMetrics:
                     self.metrics[metric_key].set(metric_value)
                 elif is_numeric(dtypename):  # numeric pass as is
                     self.metrics[metric_key].set(metric_value)
-                elif is_categorical(dtypename):  # categoricals -> enum
+                elif dtypename == "category":  # categoricals -> enum
                     self.metrics[metric_key].state(metric_value)
                 elif metric_value is None or pd.isnull(
                     metric_value
