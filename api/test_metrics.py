@@ -135,42 +135,98 @@ class TestDriftQueue(unittest.TestCase):
     def test_flush(self):
         fifof = DriftQueue({"x": int}, maxsize=1)
         ret = fifof.flush()
-        self.assertEqual(ret, False)
+        self.assertTrue(ret.empty)
         #
         fifof = DriftQueue({"x": int}, maxsize=1)
         fifof.put([1])
         ret = fifof.flush()
         self.assertEqual(ret.iloc[0, 0], 1)
-        self.assertEqual(fifof.df.shape[0], 1)
+        self.assertEqual(fifof.df.shape[0], 0)
         #
         fifof = DriftQueue({"x": int}, maxsize=10)
         fifof.put(range(11))
         ret = fifof.flush()
         self.assertEqual(ret.iloc[0, 0], 1)
-        self.assertEqual(fifof.df.shape[0], 10)
+        self.assertEqual(fifof.df.shape[0], 0)
 
-    def test_flush_clear(self):
-        fifof = DriftQueue({"x": int}, maxsize=1, clear_at_flush=True)
+    def test_flush_clear_false(self):
+        fifof = DriftQueue({"x": int}, maxsize=1, clear_at_flush=False)
+        fifof.put([1])
+        ret = fifof.flush()
+        self.assertEqual(ret.iloc[0, 0], 1)
+        self.assertEqual(fifof.df.shape[0], 1)
+        #
+        fifof = DriftQueue({"x": int}, maxsize=10, clear_at_flush=False)
+        fifof.put(range(11))
+        ret = fifof.flush()
+        self.assertEqual(ret.iloc[0, 0], 1)
+        self.assertEqual(fifof.df.shape[0], 10)
+        #
+        fifof = DriftQueue({"x": int}, maxsize=1, clear_at_flush=False)
+        ret = fifof.flush()
+        self.assertTrue(ret.empty)
+        self.assertEqual(fifof.df.shape[0], 0)
+        #
+        fifof = DriftQueue({"x": int}, maxsize=2, clear_at_flush=False)
+        fifof.put([1])
+        ret = fifof.flush()
+        self.assertTrue(ret.empty)
+        self.assertEqual(fifof.df.shape[0], 1)
+
+    def test_only_flush_full_false(self):
+        fifof = DriftQueue({"x": int}, maxsize=1, only_flush_full=False)
         fifof.put([1])
         ret = fifof.flush()
         self.assertEqual(ret.iloc[0, 0], 1)
         self.assertEqual(fifof.df.shape[0], 0)
         #
-        fifof = DriftQueue({"x": int}, maxsize=10, clear_at_flush=True)
+        fifof = DriftQueue({"x": int}, maxsize=10, only_flush_full=False)
         fifof.put(range(11))
         ret = fifof.flush()
         self.assertEqual(ret.iloc[0, 0], 1)
         self.assertEqual(fifof.df.shape[0], 0)
         #
-        fifof = DriftQueue({"x": int}, maxsize=1, clear_at_flush=True)
+        fifof = DriftQueue({"x": int}, maxsize=1, only_flush_full=False)
         ret = fifof.flush()
-        self.assertEqual(ret, False)
+        self.assertTrue(ret.empty)
         self.assertEqual(fifof.df.shape[0], 0)
         #
-        fifof = DriftQueue({"x": int}, maxsize=2, clear_at_flush=True)
+        fifof = DriftQueue({"x": int}, maxsize=2, only_flush_full=False)
         fifof.put([1])
         ret = fifof.flush()
-        self.assertEqual(ret, False)
+        self.assertEqual(ret.iloc[0, 0], 1)
+        self.assertEqual(fifof.df.shape[0], 0)
+
+    def test_clear_at_flush_false_only_flush_full_false(self):
+        fifof = DriftQueue(
+            {"x": int}, maxsize=1, clear_at_flush=False, only_flush_full=False
+        )
+        fifof.put([1])
+        ret = fifof.flush()
+        self.assertEqual(ret.iloc[0, 0], 1)
+        self.assertEqual(fifof.df.shape[0], 1)
+        #
+        fifof = DriftQueue(
+            {"x": int}, maxsize=10, clear_at_flush=False, only_flush_full=False
+        )
+        fifof.put(range(11))
+        ret = fifof.flush()
+        self.assertEqual(ret.iloc[0, 0], 1)
+        self.assertEqual(fifof.df.shape[0], 10)
+        #
+        fifof = DriftQueue(
+            {"x": int}, maxsize=1, clear_at_flush=False, only_flush_full=False
+        )
+        ret = fifof.flush()
+        self.assertTrue(ret.empty)
+        self.assertEqual(fifof.df.shape[0], 0)
+        #
+        fifof = DriftQueue(
+            {"x": int}, maxsize=2, clear_at_flush=False, only_flush_full=False
+        )
+        fifof.put([1])
+        ret = fifof.flush()
+        self.assertEqual(ret.iloc[0, 0], 1)
         self.assertEqual(fifof.df.shape[0], 1)
 
 
