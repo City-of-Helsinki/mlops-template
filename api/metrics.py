@@ -695,13 +695,14 @@ class SummaryStatisticsMetrics:
                 ):  # do not record nans
                     pass
                 else:
-                    try:  # other values should be convertable to string
-                        metric_value = str(metric_value)
-                        self.metrics[metric_key].info(metric_value)
-                    except:  # try converting to float
+                    try:  # try converting to float
+                        metric_value = float(metric_value)
+                        self.metrics[metric_key].set(metric_value)
+                    except:
                         try:
-                            metric_value = float(metric_value)
-                            self.metrics[metric_key].set(metric_value)
+                            # other values should at least be convertable to string
+                            metric_value = str(metric_value)
+                            self.metrics[metric_key].info(metric_value)
                         except:
                             pass  # do not record non-numeric, boolean, categorical or non-convertable to str
         return self
