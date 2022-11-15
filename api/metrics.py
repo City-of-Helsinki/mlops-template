@@ -275,6 +275,7 @@ def string_is_time(s: str) -> bool:
 def convert_metric_name_to_promql(
     metric_name: str,
     dtype: Type = None,
+    dtypename: str = None,
     prefix: str = "",
     suffix: str = "",
     is_counter=False,
@@ -282,6 +283,7 @@ def convert_metric_name_to_promql(
     type_mask="typemask",
     mask_reserved_suffixes=True,
     suffix_mask="suffixmask",
+    category=False,
 ) -> str:
     """
     Create a promql compatible name for a metric.
@@ -294,7 +296,14 @@ def convert_metric_name_to_promql(
     ret = prefix + "_" + metric_name + "_" + suffix
     # must be lowercase
     ret = ret.lower().strip("_")
-    dtypename = get_dtypename(dtype)
+
+    # can't begin with non-alphabetical
+    if not ret[:1].isalpha() and ret[:1].isnumeric():
+        ret = "column" + ret
+
+    if dtypename is None:
+        dtypename = get_dtypename(dtype)
+
     if is_timestamp(dtypename):
         # e.g. date_of_birth -> 'date_of_birth_timestamp_seconds'
         ret = ret.replace("seconds", "").replace("timestamp", "") + "_timestamp_seconds"
@@ -302,7 +311,7 @@ def convert_metric_name_to_promql(
     elif is_timedelta(dtypename):
         # e.g. time_on_site -> 'time_on_site_seconds'
         ret = ret.replace("seconds", "") + "_seconds"
-    elif is_str(dtypename):
+    elif is_str(dtypename) and not category:
         # e.g. description -> description_count
         ret += "_info"
     else:  # add more exceptions if needed
@@ -556,7 +565,6 @@ class SummaryStatisticsMetrics:
 
     def __init__(
         self,
-        columns: dict,
         summary_statistics_function: function = lambda df: df.describe(
             include="all", datetime_is_numeric=True
         ),
@@ -566,41 +574,50 @@ class SummaryStatisticsMetrics:
         """
         Parameters:
 
-        columns: dict of column-datatype pairs similar to when creating pd.DataFrame
         summary_statistics_function: function that takes in pd.DataFrame returns
             a dataframe containing summary statistics for each column.
         convert_names_to_promql: metric names are inferred from given column and summary statistic function.
             If true, inferred names are auto-corrected to promql.
         metrics_name_prefix: an optional prefix to prometheus metric names created, e.g. 'input_'
         """
-        self.columns = columns
         self.summary_statistics_function = summary_statistics_function
         self.convert_names_to_promql = convert_names_to_promql
         self.metrics_name_prefix = metrics_name_prefix
         self.sumstat_df = pd.DataFrame()
-        self.metrics = {}  # store metric handles in a dict
+        # Pandas category information is not conserved element-wise.
+        # To ensure categorical variables are correctly
+        # implemented as enum metrics,
+        # force categorical columns to enum metrics instead of info strings
+        # when summary statistics are calculated column-wise.
+        # to do that, keep track of input df columns and dtypes
+        self.input_df_columns = pd.DataFrame().columns
+        self.input_df_dtypes = pd.DataFrame().dtypes
+        # store metric handles in a dict
+        self.metrics = {}
 
-    def _create_metric(self, colname, rowname, dtype, summary_statistics_function):
+    def _create_metric(self, colname, rowname, dtypename, categories):
         """
         Internal: not to be called directly but by 'calculate'.
         Create new metric if it does not already exist.
         """
-        metric_key = "_".join([colname, rowname])
-        metric_description = f"calculated using summary statistics function {summary_statistics_function.__name__}"
+        metric_key = f"{colname}_{rowname}"
+        metric_description = f"calculated using summary statistics function {self.summary_statistics_function.__name__}"
         metric_name = (
             convert_metric_name_to_promql(
-                metric_name=metric_key, dtype=dtype, prefix=self.metrics_name_prefix
+                metric_name=metric_key,
+                dtypename=dtypename,
+                prefix=self.metrics_name_prefix,
+                category=categories is not None,
             )
             if self.convert_names_to_promql
             else metric_name
         )
-        dtypename = get_dtypename(dtype)
 
         # if category, create Enum
-        if is_time(dtypename) or is_numeric(dtypename) or is_bool(dtypename):
+        if is_str(dtypename) and categories is not None:
+            m = Enum(metric_name, metric_description, states=categories)
+        elif is_time(dtypename) or is_numeric(dtypename) or is_bool(dtypename):
             m = Gauge(metric_name, metric_description)
-        elif dtypename == "category":  # string, categories & objects
-            m = Enum(metric_name, metric_description, states=[""])
         else:  # string & rest
             m = Info(metric_name, metric_description)
 
@@ -623,7 +640,25 @@ class SummaryStatisticsMetrics:
         """
         Calculate summary statistics and store to self.sumstat_df. Return self.
         """
+        self.input_df_columns = df.columns
+        self.input_df_dtypes = df.dtypes
         self.sumstat_df = self.summary_statistics_function(df)
+        # check if sumstat & input share all columns
+        if self.input_df_columns.values.sort() == self.sumstat_df.columns.values.sort():
+            # boolean array where true indicates that the variable is categorical
+            self.category_indicator = (
+                np.array([get_dtypename(dt) for dt in self.input_df_dtypes])
+                == "category"
+            )
+        else:
+            self.category_indicator = np.zeros(sumstat_df.shape[1])
+        self.categories_list = []
+        for categorical, colname in zip(self.category_indicator, self.input_df_columns):
+            if categorical:
+                self.categories_list.append(list(df[colname].cat.categories.values))
+            else:
+                self.categories_list.append(None)
+
         return self
 
     def set_metrics(self) -> SummaryStatisticsMetrics:
@@ -632,20 +667,16 @@ class SummaryStatisticsMetrics:
         """
         sumstat_df = self.sumstat_df
         colnames = sumstat_df.columns
-        dtypenames = [get_dtypename(t) for t in sumstat_df.dtypes]
         rownames = sumstat_df.index.values
         # loop through dataframe and calculate summary statistics
-        for colname, dtypename in zip(colnames, dtypenames):
+        for colname, categories in zip(colnames, self.categories_list):
             for rowname in rownames:
-                metric_key = "_".join([colname, rowname])
+                metric_key = f"{colname}_{rowname}"
                 metric_value = sumstat_df.loc[rowname, colname]
-                dtype = type(metric_value)
+                dtypename = value_dtypename(metric_value)
                 # create new metric if needed
                 if metric_key not in self.metrics.keys():
-                    self._create_metric(
-                        colname, rowname, dtype, self.summary_statistics_function
-                    )
-
+                    self._create_metric(colname, rowname, dtypename, categories)
                 # record metric values and do necessary type conversions
                 if is_time(dtypename):  # convert all time formats to integer seconds
                     metric_value = convert_time_to_seconds(metric_value)
@@ -655,7 +686,9 @@ class SummaryStatisticsMetrics:
                     self.metrics[metric_key].set(metric_value)
                 elif is_numeric(dtypename):  # numeric pass as is
                     self.metrics[metric_key].set(metric_value)
-                elif dtypename == "category":  # categoricals -> enum
+                elif (
+                    is_str(dtypename) and categories is not None
+                ):  # categoricals -> enum
                     self.metrics[metric_key].state(metric_value)
                 elif metric_value is None or pd.isnull(
                     metric_value

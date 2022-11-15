@@ -533,60 +533,48 @@ from metrics import SummaryStatisticsMetrics, is_numeric
 
 
 class TestSummaryStatistics(unittest.TestCase):
-    class stringable_object:
-        def __str__():
-            return "hello_world"
-
-    class non_stringable_object:
-        a = 1
-
-    columns = {
-        "numeric_float": float,
-        "numeric_int": int,
-        "bool": "boolean",
-        "datetime": dt.datetime,
-        "category": "category",
-        "string": "string",
-        "stringable_object": stringable_object,
-        "non_stringable_object": non_stringable_object,
-    }
-
     values1 = [
         [
             0.1,
             1,
             True,
-            dt.datetime.now(),
+            pd.Timestamp("2020-01-01"),
             pd.Series(["a", "b", "c", "a"], dtype="category").iloc[0],
             "string",
-            stringable_object(),
-            non_stringable_object(),
         ]
     ]
-
-    df1 = pd.DataFrame(columns=columns, data=values1)
+    df1 = pd.DataFrame(values1)
+    df1[df1.columns[4]] = df1[df1.columns[4]].astype("category")
 
     def test_init(self):
         clean_registry()
-        ssm = (
-            SummaryStatisticsMetrics(columns=self.columns)
-            .calculate(self.df1)
-            .set_metrics()
-        )
-        for key in self.columns.keys():
-            self.assertTrue(
-                np.any(
-                    [
-                        metricname.startswith(convert_metric_name_to_promql(key))
-                        # print(metricname)
-                        for metricname in ssm.metrics.keys()
-                    ]
-                )
-            )
+        ssm = SummaryStatisticsMetrics().calculate(self.df1).set_metrics()
+        # print(self.df1.dtypes)
+        # print([get_dtypename(tp) for tp in self.df1.dtypes])
+        # print(ssm.get_sumstat().dtypes)
+        ssm.get_metrics().keys()
+        for key in ssm.get_metrics().keys():
+            self.assertTrue(key in ssm.metrics.keys())
 
     def test_calculate_and_set(self):
         clean_registry()
-        ssm = SummaryStatisticsMetrics(columns=self.columns)
+        ssm = SummaryStatisticsMetrics()
+        ssm.calculate(self.df1).set_metrics()
+        # reset
+        ssm.set_metrics()
+
+    def test_non_equal_columns(self):
+        clean_registry()
+        # keep categorical values categorical
+        ssm = SummaryStatisticsMetrics(summary_statistics_function=lambda x: x.T)
+        ssm.calculate(self.df1).set_metrics()
+        # reset
+        ssm.set_metrics()
+
+    def test_raw(self):
+        clean_registry()
+        # keep categorical values categorical
+        ssm = SummaryStatisticsMetrics(summary_statistics_function=lambda x: x)
         ssm.calculate(self.df1).set_metrics()
         # reset
         ssm.set_metrics()
