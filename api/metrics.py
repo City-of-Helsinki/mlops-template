@@ -37,18 +37,20 @@ def is_timestamp(dtypename) -> bool:
     """
     check if given datatype is a timestamp
     """
-    return np.any(
-        [
-            tp in dtypename
-            for tp in [
-                "date",
-                "time",
-                "datetime",
-                "timestamp",
-                "Timestamp",
-                "datetime64",
+    return (
+        dtypename == "date"
+        or dtypename == "time"
+        or np.any(
+            [
+                tp in dtypename
+                for tp in [
+                    "datetime",
+                    "timestamp",
+                    "Timestamp",
+                    "datetime64",
+                ]
             ]
-        ]
+        )
     )
 
 
@@ -276,6 +278,10 @@ def convert_metric_name_to_promql(
     prefix: str = "",
     suffix: str = "",
     is_counter=False,
+    mask_type_aliases=True,
+    type_mask="typemask",
+    mask_reserved_suffixes=True,
+    suffix_mask="suffixmask",
 ) -> str:
     """
     Create a promql compatible name for a metric.
@@ -304,23 +310,25 @@ def convert_metric_name_to_promql(
 
     # remove metric types from metric name (a metric name should not contain these)
     for metric_type in ["gauge", "counter", "summary", "map"]:
-        ret = ret.replace("_" + metric_type + "_", "")
-        while ret.startswith(metric_type + "_"):
-            ret = ret[: -(len(metric_type) + 1)]
-        while ret.endswith("_" + metric_type):
-            ret = ret[: -(len(metric_type) + 1)]
+        if not mask_type_aliases:  # remove
+            ret = ret.replace(metric_type, "")
+        else:  # mask
+            ret = ret.replace(metric_type, metric_type + type_mask)
 
     ret = ret.strip("_")
 
     # remove reserved suffixes (a metric should not end with these)
-    for reserved_suffix in ["_count", "_sum", "_bucket", "_total"]:
-        l = len(reserved_suffix)
-        while ret.endswith(reserved_suffix):
-            ret = ret[:-l]
-
-    # however, counters should always have _total suffix
-    if is_counter:
+    if not is_counter:
+        for reserved_suffix in ["_count", "_sum", "_bucket", "_total"]:
+            if not mask_reserved_suffixes:  # remove
+                l = len(reserved_suffix)
+                while ret.endswith(reserved_suffix):
+                    ret = ret[:-l]
+            elif ret.endswith(reserved_suffix):  # mask
+                ret += suffix_mask
+    elif not ret.endswith("_total"):  # however, counters should always end with _total
         ret += "_total"
+
     # clean non-alphanumericals except underscores
     ret = re.sub(r"[^\w" + "_" + "]", "_", ret)
 

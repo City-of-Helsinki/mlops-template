@@ -381,30 +381,33 @@ class TestConvertName(unittest.TestCase):
             "page_visit_time_timestamp_seconds",
         )
         self.assertEqual(
-            convert_metric_name_to_promql("page_visit_time_timestamp", dt.date),
+            convert_metric_name_to_promql("page_visit_time_timestamp", dt.datetime),
             "page_visit_time_timestamp_seconds",
         )
         self.assertEqual(
-            convert_metric_name_to_promql("page_visit_timestamp_time", dt.date),
+            convert_metric_name_to_promql("page_visit_timestamp_time", dt.time),
             "page_visit_time_timestamp_seconds",
         )
         self.assertEqual(
-            convert_metric_name_to_promql("page_visit_time_seconds_timestamp", dt.date),
+            convert_metric_name_to_promql(
+                "page_visit_time_seconds_timestamp",
+                value_dtypename(np.datetime64("2020-10-01")),
+            ),
             "page_visit_time_timestamp_seconds",
         )
 
     def test_timedelta(self):
         self.assertEqual(
-            convert_metric_name_to_promql("page_visit_time", dt.timedelta),
-            "page_visit_time_seconds",
+            convert_metric_name_to_promql("page_visit_duration", dt.timedelta),
+            "page_visit_duration_seconds",
         )
         self.assertEqual(
-            convert_metric_name_to_promql("page_visit_time_seconds", dt.timedelta),
-            "page_visit_time_seconds",
+            convert_metric_name_to_promql("page_visit_duration", dt.timedelta),
+            "page_visit_duration_seconds",
         )
         self.assertEqual(
-            convert_metric_name_to_promql("page_visit_seconds_time", dt.timedelta),
-            "page_visit_time_seconds",
+            convert_metric_name_to_promql("page_visit_duration", dt.timedelta),
+            "page_visit_duration_seconds",
         )
 
     def test_string(self):
@@ -414,14 +417,29 @@ class TestConvertName(unittest.TestCase):
         )
 
     def test_remove_metric_types(self):
-        self.assertEqual(convert_metric_name_to_promql("test_map", None), "test")
+        self.assertEqual(
+            convert_metric_name_to_promql("test_map", None), "test_maptypemask"
+        )
+        self.assertEqual(
+            convert_metric_name_to_promql("test_map", None, mask_type_aliases=False),
+            "test",
+        )
 
     def test_remove_reserved_suffixes(self):
         convert_metric_name_to_promql("test_count", None)
 
-        self.assertEqual(convert_metric_name_to_promql("test_count", None), "test")
         self.assertEqual(
-            convert_metric_name_to_promql("test_count_count", None), "test"
+            convert_metric_name_to_promql("test_count", None), "test_countsuffixmask"
+        )
+        self.assertEqual(
+            convert_metric_name_to_promql("test_count_count", None),
+            "test_count_countsuffixmask",
+        )
+        self.assertEqual(
+            convert_metric_name_to_promql(
+                "test_count_count", None, mask_reserved_suffixes=False
+            ),
+            "test",
         )
         # not removed from beginning or middle
         self.assertEqual(
