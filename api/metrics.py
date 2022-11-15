@@ -257,21 +257,6 @@ def string_is_time(s: str) -> bool:
         return False
 
 
-# correct metric names to prometheus naming conventions:
-
-# Prometheus naming conventions:
-#
-# suffix describing base unit, plural form
-# _total for unitless count
-# _unit_total for unit accumulating count
-# _info for metadata
-# _timestamp_seconds for timestamps
-# rule of thumb: either sum() or avg() of metric must be meaningful, or metric has to be split up
-# time -> seconds
-# percent -> ratio  0-1
-# bits, bytes -> bytes
-
-
 def convert_metric_name_to_promql(
     metric_name: str,
     dtype: Type = None,
@@ -291,18 +276,37 @@ def convert_metric_name_to_promql(
     but may help when auto-generating metrics.
 
     See https://prometheus.io/docs/practices/naming/ for naming conventions.
+
+    Prometheus naming conventions in a nutshell:
+    - suffix describing base unit, plural form
+    - _total for unitless count
+    - _unit_total for unit accumulating count
+    - _info for metadata
+    - _timestamp_seconds for timestamps
+    - rule of thumb: either sum() or avg() of metric must be meaningful, or metric has to be split up
+    - time -> seconds
+    - percent -> ratio  0-1
+    - bits, bytes -> bytes
     """
 
+    if dtypename is None:
+        if dtype is not None:
+            dtypename = get_dtypename(dtype)
+        else:
+            raise ValueError(
+                "convert_metric_name_to_promql must be given non-None dtype or dtypename"
+            )
+
+    # add possible prefix & suffix to metric name
     ret = prefix + "_" + metric_name + "_" + suffix
     # must be lowercase
     ret = ret.lower().strip("_")
 
     # can't begin with non-alphabetical
     if not ret[:1].isalpha() and ret[:1].isnumeric():
-        ret = "column" + ret
-
-    if dtypename is None:
-        dtypename = get_dtypename(dtype)
+        ret = (
+            "column" + ret
+        )  # assuming this would rise from unnamed columns addressed by index
 
     if is_timestamp(dtypename):
         # e.g. date_of_birth -> 'date_of_birth_timestamp_seconds'
@@ -311,17 +315,21 @@ def convert_metric_name_to_promql(
     elif is_timedelta(dtypename):
         # e.g. time_on_site -> 'time_on_site_seconds'
         ret = ret.replace("seconds", "") + "_seconds"
+
     elif is_str(dtypename) and not category:
         # e.g. description -> description_count
         ret += "_info"
+
     else:  # add more exceptions if needed
+        # TODO: percent -> ratio  0-1 (if possible)
+        # TODO: bits, bytes -> bytes (if possible)
         pass
 
     # remove metric types from metric name (a metric name should not contain these)
     for metric_type in ["gauge", "counter", "summary", "map"]:
         if not mask_type_aliases:  # remove
             ret = ret.replace(metric_type, "")
-        else:  # mask
+        else:  # remove by masking
             ret = ret.replace(metric_type, metric_type + type_mask)
 
     ret = ret.strip("_")
@@ -333,7 +341,7 @@ def convert_metric_name_to_promql(
                 l = len(reserved_suffix)
                 while ret.endswith(reserved_suffix):
                     ret = ret[:-l]
-            elif ret.endswith(reserved_suffix):  # mask
+            elif ret.endswith(reserved_suffix):  # remove by masking
                 ret += suffix_mask
     elif not ret.endswith("_total"):  # however, counters should always end with _total
         ret += "_total"
@@ -346,6 +354,7 @@ def convert_metric_name_to_promql(
         ["_" + val.strip("_") if val != "" else "" for val in ret.split("_")]
     ).strip("_")
 
+    # return promql compatible metric name
     return ret
 
 
@@ -354,20 +363,19 @@ def record_metrics_from_dict(
 ) -> list:
     """
     Read pre-recorded metrics from dict to Prometheus.
+
     Use case: pass model train/val pipeline metrics to prometheus.
 
     This allows recording three types of metrics
-        - numeric (int, float, etc.)
-        - categorical
-        - info (metadata)
+        - numeric (gauge) (int, float, etc.)
+        - categorical (enum)
+        - string (info), metadata
     Lists and matrices must be split so that each cell is their own metric.
 
-    For designing metrics, see Prometheus naming conventions see:
-        https://prometheus.io/docs/practices/naming/
     For metadata (model version, data version etc. see:
         https://www.robustperception.io/exposing-the-software-version-to-prometheus/
 
-    Format:
+    Input format:
     metrics = {
         'metric_name':{
             'value': int, float or str if 'type' = category,
@@ -403,8 +411,10 @@ def record_metrics_from_dict(
     }
 
     """
-    ret = []  # return metric handles. In normal use these are not needed.
+    # return metric handles, even if they are not needed again.
+    ret = []
 
+    # loop through recorded values
     for metric_name in metrics.keys():
         metric = metrics[metric_name]
         dtype = type(metric["value"])
@@ -481,16 +491,20 @@ class DriftQueue:
         self.clear_at_flush = clear_at_flush
         self.only_flush_full = only_flush_full
         self.backup_file = backup_file
+        # initialize from backup file if given one
         if backup_file != "":
-            try:  # initialize with stored data if available
+            try:
                 with open(backup_file, "rb") as f:
                     self.df = feather.read_feather(f)
-            except FileNotFoundError:  # just initialize new
+            except FileNotFoundError:
                 self.df = pd.DataFrame(columns=columns)
-        else:
+        else:  # else just create new
             self.df = pd.DataFrame(columns=columns)
 
     def is_full(self) -> bool:
+        """
+        Check if queue has maxsize elements
+        """
         if self.df.shape[0] >= self.maxsize:
             return True
         else:
@@ -499,27 +513,28 @@ class DriftQueue:
     def put(self, rows: Union[np.ndarray, Iterable, dict, pd.DataFrame]) -> DriftQueue:
         """
         Put new items to queue. If full, overwrite the oldest value.
+        Overwrite backupfile.
         Return reference to self.
         """
-        y_size = self.df.shape[0]
-        new_data = pd.DataFrame(rows, columns=self.columns)
-        if new_data.shape[0] >= self.maxsize:
-            new_data = new_data.iloc[-self.maxsize :]
-        # TODO tsekkaa
+        # add new data
         self.df = pd.concat(
-            (self.df.iloc[1:] if y_size == self.maxsize else self.df, new_data),
+            (self.df, pd.DataFrame(rows, columns=self.columns)),
             ignore_index=True,
         )
+        # drop oldest rows exceeding maxsize
+        if self.df.shape[0] > self.maxsize:
+            self.df = self.df.iloc[-self.maxsize :]
 
         # write backup for queue
         if self.backup_file != "":
             with open(self.backup_file, "wb") as f:
                 feather.write_feather(self.df, f)
+
         return self
 
     def flush(self) -> pd.DataFrame:
         """
-        Return queue contents as dataframe if full or non-full flush permitted,
+        Return queue contents as dataframe if full, or non-full flush permitted,
         else return an empty dataframe.
         Clear queue after flushing if required.
         If empty dataframe would be returned, but queue is not empty,
@@ -598,10 +613,11 @@ class SummaryStatisticsMetrics:
     def _create_metric(self, colname, rowname, dtypename, categories):
         """
         Internal: not to be called directly but by 'calculate'.
-        Create new metric if it does not already exist.
+        Create new prometheus metric if it does not already exist.
         """
         metric_key = f"{colname}_{rowname}"
         metric_description = f"calculated using summary statistics function {self.summary_statistics_function.__name__}"
+        # create name for metric
         metric_name = (
             convert_metric_name_to_promql(
                 metric_name=metric_key,
@@ -616,12 +632,14 @@ class SummaryStatisticsMetrics:
         # if category, create Enum
         if is_str(dtypename) and categories is not None:
             m = Enum(metric_name, metric_description, states=categories)
+        # gauge
         elif is_time(dtypename) or is_numeric(dtypename) or is_bool(dtypename):
             m = Gauge(metric_name, metric_description)
-        else:  # string & rest
+        # string & rest
+        else:
             m = Info(metric_name, metric_description)
 
-        # record created metric in a dict
+        # store metric handle in a dict
         self.metrics[metric_key] = m
 
     def get_metrics(self) -> dict:
@@ -639,10 +657,12 @@ class SummaryStatisticsMetrics:
     def calculate(self, df: pd.DataFrame) -> SummaryStatisticsMetrics:
         """
         Calculate summary statistics and store to self.sumstat_df. Return self.
+        Also check for categorical variables if sumstat & input columns match.
         """
         self.input_df_columns = df.columns
         self.input_df_dtypes = df.dtypes
         self.sumstat_df = self.summary_statistics_function(df)
+
         # check if sumstat & input share all columns
         if self.input_df_columns.values.sort() == self.sumstat_df.columns.values.sort():
             # boolean array where true indicates that the variable is categorical
@@ -652,7 +672,7 @@ class SummaryStatisticsMetrics:
             )
         else:
             self.category_indicator = np.zeros(sumstat_df.shape[1])
-        self.categories_list = []
+        self.categories_list = []  # store categories for creating enums
         for categorical, colname in zip(self.category_indicator, self.input_df_columns):
             if categorical:
                 self.categories_list.append(list(df[colname].cat.categories.values))
@@ -668,7 +688,7 @@ class SummaryStatisticsMetrics:
         sumstat_df = self.sumstat_df
         colnames = sumstat_df.columns
         rownames = sumstat_df.index.values
-        # loop through dataframe and calculate summary statistics
+        # loop through summary statistics & set metrics accordingly
         for colname, categories in zip(colnames, self.categories_list):
             for rowname in rownames:
                 metric_key = f"{colname}_{rowname}"

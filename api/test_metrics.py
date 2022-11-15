@@ -329,17 +329,17 @@ from metrics import convert_metric_name_to_promql
 
 class TestConvertName(unittest.TestCase):
     def test_illegal_character_removal(self):
-        self.assertEqual(convert_metric_name_to_promql("te$st", None), "te_st")
-        self.assertEqual(convert_metric_name_to_promql("test%", None), "test")
-        self.assertEqual(convert_metric_name_to_promql("&test", None), "test")
+        self.assertEqual(convert_metric_name_to_promql("te$st", int), "te_st")
+        self.assertEqual(convert_metric_name_to_promql("test%", int), "test")
+        self.assertEqual(convert_metric_name_to_promql("&test", int), "test")
 
     def test_extra_undescore_removal(self):
-        self.assertEqual(convert_metric_name_to_promql("te_st", None), "te_st")
-        self.assertEqual(convert_metric_name_to_promql("te__st", None), "te_st")
-        self.assertEqual(convert_metric_name_to_promql("test_", None), "test")
-        self.assertEqual(convert_metric_name_to_promql("test__", None), "test")
-        self.assertEqual(convert_metric_name_to_promql("_test", None), "test")
-        self.assertEqual(convert_metric_name_to_promql("__test", None), "test")
+        self.assertEqual(convert_metric_name_to_promql("te_st", int), "te_st")
+        self.assertEqual(convert_metric_name_to_promql("te__st", int), "te_st")
+        self.assertEqual(convert_metric_name_to_promql("test_", int), "test")
+        self.assertEqual(convert_metric_name_to_promql("test__", int), "test")
+        self.assertEqual(convert_metric_name_to_promql("_test", int), "test")
+        self.assertEqual(convert_metric_name_to_promql("__test", int), "test")
 
     def test_prefix(self):
         # normal
@@ -366,12 +366,12 @@ class TestConvertName(unittest.TestCase):
     def test_suffix(self):
         # normal
         self.assertEqual(
-            convert_metric_name_to_promql("value_generated", None, suffix="euros"),
+            convert_metric_name_to_promql("value_generated", int, suffix="euros"),
             "value_generated_euros",
         )
         # illegal character removal
         self.assertEqual(
-            convert_metric_name_to_promql("value_generated", None, suffix="euros_€"),
+            convert_metric_name_to_promql("value_generated", int, suffix="euros_€"),
             "value_generated_euros",
         )
 
@@ -418,47 +418,45 @@ class TestConvertName(unittest.TestCase):
 
     def test_remove_metric_types(self):
         self.assertEqual(
-            convert_metric_name_to_promql("test_map", None), "test_maptypemask"
+            convert_metric_name_to_promql("test_map", int), "test_maptypemask"
         )
         self.assertEqual(
-            convert_metric_name_to_promql("test_map", None, mask_type_aliases=False),
+            convert_metric_name_to_promql("test_map", int, mask_type_aliases=False),
             "test",
         )
 
     def test_remove_reserved_suffixes(self):
-        convert_metric_name_to_promql("test_count", None)
+        convert_metric_name_to_promql("test_count", int)
 
         self.assertEqual(
-            convert_metric_name_to_promql("test_count", None), "test_countsuffixmask"
+            convert_metric_name_to_promql("test_count", int), "test_countsuffixmask"
         )
         self.assertEqual(
-            convert_metric_name_to_promql("test_count_count", None),
+            convert_metric_name_to_promql("test_count_count", int),
             "test_count_countsuffixmask",
         )
         self.assertEqual(
             convert_metric_name_to_promql(
-                "test_count_count", None, mask_reserved_suffixes=False
+                "test_count_count", int, mask_reserved_suffixes=False
             ),
             "test",
         )
         # not removed from beginning or middle
+        self.assertEqual(convert_metric_name_to_promql("count_test", int), "count_test")
         self.assertEqual(
-            convert_metric_name_to_promql("count_test", None), "count_test"
-        )
-        self.assertEqual(
-            convert_metric_name_to_promql("test_count_test", None), "test_count_test"
+            convert_metric_name_to_promql("test_count_test", int), "test_count_test"
         )
 
     def test_counter_suffix(self):
         self.assertEqual(
-            convert_metric_name_to_promql("test", None, is_counter=True), "test_total"
+            convert_metric_name_to_promql("test", int, is_counter=True), "test_total"
         )
         self.assertEqual(
-            convert_metric_name_to_promql("test_total", None, is_counter=True),
+            convert_metric_name_to_promql("test_total", int, is_counter=True),
             "test_total",
         )
         self.assertEqual(
-            convert_metric_name_to_promql("total_test", None, is_counter=True),
+            convert_metric_name_to_promql("total_test", int, is_counter=True),
             "total_test_total",
         )
 
@@ -533,6 +531,12 @@ from metrics import SummaryStatisticsMetrics, is_numeric
 
 
 class TestSummaryStatistics(unittest.TestCase):
+    """
+    Here it becomes a bit impractical to attempt through testing.
+    These are sort of 'should not crash' tests, should be complemented by testing
+    in use with real examples.
+    """
+
     values1 = [
         [
             0.1,
@@ -565,15 +569,15 @@ class TestSummaryStatistics(unittest.TestCase):
 
     def test_non_equal_columns(self):
         clean_registry()
-        # keep categorical values categorical
+        # transform summary statistics so that columns do not match. Category information is lost
         ssm = SummaryStatisticsMetrics(summary_statistics_function=lambda x: x.T)
         ssm.calculate(self.df1).set_metrics()
         # reset
         ssm.set_metrics()
 
     def test_raw(self):
+        # raw input instead of summary statistics. This should not be done in practice.
         clean_registry()
-        # keep categorical values categorical
         ssm = SummaryStatisticsMetrics(summary_statistics_function=lambda x: x)
         ssm.calculate(self.df1).set_metrics()
         # reset
