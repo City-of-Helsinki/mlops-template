@@ -340,9 +340,6 @@ def convert_metric_name_to_promql(
     return ret
 
 
-# function for passing pre-recorded metrics to prometheus
-
-
 def record_metrics_from_dict(
     metrics: dict, convert_names_to_promql: bool = True
 ) -> list:

@@ -514,7 +514,7 @@ class TestRecordDict(unittest.TestCase):
 
         self.assertEqual(str(m[0]), "gauge:train_loss")
 
-        self.assertEqual(str(m[2]), "stateset:optimizer")
+        self.assertEqual(str(m[2]), "stateset:optimizer_info")
 
         self.assertEqual(str(m[3]), "info:model_build_info")
 
