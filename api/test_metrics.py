@@ -550,6 +550,8 @@ class TestSummaryStatistics(unittest.TestCase):
     df1 = pd.DataFrame(values1)
     df1[df1.columns[4]] = df1[df1.columns[4]].astype("category")
 
+    # TODO: test using pandas util.testing.makeMizedDataFrame https://www.statology.org/pandas-sample-datasets/
+
     def test_init(self):
         clean_registry()
         ssm = SummaryStatisticsMetrics().calculate(self.df1).set_metrics()
