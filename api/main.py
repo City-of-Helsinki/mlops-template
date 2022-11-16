@@ -6,9 +6,12 @@ from fastapi.params import Depends
 from fastapi.responses import HTMLResponse
 from pydantic import create_model
 from starlette.middleware.cors import CORSMiddleware
+import time
 
 import secrets
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
+
+# TODO: API metadata (master + commit + lastupdatedtime)
 
 from model_util import (
     unpickle_bundle,
@@ -25,7 +28,7 @@ from metrics import (
     SummaryStatisticsMetrics,
 )
 
-from prometheus_client import generate_latest
+from prometheus_client import generate_latest, Gauge, Counter
 
 # Authentication
 
@@ -105,6 +108,23 @@ input_fifo = DriftQueue(
 )
 # create summary statistics metrics for the input
 input_sumstat = SummaryStatisticsMetrics(metrics_name_prefix="input_drift_")
+
+output_columns = schema_to_pandas_columns(model_and_schema.res_schema)
+output_fifo = DriftQueue(
+    columns=output_columns, maxsize=10, backup_file="output_fifo.feather"
+)
+output_sumstat = SummaryStatisticsMetrics(metrics_name_prefix="output_drift_")
+
+# collect request processing times, sizes and mean by row processing times
+request_columns = {'processing_time_seconds': float, 'size_rows': int, 'mean_by_row_processing_time_seconds': float}
+# the size we use to calculate summary statistics can be less than with the input/output drifts
+request_fifo = DriftQueue(
+    columns=request_columns, maxsize=3, backup_file="request_fifo.feather"
+)
+# for the request processing times it's enough if we know the mean and top values
+request_sumstat = SummaryStatisticsMetrics(metrics_name_prefix="prediction_request_",
+    summary_statistics_function = lambda x: x.describe()[['avg', 'top']])
+
 # calculate summary statistics either periodically or when metrics is called
 # example in get_metrics below
 # /drift detection
@@ -116,27 +136,36 @@ def get_metrics(username: str = Depends(get_current_username)):
     latest_input = input_fifo.flush()
     if not latest_input.empty:
         input_sumstat.calculate(latest_input).set_metrics()
+    latest_output = output_fifo.flush()
+    if not latest_output.empty:
+        output_sumstat.calculate(latest_output).set_metrics()
+    latest_requests = request_fifo.flush()
+    if not latest_requests.empty:
+        request_sumstat.calculate(latest_requests).set_metrics()
     return HTMLResponse(generate_latest())
 
 
-# TODO: PROMEHEUS:
-# input / output drift DONE
-# processing:
-#   - time (total / hist )
-#   - general resource usage
-#   - request counter
 
 
+#request_count_total = Counter()
+# TODO: request counter
 @app.post("/predict", response_model=List[DynamicApiResponse])
+#@request_processing_time.time()
 def predict(p_list: List[DynamicApiRequest]):
+    t_begin = time.time()
     # loop trough parameter list
+    input_values = []
     prediction_values = []
     for p in p_list:
         # convert parameter object to array for model
         parameter_array = [getattr(p, k) for k in vars(p)]
         prediction_values.append(model.predict([parameter_array]))
-        # store input in fifo
-        input_fifo.put([parameter_array])
+        input_values.append(parameter_array)
+    # store temporarily in DriftQueues
+    input_fifo.put(input_values)
+    output_fifo.put(prediction_values)
+    # NOTE: if live-scoring, add separate fifo for model drift
+
     # Construct response
     response: List[DynamicApiResponse] = []
 
@@ -144,6 +173,9 @@ def predict(p_list: List[DynamicApiRequest]):
         # Cast predicted value to correct type and add response value to response array
         typed_value = response_value_type(predicted_value[0])
         response.append(DynamicApiResponse(**{response_value_field: typed_value}))
+    t_end = time.time()
+    processing_time = t_end-t_begin
+    request_fifo.put([[processing_time, len(p_list)+1, processing_time / (len(p_list)+1.)]])
     return response
 
 
