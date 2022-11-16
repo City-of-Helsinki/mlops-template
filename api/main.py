@@ -18,7 +18,7 @@ from model_util import (
 )
 
 from metrics import (
-    FifoOverwriteDataFrame,
+    DriftQueue,
     convert_time_to_seconds,
     convert_metric_name_to_promql,
     record_metrics_from_dict,
@@ -100,13 +100,11 @@ app.add_middleware(
 # DRIFT DETECTION
 # store maxsize inputs in a temporal fifo que for drift detection
 input_columns = schema_to_pandas_columns(model_and_schema.req_schema)
-input_fifo = FifoOverwriteDataFrame(
+input_fifo = DriftQueue(
     columns=input_columns, maxsize=10, backup_file="input_fifo.feather"
 )
 # create summary statistics metrics for the input
-input_sumstat = SummaryStatisticsMetrics(
-    columns=input_columns, metrics_name_prefix="input_drift_"
-)
+input_sumstat = SummaryStatisticsMetrics(metrics_name_prefix="input_drift_")
 # calculate summary statistics either periodically or when metrics is called
 # example in get_metrics below
 # /drift detection
@@ -118,7 +116,6 @@ def get_metrics(username: str = Depends(get_current_username)):
     latest_input = input_fifo.flush()
     if not latest_input.empty:
         input_sumstat.calculate(latest_input).set_metrics()
-    # print(input_sumstat.get_sumstat())
     return HTMLResponse(generate_latest())
 
 
