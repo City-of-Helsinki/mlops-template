@@ -125,9 +125,9 @@ request_columns = {
 request_fifo = DriftQueue(
     columns=request_columns, maxsize=3, backup_file="request_fifo.feather"
 )
-# for the request processing times it's enough if we know the mean and top values
+# for the request processing times it's enough if we know the sample size, mean and top values
 request_sumstat = SummaryStatisticsMetrics(
-    metrics_name_prefix="prediction_request_",
+    metrics_name_prefix="predict_request_",
     summary_statistics_function=lambda x: x.describe(
         include="all", datetime_is_numeric=True
     )
@@ -155,16 +155,24 @@ def get_metrics(username: str = Depends(get_current_username)):
     return HTMLResponse(generate_latest())
 
 
-# request_count_total = Counter()
+request_counter = Counter(
+    "predict_requests", "How many requests have been received in total?"
+)
+prediction_counter = Counter(
+    "predict_request_predictions",
+    "How many predictions have been made in total / how many input rows have there been in requests in total? ",
+)
 # TODO: request counter
 @app.post("/predict", response_model=List[DynamicApiResponse])
 # @request_processing_time.time()
 def predict(p_list: List[DynamicApiRequest]):
+    request_counter.inc()
     t_begin = time.time()
     # loop trough parameter list
     input_values = []
     prediction_values = []
     for p in p_list:
+        prediction_counter.inc()
         # convert parameter object to array for model
         parameter_array = [getattr(p, k) for k in vars(p)]
         prediction_values.append(model.predict([parameter_array]))
