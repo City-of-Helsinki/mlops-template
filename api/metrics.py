@@ -582,7 +582,7 @@ class SummaryStatisticsMetrics:
         self,
         summary_statistics_function: function = lambda df: df.describe(
             include="all", datetime_is_numeric=True
-        ),
+        ).rename({"count": "sample_size"}),
         convert_names_to_promql: bool = True,
         metrics_name_prefix: str = "",
     ):

@@ -116,14 +116,24 @@ output_fifo = DriftQueue(
 output_sumstat = SummaryStatisticsMetrics(metrics_name_prefix="output_drift_")
 
 # collect request processing times, sizes and mean by row processing times
-request_columns = {'processing_time_seconds': float, 'size_rows': int, 'mean_by_row_processing_time_seconds': float}
+request_columns = {
+    "processing_time_seconds": float,
+    "size_rows": int,
+    "mean_by_row_processing_time_seconds": float,
+}
 # the size we use to calculate summary statistics can be less than with the input/output drifts
 request_fifo = DriftQueue(
     columns=request_columns, maxsize=3, backup_file="request_fifo.feather"
 )
 # for the request processing times it's enough if we know the mean and top values
-request_sumstat = SummaryStatisticsMetrics(metrics_name_prefix="prediction_request_",
-    summary_statistics_function = lambda x: x.describe().loc[['count','mean', 'max']].rename({'count':'sample_size'}))
+request_sumstat = SummaryStatisticsMetrics(
+    metrics_name_prefix="prediction_request_",
+    summary_statistics_function=lambda x: x.describe(
+        include="all", datetime_is_numeric=True
+    )
+    .loc[["count", "mean", "max"]]
+    .rename({"count": "sample_size"}),
+)
 
 # calculate summary statistics either periodically or when metrics is called
 # example in get_metrics below
@@ -145,12 +155,10 @@ def get_metrics(username: str = Depends(get_current_username)):
     return HTMLResponse(generate_latest())
 
 
-
-
-#request_count_total = Counter()
+# request_count_total = Counter()
 # TODO: request counter
 @app.post("/predict", response_model=List[DynamicApiResponse])
-#@request_processing_time.time()
+# @request_processing_time.time()
 def predict(p_list: List[DynamicApiRequest]):
     t_begin = time.time()
     # loop trough parameter list
@@ -174,8 +182,10 @@ def predict(p_list: List[DynamicApiRequest]):
         typed_value = response_value_type(predicted_value[0])
         response.append(DynamicApiResponse(**{response_value_field: typed_value}))
     t_end = time.time()
-    processing_time = t_end-t_begin
-    request_fifo.put([[processing_time, len(p_list)+1, processing_time / (len(p_list)+1.)]])
+    processing_time = t_end - t_begin
+    request_fifo.put(
+        [[processing_time, len(p_list) + 1, processing_time / (len(p_list) + 1.0)]]
+    )
     return response
 
 
