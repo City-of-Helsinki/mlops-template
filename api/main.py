@@ -123,7 +123,7 @@ request_fifo = DriftQueue(
 )
 # for the request processing times it's enough if we know the mean and top values
 request_sumstat = SummaryStatisticsMetrics(metrics_name_prefix="prediction_request_",
-    summary_statistics_function = lambda x: x.describe()[['avg', 'top']])
+    summary_statistics_function = lambda x: x.describe().loc[['count','mean', 'max']].rename({'count':'sample_size'}))
 
 # calculate summary statistics either periodically or when metrics is called
 # example in get_metrics below
