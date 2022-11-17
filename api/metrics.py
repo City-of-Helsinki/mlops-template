@@ -552,6 +552,13 @@ class DriftQueue:
         return ret
 
 
+def default_summary_statistics_function(df: pd.DataFrame) -> pd.DataFrame:
+    """pandas.DataFrame.describe(include="all", datetime_is_numeric=True).rename({"count": "sample_size"})"""
+    return df.describe(include="all", datetime_is_numeric=True).rename(
+        {"count": "sample_size"}
+    )
+
+
 class SummaryStatisticsMetrics:
     """
     Class wrapper for generic drift monitoring.
@@ -580,9 +587,7 @@ class SummaryStatisticsMetrics:
 
     def __init__(
         self,
-        summary_statistics_function: function = lambda df: df.describe(
-            include="all", datetime_is_numeric=True
-        ).rename({"count": "sample_size"}),
+        summary_statistics_function: function = default_summary_statistics_function,
         convert_names_to_promql: bool = True,
         metrics_name_prefix: str = "",
     ):
@@ -616,7 +621,7 @@ class SummaryStatisticsMetrics:
         Create new prometheus metric if it does not already exist.
         """
         metric_key = f"{colname}_{rowname}"
-        metric_description = f"calculated using summary statistics function {self.summary_statistics_function.__name__}"
+        metric_description = f"calculated using summary statistics function {self.summary_statistics_function.__doc__}"
         # create name for metric
         metric_name = (
             convert_metric_name_to_promql(

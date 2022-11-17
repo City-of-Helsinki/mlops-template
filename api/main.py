@@ -8,6 +8,8 @@ from pydantic import create_model
 from starlette.middleware.cors import CORSMiddleware
 import time
 
+import pandas as pd
+
 import secrets
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 
@@ -26,6 +28,7 @@ from metrics import (
     convert_metric_name_to_promql,
     record_metrics_from_dict,
     SummaryStatisticsMetrics,
+    default_summary_statistics_function,
 )
 
 from prometheus_client import generate_latest, Gauge, Counter
@@ -125,14 +128,17 @@ request_columns = {
 request_fifo = DriftQueue(
     columns=request_columns, maxsize=3, backup_file="request_fifo.feather"
 )
+
 # for the request processing times it's enough if we know the sample size, mean and top values
+# define a custom summary statistics function
+def request_summary_statistics_function(df: pd.DataFrame) -> pd.DataFrame:
+    """ "pandas.DataFrame.describe(include="all", datetime_is_numeric=True).rename({"count": "sample_size"}).loc[["sample_size", "mean", "max"]]"""
+    return default_summary_statistics_function(df).loc[["sample_size", "mean", "max"]]
+
+
 request_sumstat = SummaryStatisticsMetrics(
     metrics_name_prefix="predict_request_",
-    summary_statistics_function=lambda x: x.describe(
-        include="all", datetime_is_numeric=True
-    )
-    .loc[["count", "mean", "max"]]
-    .rename({"count": "sample_size"}),
+    summary_statistics_function=request_summary_statistics_function,
 )
 
 # calculate summary statistics either periodically or when metrics is called
