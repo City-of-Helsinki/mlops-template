@@ -1,11 +1,14 @@
 version: "3.8"
 services:
   api:
-    build: ./api/
+    build:
+      context: api/
+    # TODO: how to add .git to build context?
     container_name: mlops-fastapi-api
     restart: always
     volumes:
       - ./api/:/app
+      - .git/:/app/.git/
     ports:
       - 8000:8000
     command: ['uvicorn',

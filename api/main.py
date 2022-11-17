@@ -13,7 +13,8 @@ import pandas as pd
 import secrets
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 
-# TODO: API metadata (master + commit + lastupdatedtime)
+from prometheus_client import generate_latest, Gauge, Counter, Info
+
 
 from model_util import (
     unpickle_bundle,
@@ -31,7 +32,19 @@ from metrics import (
     default_summary_statistics_function,
 )
 
-from prometheus_client import generate_latest, Gauge, Counter
+# API VERSION INFO
+
+# send api version info to prometheus
+from git import Repo
+
+repo = Repo(".")
+# reponame # TODO: figure out how to get repo name, working tree returns current folder
+head = repo.heads[0]
+branch = head.name
+commit = head.commit.hexsha
+api_version_info = Info("api_version", "api repo name, HEAD branch and HEAD commit")
+api_version_info.info({"branch": branch, "commit": commit})
+# /api version info
 
 # Authentication
 
@@ -62,12 +75,14 @@ def get_current_username(credentials: HTTPBasicCredentials = Depends(security)):
 
 # / authentication
 
+# MODEL, SCHEMA & METRICS
+
 # Load model and schema definitions & train/val workflow metrics from pickled container class
 model_and_schema: ModelSchemaContainer = unpickle_bundle("bundle_latest")
 # ML model
 model = model_and_schema.model
 
-# metrics
+# Model train/test workflow metrics
 metrics = model_and_schema.metrics
 # pass metrics to prometheus
 _ = record_metrics_from_dict(metrics)
@@ -141,14 +156,12 @@ request_sumstat = SummaryStatisticsMetrics(
     summary_statistics_function=request_summary_statistics_function,
 )
 
-# calculate summary statistics either periodically or when metrics is called
-# example in get_metrics below
 # /drift detection
 
 # metrics endpoint for prometheus
 @app.get("/metrics", response_model=dict)
 def get_metrics(username: str = Depends(get_current_username)):
-    # if enough data / new data, calculate and record input summary statistics
+    # if enough data / new data, calculate and record summary statistics
     latest_input = input_fifo.flush()
     if not latest_input.empty:
         input_sumstat.calculate(latest_input).set_metrics()
@@ -168,9 +181,9 @@ prediction_counter = Counter(
     "predict_request_predictions",
     "How many predictions have been made in total / how many input rows have there been in requests in total? ",
 )
-# TODO: request counter
+
+
 @app.post("/predict", response_model=List[DynamicApiResponse])
-# @request_processing_time.time()
 def predict(p_list: List[DynamicApiRequest]):
     request_counter.inc()
     t_begin = time.time()
