@@ -1,4 +1,3 @@
-import json
 from logging import LogRecord
 from sqlite3 import Timestamp
 from typing import Optional
