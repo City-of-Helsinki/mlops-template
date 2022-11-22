@@ -1,4 +1,4 @@
-
+import os
 from typing import List
 
 import uvicorn
@@ -16,7 +16,10 @@ from model_util import unpickle_bundle, ModelSchemaContainer, build_model_defini
 logging.getLogger().addHandler(SQLiteLoggingHandler())
 logging.getLogger().setLevel(logging.INFO)
 
-setting_log_predictions = True
+if 'false' == str(os.environ['LOG_PREDICTIONS']).lower():
+    setting_log_predictions = False
+else:
+    setting_log_predictions = True
 
 # Authentication
 API_KEY = "apiKey123"   # TODO: where we want to keep api keys
