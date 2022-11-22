@@ -1,14 +1,25 @@
+import os
 from typing import List
 
 import uvicorn
 from fastapi import FastAPI, Security, HTTPException
+import logging
 from fastapi.params import Depends
 from fastapi.security.api_key import APIKeyHeader, APIKey
 from pydantic import create_model
 from starlette.middleware.cors import CORSMiddleware
 from starlette.status import HTTP_403_FORBIDDEN
 
+from log.sqlite_logging_handler import SQLiteLoggingHandler
 from model_util import unpickle_bundle, ModelSchemaContainer, build_model_definition_from_dict
+
+logging.getLogger().addHandler(SQLiteLoggingHandler())
+logging.getLogger().setLevel(logging.INFO)
+
+if 'false' == str(os.environ['LOG_PREDICTIONS']).lower():
+    setting_log_predictions = False
+else:
+    setting_log_predictions = True
 
 # Authentication
 API_KEY = "apiKey123"   # TODO: where we want to keep api keys
@@ -69,7 +80,11 @@ def predict(p_list: List[DynamicApiRequest]):
     for p in p_list:
         # convert parameter object to array for model
         parameter_array = [getattr(p, k) for k in vars(p)]
-        prediction_values.append(model.predict([parameter_array]))
+        prediction = model.predict([parameter_array])[0]
+        prediction_values.append(prediction)
+        if setting_log_predictions:
+            logging.info({'prediction': prediction, 'request_parameters': p})
+
     # Construct response
     response: List[DynamicApiResponse] = []
 
@@ -81,4 +96,4 @@ def predict(p_list: List[DynamicApiRequest]):
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8002)
