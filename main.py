@@ -1,7 +1,6 @@
 
 from typing import List
 
-import structlog
 import uvicorn
 from fastapi import FastAPI, Security, HTTPException
 import logging
@@ -14,24 +13,8 @@ from starlette.status import HTTP_403_FORBIDDEN
 from log.sqlite_logging_handler import SQLiteLoggingHandler
 from model_util import unpickle_bundle, ModelSchemaContainer, build_model_definition_from_dict
 
-# Logging configuration
-structlog.configure(
-    processors=[
-        structlog.contextvars.merge_contextvars,
-        structlog.processors.add_log_level,
-        structlog.processors.StackInfoRenderer(),
-        structlog.processors.TimeStamper(),
-        structlog.processors.JSONRenderer()
-    ],
-    wrapper_class=structlog.make_filtering_bound_logger(logging.INFO),
-    context_class=dict,
-    logger_factory=structlog.stdlib.LoggerFactory(),
-    cache_logger_on_first_use=False,
-)
-
 logging.getLogger().addHandler(SQLiteLoggingHandler())
 logging.getLogger().setLevel(logging.INFO)
-log = structlog.get_logger().bind()
 
 # Authentication
 API_KEY = "apiKey123"   # TODO: where we want to keep api keys
@@ -94,7 +77,6 @@ def predict(p_list: List[DynamicApiRequest]):
         parameter_array = [getattr(p, k) for k in vars(p)]
         prediction = model.predict([parameter_array])[0]
         prediction_values.append(prediction)
-        log.info({'prediction': prediction, 'request_parameters': p})
         logging.info({'prediction': prediction, 'request_parameters': p})
 
     # Construct response
