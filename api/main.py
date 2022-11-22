@@ -1,5 +1,5 @@
+import os
 from typing import List
-
 import uvicorn
 from fastapi import FastAPI, Security, HTTPException, status
 from fastapi.params import Depends
@@ -32,19 +32,14 @@ from metrics import (
     default_summary_statistics_function,
 )
 
+
 # API VERSION INFO
-
-# send api version info to prometheus
-from git import Repo
-
-repo = Repo(".")
-# reponame # TODO: figure out how to get repo name, working tree returns current folder
-head = repo.heads[0]
-branch = head.name
-commit = head.commit.hexsha
-api_version_info = Info("api_version", "api repo name, HEAD branch and HEAD commit")
-api_version_info.info({"branch": branch, "commit": commit})
+#with open('build_version.txt', 'r') as f:
+#    print(f.readlines())
+api_version_info = Info("api_git_version", "The branch and HEAD commit the api was built on.")
+api_version_info.info({"branch": os.environ['GIT_BRANCH'], "head": os.environ['GIT_HEAD']})#args.git_head})
 # /api version info
+
 
 # Authentication
 

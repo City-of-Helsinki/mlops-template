@@ -1,23 +1,24 @@
 version: "3.8"
 services:
   api:
-    build:
-      context: api/
-    # TODO: how to add .git to build context?
+    build: api/
     container_name: mlops-fastapi-api
     restart: always
     volumes:
       - ./api/:/app
-      - .git/:/app/.git/
+      - .git/:/app/.git/ # needed for build version info
     ports:
       - 8000:8000
-    command: ['uvicorn',
-              'main:app',
-              '--reload',
-              '--reload-include',
-              '*.pickle',
-              "--host",
-              "0.0.0.0"]  
+    command: 
+      - /bin/sh
+      - -c
+      - |
+        # add build version info as environment variables
+        # (Dockerfile / compose ENV variables do not support automatic assigning)
+        export GIT_BRANCH="$(git symbolic-ref -q --short HEAD)"
+        export GIT_HEAD="$(git rev-parse --short HEAD)"
+        # run api
+        uvicorn main:app --reload --reload-include *.pickle --host 0.0.0.0
   prometheus:
     image: prom/prometheus
     container_name: mlops-fastapi-prometheus

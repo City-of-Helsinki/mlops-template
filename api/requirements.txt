@@ -20,4 +20,3 @@ uvicorn==0.18.3
 watchfiles==0.17.0
 prometheus-client
 pyarrow
-gitpython
