@@ -1,11 +1,14 @@
 from __future__ import annotations
+import functools
 from typing import Iterable, Type, Union
 from numbers import Number
+import os
 from parser import ParserError
-from prometheus_client import Summary, Counter, Gauge, Enum, Info
+from prometheus_client import generate_latest, Summary, Counter, Gauge, Enum, Info
 import pyarrow.feather as feather
 import datetime as dt
 import re
+import time
 
 from itertools import product
 
@@ -316,7 +319,8 @@ def convert_metric_name_to_promql(
         # e.g. time_on_site -> 'time_on_site_seconds'
         ret = ret.replace("seconds", "") + "_seconds"
 
-    elif is_str(dtypename) and not category:
+    # TODO: remove?
+    elif is_str(dtypename) and not category and not dtypename.endswith('_info'):
         # e.g. description -> description_count
         ret += "_info"
 
@@ -522,8 +526,9 @@ class DriftQueue:
             ignore_index=True,
         )
         # drop oldest rows exceeding maxsize
-        if self.df.shape[0] > self.maxsize:
+        if self.is_full():
             self.df = self.df.iloc[-self.maxsize :]
+
 
         # write backup for queue
         if self.backup_file != "":
@@ -541,14 +546,12 @@ class DriftQueue:
         queue is not cleared to not to loose data.
         """
         ret = self.df.copy()
-
         # return empty dataframe if not completely full
         if self.only_flush_full and not self.is_full():
             ret.drop(ret.index, inplace=True)
         # only allow clear queue if return is not empty
         elif ret.shape[0] > 0 and self.clear_at_flush:
             self.df.drop(self.df.index, inplace=True)
-
         return ret
 
 
@@ -557,6 +560,10 @@ def default_summary_statistics_function(df: pd.DataFrame) -> pd.DataFrame:
     return df.describe(include="all", datetime_is_numeric=True).rename(
         {"count": "sample_size"}
     )
+
+def mean_max_sumstat(df: pd.DataFrame) -> pd.DataFrame:
+    """pandas.DataFrame.describe(include="all", datetime_is_numeric=True).rename({"count": "sample_size"}).loc[["sample_size", "mean", "max"]]"""
+    return default_summary_statistics_function(df).loc[["sample_size", "mean", "max"]]
 
 
 class SummaryStatisticsMetrics:
@@ -633,7 +640,6 @@ class SummaryStatisticsMetrics:
             if self.convert_names_to_promql
             else metric_name
         )
-
         # if category, create Enum
         if is_str(dtypename) and categories is not None:
             m = Enum(metric_name, metric_description, states=categories)
@@ -731,3 +737,146 @@ class SummaryStatisticsMetrics:
                         except:
                             pass  # do not record non-numeric, boolean, categorical or non-convertable to str
         return self
+
+
+class DriftMonitor(DriftQueue, SummaryStatisticsMetrics):
+    """
+    Wrapper for using DriftQueue and SummaryStatisticsMetrics together
+    """
+
+    def __init__(self,
+        columns: dict,
+        maxsize: int = 1000,
+        backup_file: str = '',
+        clear_at_flush: bool = True,
+        only_flush_full: bool = True,
+        summary_statistics_function: function = default_summary_statistics_function,
+        convert_names_to_promql: bool = True,
+        metrics_name_prefix: str = ""
+        ):
+
+        # init base classes
+        DriftQueue.__init__(self, columns=columns, maxsize=maxsize, backup_file=backup_file, clear_at_flush=clear_at_flush,
+        only_flush_full=only_flush_full)
+        SummaryStatisticsMetrics.__init__(self, summary_statistics_function=summary_statistics_function, convert_names_to_promql = convert_names_to_promql,
+        metrics_name_prefix = metrics_name_prefix)
+
+    def update_metrics(self)->DriftMonitor:
+        """
+        If enough new data, calculate new sumstat and updates prometheus metrics accordingly.
+        """
+        latest_input = self.flush()
+        if not latest_input.empty:
+            self.calculate(latest_input).set_metrics()
+        return self
+
+    def update_metrics_decorator(self):
+        """
+        Use update_metrics as decorator
+        """
+        def wrapper1(function):
+            @functools.wraps(function)
+            def wrapper2(*args, **kwargs):
+                self.update_metrics()
+                return function(*args, **kwargs)
+            return wrapper2
+        return wrapper1
+
+
+# util & wrappers
+
+class RequestMonitor(DriftMonitor):
+    """
+    Util wrapper for monitoring requests
+    """
+    def __init__(self, maxsize: int = 1000):
+        super().__init__(columns = {
+        "processing_time_seconds": float,
+        "size_rows": int,
+        "mean_by_row_processing_time_seconds": float,
+        },
+        backup_file='processing_fifo.feather',
+        metrics_name_prefix="predict_request_",
+        summary_statistics_function=mean_max_sumstat,
+        maxsize=maxsize)
+
+        self.request_counter = Counter("predict_requests", "How many requests have been received in total?")
+        self.prediction_counter = Counter(
+            "predict_request_predictions",
+            "How many individual predictions have been made in total? ",
+            )
+    
+    def monitor(self):
+        """
+        Decorator. Count requests, predictions and time it takes to process a request & predictions
+        """
+        def timer(function):
+            @functools.wraps(function)
+            def wrapper(*args, **kwargs):
+                # add to requrest & prediction counters
+                self.request_counter.inc()
+                self.prediction_counter.inc(len(kwargs['p_list']))
+                # time response
+                start = time.time()
+                response = function(*args, **kwargs)
+                end = time.time()
+                processing_time = end-start
+                N = len(response) + 1 # how many rows in request
+                self.put([[processing_time, N, processing_time / N]])
+                #
+                return response
+            return wrapper
+        return timer
+
+
+def pass_api_version_to_prometheus():
+    """
+    Pass git branch & HEAD for prometheus.
+    Return info metric handle.
+    """
+    m = Info("api_git_version", "The branch and HEAD commit the api was built on.")
+    m.info({"branch": os.environ['GIT_BRANCH'], "head": os.environ['GIT_HEAD']})
+    return m
+
+def generate_metrics():
+    return generate_latest()
+
+def monitor_input(driftmonitor: DriftMonitor):
+    """
+    Monitor inputs of requests: summary statistics, count requests and individual rows in all requests
+    """
+    def monitor(function):
+        @functools.wraps(function)
+        def wrapper(*args, **kwargs):
+            # loop through parameters
+            input_values = []
+            for p in kwargs['p_list']:
+                parameter_array = [getattr(p, k) for k in vars(p)]
+                input_values.append(parameter_array)
+            # update driftmonitor
+            driftmonitor.put(input_values)
+            # call function with parameters
+            return function(*args, **kwargs)
+        return wrapper
+    return monitor
+    
+def monitor_output(driftmonitor: DriftMonitor):
+    """
+    Monitor outputs of requests: summary statistics
+    """
+    def monitor(function):
+        @functools.wraps(function)
+        def wrapper(*args, **kwargs):
+            # call function
+            ret = function(*args, **kwargs)
+            # loop through response and extract values
+            output_values = []
+            for p in ret:
+                label_array = [getattr(p, k) for k in vars(p)]
+                output_values.append(label_array)
+            # update DriftMonitor
+            driftmonitor.put(output_values)
+            # return original response
+            return ret
+        return wrapper
+    return monitor

@@ -13,9 +13,6 @@ import pandas as pd
 import secrets
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 
-from prometheus_client import generate_latest, Gauge, Counter, Info
-
-
 from model_util import (
     unpickle_bundle,
     ModelSchemaContainer,
@@ -24,27 +21,17 @@ from model_util import (
 )
 
 from metrics import (
-    DriftQueue,
-    convert_time_to_seconds,
-    convert_metric_name_to_promql,
     record_metrics_from_dict,
-    SummaryStatisticsMetrics,
-    default_summary_statistics_function,
+    DriftMonitor,
+    pass_api_version_to_prometheus,
+    RequestMonitor,
+    monitor_input,
+    monitor_output,
+    generate_metrics
 )
 
-
-# API VERSION INFO
-#with open('build_version.txt', 'r') as f:
-#    print(f.readlines())
-api_version_info = Info("api_git_version", "The branch and HEAD commit the api was built on.")
-api_version_info.info({"branch": os.environ['GIT_BRANCH'], "head": os.environ['GIT_HEAD']})#args.git_head})
-# /api version info
-
-
 # Authentication
-
-app = FastAPI()
-
+# TODO: use secrets, define in separate module, define for prediction & metrics endpoints separately
 security = HTTPBasic()
 
 
@@ -98,7 +85,24 @@ response_value_type = type(
     DynamicApiResponse.schema()["properties"][response_value_field]["type"]
 )
 
+# DRIFT DETECTION
+# TODO 2: drift detection wrapper
+# store maxsize inputs in a temporal fifo que for drift detection
+input_drift = DriftMonitor(columns=schema_to_pandas_columns(model_and_schema.req_schema),
+    backup_file="input_fifo.feather", metrics_name_prefix="input_drift_")
+
+
+output_drift = DriftMonitor(columns=schema_to_pandas_columns(model_and_schema.res_schema),
+    backup_file="output_fifo.feather", metrics_name_prefix="output_drift_"
+)
+# NOTE: if live-scoring, add separate DriftMonitor for model drift
+# collect request processing times, sizes and mean by row processing times
+processing_drift = RequestMonitor()
+
+# /drift detection
+
 # Start up API
+_ = pass_api_version_to_prometheus()
 app = FastAPI(
     title="DataHel ML API", description="Generic API for ML model.", version="1.0"
 )
@@ -113,89 +117,33 @@ app.add_middleware(
     max_age=3600,
 )
 
-# DRIFT DETECTION
-# store maxsize inputs in a temporal fifo que for drift detection
-input_columns = schema_to_pandas_columns(model_and_schema.req_schema)
-input_fifo = DriftQueue(
-    columns=input_columns, maxsize=10, backup_file="input_fifo.feather"
-)
-# create summary statistics metrics for the input
-input_sumstat = SummaryStatisticsMetrics(metrics_name_prefix="input_drift_")
-
-output_columns = schema_to_pandas_columns(model_and_schema.res_schema)
-output_fifo = DriftQueue(
-    columns=output_columns, maxsize=10, backup_file="output_fifo.feather"
-)
-output_sumstat = SummaryStatisticsMetrics(metrics_name_prefix="output_drift_")
-
-# collect request processing times, sizes and mean by row processing times
-request_columns = {
-    "processing_time_seconds": float,
-    "size_rows": int,
-    "mean_by_row_processing_time_seconds": float,
-}
-# the size we use to calculate summary statistics can be less than with the input/output drifts
-request_fifo = DriftQueue(
-    columns=request_columns, maxsize=3, backup_file="request_fifo.feather"
-)
-
-# for the request processing times it's enough if we know the sample size, mean and top values
-# define a custom summary statistics function
-def request_summary_statistics_function(df: pd.DataFrame) -> pd.DataFrame:
-    """ "pandas.DataFrame.describe(include="all", datetime_is_numeric=True).rename({"count": "sample_size"}).loc[["sample_size", "mean", "max"]]"""
-    return default_summary_statistics_function(df).loc[["sample_size", "mean", "max"]]
-
-
-request_sumstat = SummaryStatisticsMetrics(
-    metrics_name_prefix="predict_request_",
-    summary_statistics_function=request_summary_statistics_function,
-)
-
-# /drift detection
+# TODO: for some reason DriftMonitor metrics are only created when loaded from feather.
+# new metrics are not created
 
 # metrics endpoint for prometheus
 @app.get("/metrics", response_model=dict)
+@input_drift.update_metrics_decorator()
+@output_drift.update_metrics_decorator()
+@processing_drift.update_metrics_decorator()
 def get_metrics(username: str = Depends(get_current_username)):
     # if enough data / new data, calculate and record summary statistics
-    latest_input = input_fifo.flush()
-    if not latest_input.empty:
-        input_sumstat.calculate(latest_input).set_metrics()
-    latest_output = output_fifo.flush()
-    if not latest_output.empty:
-        output_sumstat.calculate(latest_output).set_metrics()
-    latest_requests = request_fifo.flush()
-    if not latest_requests.empty:
-        request_sumstat.calculate(latest_requests).set_metrics()
-    return HTMLResponse(generate_latest())
+    # TODO 3: sumstat.calculate().set_metrics() decorator wrapper
+    return HTMLResponse(generate_metrics())
 
-
-request_counter = Counter(
-    "predict_requests", "How many requests have been received in total?"
-)
-prediction_counter = Counter(
-    "predict_request_predictions",
-    "How many predictions have been made in total / how many input rows have there been in requests in total? ",
-)
-
-
+# TODO 5: predict timing decorator wrapper
 @app.post("/predict", response_model=List[DynamicApiResponse])
+@monitor_output(output_drift)
+@monitor_input(input_drift)
+@processing_drift.monitor()
 def predict(p_list: List[DynamicApiRequest]):
-    request_counter.inc()
-    t_begin = time.time()
     # loop trough parameter list
-    input_values = []
     prediction_values = []
     for p in p_list:
-        prediction_counter.inc()
         # convert parameter object to array for model
         parameter_array = [getattr(p, k) for k in vars(p)]
         prediction_values.append(model.predict([parameter_array]))
-        input_values.append(parameter_array)
-    # store temporarily in DriftQueues
-    input_fifo.put(input_values)
-    output_fifo.put(prediction_values)
-    # NOTE: if live-scoring, add separate fifo for model drift
-
+    # monitor output
+    #processing_drift.put(prediction_values)
     # Construct response
     response: List[DynamicApiResponse] = []
 
@@ -203,11 +151,6 @@ def predict(p_list: List[DynamicApiRequest]):
         # Cast predicted value to correct type and add response value to response array
         typed_value = response_value_type(predicted_value[0])
         response.append(DynamicApiResponse(**{response_value_field: typed_value}))
-    t_end = time.time()
-    processing_time = t_end - t_begin
-    request_fifo.put(
-        [[processing_time, len(p_list) + 1, processing_time / (len(p_list) + 1.0)]]
-    )
     return response
 
 
