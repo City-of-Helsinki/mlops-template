@@ -559,7 +559,7 @@ class DriftQueue:
         return ret
 
 
-def default_summary_statistics_function(df: pd.DataFrame) -> pd.DataFrame:
+def default_summary_statistics(df: pd.DataFrame) -> pd.DataFrame:
     """
     Generic summary statistics function, calculates large number of descriptive statistics
     """
@@ -568,7 +568,7 @@ def default_summary_statistics_function(df: pd.DataFrame) -> pd.DataFrame:
     )
 
 
-def distribution_summary_statistics_function(df: pd.DataFrame) -> pd.DataFrame:
+def distribution_summary_statistics(df: pd.DataFrame) -> pd.DataFrame:
     """
     Generic distribution metrics
     """
@@ -577,14 +577,14 @@ def distribution_summary_statistics_function(df: pd.DataFrame) -> pd.DataFrame:
     ).rename({"count": "sample_size"})
 
 
-def mean_max_summary_statistics_function(df: pd.DataFrame) -> pd.DataFrame:
+def mean_max_summary_statistics(df: pd.DataFrame) -> pd.DataFrame:
     """
     Narrow summary statistics function, for performance monitoring
     """
     return df.aggregate(["count", "mean", "max"]).rename({"count": "sample_size"})
 
 
-def categorical_summary_statistics_function(df: pd.DataFrame) -> pd.DataFrame:
+def categorical_summary_statistics(df: pd.DataFrame) -> pd.DataFrame:
     """
     Summary staticstics function for hard clustering labels
     """
@@ -600,8 +600,46 @@ def categorical_summary_statistics_function(df: pd.DataFrame) -> pd.DataFrame:
         ignore_index=False,
     )
     ret.rename(columns={list(ret)[0]: "_"}, inplace=True)
-    print(ret)
     return ret
+
+
+def simple_text_summary_statistics(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Very simple summary statistics for text data
+    """
+
+    def word_count(s: str) -> dict:
+        return {"word_count": len(s.split())}
+
+    def string_length(s: str) -> dict:
+        return {"string_length": len(s)}
+
+    def vovel_rate(s: str) -> dict:
+        ret = {}
+        for vovel in ["a", "e", "i", "o", "u"]:
+            ret["vovel_" + vovel + "_rate"] = s.count(vovel) / len(s)
+        return ret
+
+    ret = pd.DataFrame()
+    ret["sample_size"] = [df.shape[0]]
+    ret = ret.T
+
+    # apply all the summary statistics functions to each column of the df
+    for f in [word_count, string_length, vovel_rate]:
+        buff = df.applymap(f)
+        for colname in buff.columns.values:
+            buff2 = (
+                buff[colname].apply(pd.Series).aggregate(["mean"])
+            )  # , 'std']) # you can edit the aggregate functions
+            for colname2 in buff2.columns.values:
+                buff2[colname2].index = (
+                    str(colname) + "_" + colname2 + "_" + buff2[colname2].index
+                )
+                # save results in a single df
+                ret = pd.concat((ret, buff2[colname2]))
+
+    ret.rename(columns={list(ret)[0]: "_"}, inplace=True)
+    return pd.DataFrame()
 
 
 class SummaryStatisticsMetrics:
@@ -632,7 +670,7 @@ class SummaryStatisticsMetrics:
 
     def __init__(
         self,
-        summary_statistics_function: function = default_summary_statistics_function,
+        summary_statistics_function: function = default_summary_statistics,
         convert_names_to_promql: bool = True,
         metrics_name_prefix: str = "",
     ):
@@ -789,7 +827,7 @@ class DriftMonitor(DriftQueue, SummaryStatisticsMetrics):
         backup_file: str = "",
         clear_at_flush: bool = True,
         only_flush_full: bool = True,
-        summary_statistics_function: function = default_summary_statistics_function,
+        summary_statistics_function: function = default_summary_statistics,
         convert_names_to_promql: bool = True,
         metrics_name_prefix: str = "",
     ):
@@ -852,7 +890,7 @@ class RequestMonitor(DriftMonitor):
             },
             backup_file="processing_fifo.feather",
             metrics_name_prefix="predict_request_",
-            summary_statistics_function=mean_max_summary_statistics_function,
+            summary_statistics_function=mean_max_summary_statistics,
             maxsize=maxsize,
         )
 

@@ -28,8 +28,15 @@ from metrics import (
     monitor_input,
     monitor_output,
     generate_metrics,
-    categorical_summary_statistics_function,
-    distribution_summary_statistics_function,
+    categorical_summary_statistics,
+    distribution_summary_statistics,
+    simple_text_summary_statistics,
+)
+
+simple_text_summary_statistics(
+    pd.DataFrame(
+        [["This is text", "even more text"], ["wow there is another row", "so cool!"]]
+    )
 )
 
 # Authentication
@@ -94,7 +101,7 @@ input_drift = DriftMonitor(
     columns=schema_to_pandas_columns(model_and_schema.req_schema),
     backup_file="input_fifo.feather",
     metrics_name_prefix="input_drift_",
-    summary_statistics_function=distribution_summary_statistics_function,
+    summary_statistics_function=distribution_summary_statistics,
 )
 
 
@@ -102,7 +109,7 @@ output_drift = DriftMonitor(
     columns=schema_to_pandas_columns(model_and_schema.res_schema),
     backup_file="output_fifo.feather",
     metrics_name_prefix="output_drift_",
-    summary_statistics_function=categorical_summary_statistics_function,
+    summary_statistics_function=categorical_summary_statistics,
 )
 # NOTE: if live-scoring, add separate DriftMonitor for model drift
 # collect request processing times, sizes and mean by row processing times
