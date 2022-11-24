@@ -1,18 +1,14 @@
-import os
 from typing import List
 import uvicorn
-from fastapi import FastAPI, Security, HTTPException, status
+from fastapi import FastAPI, HTTPException, status
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.params import Depends
 from fastapi.responses import HTMLResponse
 from pydantic import create_model
 from starlette.middleware.cors import CORSMiddleware
-import time
-
-import pandas as pd
-
 import secrets
-from fastapi.security import HTTPBasic, HTTPBasicCredentials
 
+# LOCAL IMPORTS
 from model_util import (
     unpickle_bundle,
     ModelSchemaContainer,
@@ -30,16 +26,13 @@ from metrics import (
     generate_metrics,
     categorical_summary_statistics,
     distribution_summary_statistics,
-    simple_text_summary_statistics,
+    # simple_text_summary_statistics # uncomment to use
+    # you can define more summary statistics functions in metrics or use lambdas
 )
 
-simple_text_summary_statistics(
-    pd.DataFrame(
-        [["This is text", "even more text"], ["wow there is another row", "so cool!"]]
-    )
-)
 
-# Authentication
+# AUTHENTICATION
+
 # TODO: use secrets, define in separate module, define for prediction & metrics endpoints separately
 security = HTTPBasic()
 
@@ -64,9 +57,7 @@ def get_current_username(credentials: HTTPBasicCredentials = Depends(security)):
     return credentials.username
 
 
-# / authentication
-
-# MODEL, SCHEMA & METRICS
+# MODEL, SCHEMA & TRAIN METRICS
 
 # Load model and schema definitions & train/val workflow metrics from pickled container class
 model_and_schema: ModelSchemaContainer = unpickle_bundle("bundle_latest")
@@ -74,9 +65,9 @@ model_and_schema: ModelSchemaContainer = unpickle_bundle("bundle_latest")
 model = model_and_schema.model
 
 # Model train/test workflow metrics
-metrics = model_and_schema.metrics
+train_val_metrics = model_and_schema.metrics
 # pass metrics to prometheus
-_ = record_metrics_from_dict(metrics)
+_ = record_metrics_from_dict(train_val_metrics)
 
 # Schema for request (X)
 DynamicApiRequest = create_model(
@@ -95,8 +86,8 @@ response_value_type = type(
 )
 
 # DRIFT DETECTION
-# TODO 2: drift detection wrapper
-# store maxsize inputs in a temporal fifo que for drift detection
+
+# store inputs, outputs & processing data in temporal fifo queues
 input_drift = DriftMonitor(
     columns=schema_to_pandas_columns(model_and_schema.req_schema),
     backup_file="input_fifo.feather",
@@ -104,18 +95,16 @@ input_drift = DriftMonitor(
     summary_statistics_function=distribution_summary_statistics,
 )
 
-
 output_drift = DriftMonitor(
     columns=schema_to_pandas_columns(model_and_schema.res_schema),
     backup_file="output_fifo.feather",
     metrics_name_prefix="output_drift_",
     summary_statistics_function=categorical_summary_statistics,
 )
-# NOTE: if live-scoring, add separate DriftMonitor for model drift
-# collect request processing times, sizes and mean by row processing times
-processing_drift = RequestMonitor()
 
-# /drift detection
+processing_drift = RequestMonitor()
+# NOTE: if live-scoring, add separate DriftMonitor for model drift
+
 
 # Start up API
 _ = pass_api_version_to_prometheus()
@@ -133,23 +122,17 @@ app.add_middleware(
     max_age=3600,
 )
 
-# TODO: for some reason DriftMonitor metrics are only created when loaded from feather.
-# new metrics are not created
-
 # metrics endpoint for prometheus
 @app.get("/metrics", response_model=dict)
-@input_drift.update_metrics_decorator()
+@input_drift.update_metrics_decorator()  # calculate drift metrics & pass to prometheus
 @output_drift.update_metrics_decorator()
 @processing_drift.update_metrics_decorator()
 def get_metrics(username: str = Depends(get_current_username)):
-    # if enough data / new data, calculate and record summary statistics
-    # TODO 3: sumstat.calculate().set_metrics() decorator wrapper
     return HTMLResponse(generate_metrics())
 
 
-# TODO 5: predict timing decorator wrapper
 @app.post("/predict", response_model=List[DynamicApiResponse])
-@monitor_output(output_drift)
+@monitor_output(output_drift)  # add new data to fifos
 @monitor_input(input_drift)
 @processing_drift.monitor()
 def predict(p_list: List[DynamicApiRequest]):
@@ -159,8 +142,6 @@ def predict(p_list: List[DynamicApiRequest]):
         # convert parameter object to array for model
         parameter_array = [getattr(p, k) for k in vars(p)]
         prediction_values.append(model.predict([parameter_array]))
-    # monitor output
-    # processing_drift.put(prediction_values)
     # Construct response
     response: List[DynamicApiResponse] = []
 
