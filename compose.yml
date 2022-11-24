@@ -25,5 +25,6 @@ services:
     container_name: mlops-fastapi-prometheus
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus/prometheus/:/prometheus # store time series here
     ports: 
       - 9090:9090
