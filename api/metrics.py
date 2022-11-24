@@ -266,7 +266,6 @@ def convert_metric_name_to_promql(
     dtypename: str = None,
     prefix: str = "",
     suffix: str = "",
-    is_counter=False,
     mask_type_aliases=True,
     type_mask="typemask",
     mask_reserved_suffixes=True,
@@ -335,16 +334,14 @@ def convert_metric_name_to_promql(
     ret = ret.strip("_")
 
     # remove reserved suffixes (a metric should not end with these)
-    if not is_counter:
-        for reserved_suffix in ["_count", "_sum", "_bucket", "_total"]:
-            if not mask_reserved_suffixes:  # remove
-                l = len(reserved_suffix)
-                while ret.endswith(reserved_suffix):
-                    ret = ret[:-l]
-            elif ret.endswith(reserved_suffix):  # remove by masking
-                ret += suffix_mask
-    elif not ret.endswith("_total"):  # however, counters should always end with _total
-        ret += "_total"
+
+    for reserved_suffix in ["_count", "_sum", "_bucket", "_total"]:
+        if not mask_reserved_suffixes:  # remove
+            l = len(reserved_suffix)
+            while ret.endswith(reserved_suffix):
+                ret = ret[:-l]
+        elif ret.endswith(reserved_suffix):  # remove by masking
+            ret += suffix_mask
 
     # clean non-alphanumericals except underscores
     ret = re.sub(r"[^\w" + "_" + "]", "_", ret)
