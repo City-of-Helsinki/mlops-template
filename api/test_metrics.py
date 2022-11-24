@@ -413,7 +413,7 @@ class TestConvertName(unittest.TestCase):
     def test_string(self):
         self.assertEqual(
             convert_metric_name_to_promql("optimization_function", str),
-            "optimization_function_info",
+            "optimization_function",
         )
 
     def test_remove_metric_types(self):
@@ -448,16 +448,14 @@ class TestConvertName(unittest.TestCase):
         )
 
     def test_counter_suffix(self):
+        self.assertEqual(convert_metric_name_to_promql("test", int), "test")
         self.assertEqual(
-            convert_metric_name_to_promql("test", int, is_counter=True), "test_total"
+            convert_metric_name_to_promql("test_total", int),
+            "test_totalsuffixmask",
         )
         self.assertEqual(
-            convert_metric_name_to_promql("test_total", int, is_counter=True),
-            "test_total",
-        )
-        self.assertEqual(
-            convert_metric_name_to_promql("total_test", int, is_counter=True),
-            "total_test_total",
+            convert_metric_name_to_promql("total_test", int),
+            "total_test",
         )
 
 
@@ -490,7 +488,7 @@ class TestRecordDict(unittest.TestCase):
             "type": "category",
             "categories": ["SGD", "RMSProp", "Adagrad", "Adam"],
         },
-        "model_build_info": {
+        "model_build": {
             "description": "dev information",
             "type": "info",
             "value": {
@@ -512,9 +510,9 @@ class TestRecordDict(unittest.TestCase):
 
         self.assertEqual(str(m[0]), "gauge:train_loss")
 
-        self.assertEqual(str(m[2]), "stateset:optimizer_info")
+        self.assertEqual(str(m[2]), "stateset:optimizer")
 
-        self.assertEqual(str(m[3]), "info:model_build_info")
+        self.assertEqual(str(m[3]), "info:model_build")
 
         self.assertEqual(str(m[4]), "gauge:model_update_time_timestamp_seconds")
 
@@ -584,3 +582,39 @@ class TestSummaryStatistics(unittest.TestCase):
         ssm.calculate(self.df1).set_metrics()
         # reset
         ssm.set_metrics()
+
+
+from metrics import DriftMonitor
+
+
+class TestDriftMonitor(unittest.TestCase):
+    def test_init(self):
+        DriftMonitor(columns={"testcolumn": int})
+
+    def test_update_metrics(self):
+        clean_registry()
+        monitor = DriftMonitor(columns={"testcolumn": int}, maxsize=1)
+        monitor.put([[1]])
+        monitor.update_metrics()
+
+    def test_update_metrics_decorator(self):
+        clean_registry()
+        monitor = DriftMonitor(columns={"testcolumn": int}, maxsize=1)
+        monitor.put([[1]])
+
+        @monitor.update_metrics_decorator()
+        def foo(param1: int):
+            return "bar"
+
+        self.assertEqual(foo(1), "bar")
+
+
+from metrics import RequestMonitor
+
+
+class TestRequestMonitor(unittest.TestCase):
+    def test_init(self):
+        RequestMonitor()
+
+    def test_update_metrics_decorator(self):
+        pass  # difficult to unit test
