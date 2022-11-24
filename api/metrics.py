@@ -3,8 +3,7 @@ import functools
 from typing import Iterable, Type, Union
 from numbers import Number
 import os
-from parser import ParserError
-from prometheus_client import generate_latest, Summary, Counter, Gauge, Enum, Info
+from prometheus_client import generate_latest, Counter, Gauge, Enum, Info
 import pyarrow.feather as feather
 import datetime as dt
 import re
@@ -150,8 +149,6 @@ def value_dtypename(value) -> str:
         return get_dtypename(type(value))
 
 
-# / data types
-
 # convert time expressions to seconds (prometheus convention)
 
 
@@ -260,6 +257,9 @@ def string_is_time(s: str) -> bool:
         return False
 
 
+# convert names to promql
+
+
 def convert_metric_name_to_promql(
     metric_name: str,
     dtype: Type = None,
@@ -319,12 +319,8 @@ def convert_metric_name_to_promql(
         # e.g. time_on_site -> 'time_on_site_seconds'
         ret = ret.replace("seconds", "") + "_seconds"
 
-    # TODO: remove?
-    elif is_str(dtypename) and not category and not dtypename.endswith("_info"):
-        # e.g. description -> description_count
-        ret += "_info"
-
     else:  # add more exceptions if needed
+        # info suffix is inferred automatically if metric type is info
         # TODO: percent -> ratio  0-1 (if possible)
         # TODO: bits, bytes -> bytes (if possible)
         pass
@@ -878,7 +874,7 @@ class DriftMonitor(DriftQueue, SummaryStatisticsMetrics):
 
 class RequestMonitor(DriftMonitor):
     """
-    Util wrapper for monitoring requests
+    DriftMonitor wrapper for monitoring request & processing times
     """
 
     def __init__(self, maxsize: int = 1000):
@@ -939,6 +935,9 @@ def pass_api_version_to_prometheus():
 
 
 def generate_metrics():
+    """
+    Wrapper for prometheus_client generate_latest()
+    """
     return generate_latest()
 
 
