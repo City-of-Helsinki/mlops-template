@@ -20,12 +20,11 @@ class LogEvent(SQLModel, table=True):
         self.severity = record.levelname
         if type(record.msg) is dict and record.msg:
             self.message = None
-            if 'prediction' in record.msg:
-                self.type = 'PREDICTION'
-                self.request = record.msg['request_parameters'].json()
-                self.response = record.msg['prediction']
+            if "prediction" in record.msg:
+                self.type = "PREDICTION"
+                self.request = record.msg["request_parameters"].json()
+                self.response = record.msg["prediction"]
         else:
             self.message = record.msg
             self.request = None
             self.response = None
-
