@@ -27,8 +27,9 @@ from metrics import (
     RequestMonitor,
     monitor_input,
     monitor_output,
-    generate_metrics, 
-    categorical_summary_statistics_function
+    generate_metrics,
+    categorical_summary_statistics_function,
+    distribution_summary_statistics_function,
 )
 
 # Authentication
@@ -89,13 +90,19 @@ response_value_type = type(
 # DRIFT DETECTION
 # TODO 2: drift detection wrapper
 # store maxsize inputs in a temporal fifo que for drift detection
-input_drift = DriftMonitor(columns=schema_to_pandas_columns(model_and_schema.req_schema),
-    backup_file="input_fifo.feather", metrics_name_prefix="input_drift_")
+input_drift = DriftMonitor(
+    columns=schema_to_pandas_columns(model_and_schema.req_schema),
+    backup_file="input_fifo.feather",
+    metrics_name_prefix="input_drift_",
+    summary_statistics_function=distribution_summary_statistics_function,
+)
 
 
-output_drift = DriftMonitor(columns=schema_to_pandas_columns(model_and_schema.res_schema),
-    backup_file="output_fifo.feather", metrics_name_prefix="output_drift_", maxsize=10,
-    summary_statistics_function=categorical_summary_statistics_function
+output_drift = DriftMonitor(
+    columns=schema_to_pandas_columns(model_and_schema.res_schema),
+    backup_file="output_fifo.feather",
+    metrics_name_prefix="output_drift_",
+    summary_statistics_function=categorical_summary_statistics_function,
 )
 # NOTE: if live-scoring, add separate DriftMonitor for model drift
 # collect request processing times, sizes and mean by row processing times
@@ -132,6 +139,7 @@ def get_metrics(username: str = Depends(get_current_username)):
     # TODO 3: sumstat.calculate().set_metrics() decorator wrapper
     return HTMLResponse(generate_metrics())
 
+
 # TODO 5: predict timing decorator wrapper
 @app.post("/predict", response_model=List[DynamicApiResponse])
 @monitor_output(output_drift)
@@ -145,7 +153,7 @@ def predict(p_list: List[DynamicApiRequest]):
         parameter_array = [getattr(p, k) for k in vars(p)]
         prediction_values.append(model.predict([parameter_array]))
     # monitor output
-    #processing_drift.put(prediction_values)
+    # processing_drift.put(prediction_values)
     # Construct response
     response: List[DynamicApiResponse] = []
 

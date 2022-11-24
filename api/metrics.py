@@ -320,7 +320,7 @@ def convert_metric_name_to_promql(
         ret = ret.replace("seconds", "") + "_seconds"
 
     # TODO: remove?
-    elif is_str(dtypename) and not category and not dtypename.endswith('_info'):
+    elif is_str(dtypename) and not category and not dtypename.endswith("_info"):
         # e.g. description -> description_count
         ret += "_info"
 
@@ -531,7 +531,7 @@ class DriftQueue:
             (self.df, pd.DataFrame(rows, columns=self.columns)),
             ignore_index=True,
         )
-        
+
         self._cut_to_maxsize()
 
         # write backup for queue
@@ -567,11 +567,22 @@ def default_summary_statistics_function(df: pd.DataFrame) -> pd.DataFrame:
         {"count": "sample_size"}
     )
 
+
+def distribution_summary_statistics_function(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Generic distribution metrics
+    """
+    return df.aggregate(
+        ["count", "min", "mean", pd.DataFrame.median, "std", "max"]
+    ).rename({"count": "sample_size"})
+
+
 def mean_max_summary_statistics_function(df: pd.DataFrame) -> pd.DataFrame:
     """
     Narrow summary statistics function, for performance monitoring
     """
-    return default_summary_statistics_function(df).loc[["sample_size", "mean", "max"]]
+    return df.aggregate(["count", "mean", "max"]).rename({"count": "sample_size"})
+
 
 def categorical_summary_statistics_function(df: pd.DataFrame) -> pd.DataFrame:
     """
@@ -580,12 +591,15 @@ def categorical_summary_statistics_function(df: pd.DataFrame) -> pd.DataFrame:
     ret = pd.DataFrame()
     for colname in df.columns.values:
         counts = df[colname].value_counts(dropna=False)
-        counts.index = colname + '_proportion_of_' + counts.index.values + '_rate'
+        counts.index = colname + "_proportion_of_" + counts.index.values + "_rate"
         rates = counts / counts.sum()
         ret = pd.concat((ret, rates), ignore_index=False)
     ret = ret.astype(float)
-    ret = pd.concat((ret, pd.DataFrame([[df.shape[0]]], index=['sample_size']).astype(int)), ignore_index = False)
-    ret.rename(columns={list(ret)[0]:'_'}, inplace=True)
+    ret = pd.concat(
+        (ret, pd.DataFrame([[df.shape[0]]], index=["sample_size"]).astype(int)),
+        ignore_index=False,
+    )
+    ret.rename(columns={list(ret)[0]: "_"}, inplace=True)
     print(ret)
     return ret
 
@@ -768,24 +782,35 @@ class DriftMonitor(DriftQueue, SummaryStatisticsMetrics):
     Wrapper for using DriftQueue and SummaryStatisticsMetrics together
     """
 
-    def __init__(self,
+    def __init__(
+        self,
         columns: dict,
         maxsize: int = 1000,
-        backup_file: str = '',
+        backup_file: str = "",
         clear_at_flush: bool = True,
         only_flush_full: bool = True,
         summary_statistics_function: function = default_summary_statistics_function,
         convert_names_to_promql: bool = True,
-        metrics_name_prefix: str = ""
-        ):
+        metrics_name_prefix: str = "",
+    ):
 
         # init base classes
-        DriftQueue.__init__(self, columns=columns, maxsize=maxsize, backup_file=backup_file, clear_at_flush=clear_at_flush,
-        only_flush_full=only_flush_full)
-        SummaryStatisticsMetrics.__init__(self, summary_statistics_function=summary_statistics_function, convert_names_to_promql = convert_names_to_promql,
-        metrics_name_prefix = metrics_name_prefix)
+        DriftQueue.__init__(
+            self,
+            columns=columns,
+            maxsize=maxsize,
+            backup_file=backup_file,
+            clear_at_flush=clear_at_flush,
+            only_flush_full=only_flush_full,
+        )
+        SummaryStatisticsMetrics.__init__(
+            self,
+            summary_statistics_function=summary_statistics_function,
+            convert_names_to_promql=convert_names_to_promql,
+            metrics_name_prefix=metrics_name_prefix,
+        )
 
-    def update_metrics(self)->DriftMonitor:
+    def update_metrics(self) -> DriftMonitor:
         """
         If enough new data, calculate new sumstat and updates prometheus metrics accordingly.
         """
@@ -798,58 +823,70 @@ class DriftMonitor(DriftQueue, SummaryStatisticsMetrics):
         """
         Use update_metrics as decorator
         """
+
         def wrapper1(function):
             @functools.wraps(function)
             def wrapper2(*args, **kwargs):
                 self.update_metrics()
                 return function(*args, **kwargs)
+
             return wrapper2
+
         return wrapper1
 
 
 # util & wrappers
 
+
 class RequestMonitor(DriftMonitor):
     """
     Util wrapper for monitoring requests
     """
-    def __init__(self, maxsize: int = 1000):
-        super().__init__(columns = {
-        "processing_time_seconds": float,
-        "size_rows": int,
-        "mean_by_row_processing_time_seconds": float,
-        },
-        backup_file='processing_fifo.feather',
-        metrics_name_prefix="predict_request_",
-        summary_statistics_function=mean_max_summary_statistics_function,
-        maxsize=maxsize)
 
-        self.request_counter = Counter("predict_requests", "How many requests have been received in total?")
+    def __init__(self, maxsize: int = 1000):
+        super().__init__(
+            columns={
+                "processing_time_seconds": float,
+                "size_rows": int,
+                "mean_by_row_processing_time_seconds": float,
+            },
+            backup_file="processing_fifo.feather",
+            metrics_name_prefix="predict_request_",
+            summary_statistics_function=mean_max_summary_statistics_function,
+            maxsize=maxsize,
+        )
+
+        self.request_counter = Counter(
+            "predict_requests", "How many requests have been received in total?"
+        )
         self.prediction_counter = Counter(
             "predict_request_predictions",
             "How many individual predictions have been made in total? ",
-            )
-    
+        )
+
     def monitor(self):
         """
         Decorator. Count requests, predictions and time it takes to process a request & predictions
         """
+
         def timer(function):
             @functools.wraps(function)
             def wrapper(*args, **kwargs):
                 # add to requrest & prediction counters
                 self.request_counter.inc()
-                self.prediction_counter.inc(len(kwargs['p_list']))
+                self.prediction_counter.inc(len(kwargs["p_list"]))
                 # time response
                 start = time.time()
                 response = function(*args, **kwargs)
                 end = time.time()
-                processing_time = end-start
-                N = len(response) + 1 # how many rows in request
+                processing_time = end - start
+                N = len(response) + 1  # how many rows in request
                 self.put([[processing_time, N, processing_time / N]])
                 #
                 return response
+
             return wrapper
+
         return timer
 
 
@@ -859,35 +896,42 @@ def pass_api_version_to_prometheus():
     Return info metric handle.
     """
     m = Info("api_git_version", "The branch and HEAD commit the api was built on.")
-    m.info({"branch": os.environ['GIT_BRANCH'], "head": os.environ['GIT_HEAD']})
+    m.info({"branch": os.environ["GIT_BRANCH"], "head": os.environ["GIT_HEAD"]})
     return m
+
 
 def generate_metrics():
     return generate_latest()
+
 
 def monitor_input(driftmonitor: DriftMonitor):
     """
     Monitor inputs of requests: summary statistics, count requests and individual rows in all requests
     """
+
     def monitor(function):
         @functools.wraps(function)
         def wrapper(*args, **kwargs):
             # loop through parameters
             input_values = []
-            for p in kwargs['p_list']:
+            for p in kwargs["p_list"]:
                 parameter_array = [getattr(p, k) for k in vars(p)]
                 input_values.append(parameter_array)
             # update driftmonitor
             driftmonitor.put(input_values)
             # call function with parameters
             return function(*args, **kwargs)
+
         return wrapper
+
     return monitor
-    
+
+
 def monitor_output(driftmonitor: DriftMonitor):
     """
     Monitor outputs of requests: summary statistics
     """
+
     def monitor(function):
         @functools.wraps(function)
         def wrapper(*args, **kwargs):
@@ -902,5 +946,7 @@ def monitor_output(driftmonitor: DriftMonitor):
             driftmonitor.put(output_values)
             # return original response
             return ret
+
         return wrapper
+
     return monitor
