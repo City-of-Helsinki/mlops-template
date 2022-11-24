@@ -1,3 +1,6 @@
+import os
+import logging
+from log.sqlite_logging_handler import SQLiteLoggingHandler
 from typing import List
 import uvicorn
 from fastapi import FastAPI, HTTPException, status
@@ -7,6 +10,15 @@ from fastapi.responses import HTMLResponse
 from pydantic import create_model
 from starlette.middleware.cors import CORSMiddleware
 import secrets
+
+# LOGGING
+logging.getLogger().addHandler(SQLiteLoggingHandler())
+logging.getLogger().setLevel(logging.INFO)
+
+if 'false' == str(os.environ['LOG_PREDICTIONS']).lower():
+    setting_log_predictions = False
+else:
+    setting_log_predictions = True
 
 # LOCAL IMPORTS
 from model_util import (
@@ -141,7 +153,10 @@ def predict(p_list: List[DynamicApiRequest]):
     for p in p_list:
         # convert parameter object to array for model
         parameter_array = [getattr(p, k) for k in vars(p)]
-        prediction_values.append(model.predict([parameter_array]))
+        prediction = model.predict([parameter_array])
+        prediction_values.append(prediction)
+        if setting_log_predictions:
+            logging.info({'prediction': prediction, 'request_parameters': p})
     # Construct response
     response: List[DynamicApiResponse] = []
 
@@ -149,6 +164,7 @@ def predict(p_list: List[DynamicApiRequest]):
         # Cast predicted value to correct type and add response value to response array
         typed_value = response_value_type(predicted_value[0])
         response.append(DynamicApiResponse(**{response_value_field: typed_value}))
+
     return response
 
 
