@@ -27,7 +27,8 @@ from metrics import (
     RequestMonitor,
     monitor_input,
     monitor_output,
-    generate_metrics
+    generate_metrics, 
+    categorical_summary_statistics_function
 )
 
 # Authentication
@@ -93,7 +94,8 @@ input_drift = DriftMonitor(columns=schema_to_pandas_columns(model_and_schema.req
 
 
 output_drift = DriftMonitor(columns=schema_to_pandas_columns(model_and_schema.res_schema),
-    backup_file="output_fifo.feather", metrics_name_prefix="output_drift_"
+    backup_file="output_fifo.feather", metrics_name_prefix="output_drift_", maxsize=10,
+    summary_statistics_function=categorical_summary_statistics_function
 )
 # NOTE: if live-scoring, add separate DriftMonitor for model drift
 # collect request processing times, sizes and mean by row processing times

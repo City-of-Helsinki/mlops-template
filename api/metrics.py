@@ -500,6 +500,7 @@ class DriftQueue:
             try:
                 with open(backup_file, "rb") as f:
                     self.df = feather.read_feather(f)
+                    self._cut_to_maxsize()
             except FileNotFoundError:
                 self.df = pd.DataFrame(columns=columns)
         else:  # else just create new
@@ -514,6 +515,11 @@ class DriftQueue:
         else:
             return False
 
+    def _cut_to_maxsize(self):
+        # drop oldest rows exceeding maxsize
+        if self.is_full():
+            self.df = self.df.iloc[-self.maxsize :]
+
     def put(self, rows: Union[np.ndarray, Iterable, dict, pd.DataFrame]) -> DriftQueue:
         """
         Put new items to queue. If full, overwrite the oldest value.
@@ -525,10 +531,8 @@ class DriftQueue:
             (self.df, pd.DataFrame(rows, columns=self.columns)),
             ignore_index=True,
         )
-        # drop oldest rows exceeding maxsize
-        if self.is_full():
-            self.df = self.df.iloc[-self.maxsize :]
-
+        
+        self._cut_to_maxsize()
 
         # write backup for queue
         if self.backup_file != "":
@@ -556,14 +560,34 @@ class DriftQueue:
 
 
 def default_summary_statistics_function(df: pd.DataFrame) -> pd.DataFrame:
-    """pandas.DataFrame.describe(include="all", datetime_is_numeric=True).rename({"count": "sample_size"})"""
+    """
+    Generic summary statistics function, calculates large number of descriptive statistics
+    """
     return df.describe(include="all", datetime_is_numeric=True).rename(
         {"count": "sample_size"}
     )
 
-def mean_max_sumstat(df: pd.DataFrame) -> pd.DataFrame:
-    """pandas.DataFrame.describe(include="all", datetime_is_numeric=True).rename({"count": "sample_size"}).loc[["sample_size", "mean", "max"]]"""
+def mean_max_summary_statistics_function(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Narrow summary statistics function, for performance monitoring
+    """
     return default_summary_statistics_function(df).loc[["sample_size", "mean", "max"]]
+
+def categorical_summary_statistics_function(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Summary staticstics function for hard clustering labels
+    """
+    ret = pd.DataFrame()
+    for colname in df.columns.values:
+        counts = df[colname].value_counts(dropna=False)
+        counts.index = colname + '_proportion_of_' + counts.index.values + '_rate'
+        rates = counts / counts.sum()
+        ret = pd.concat((ret, rates), ignore_index=False)
+    ret = ret.astype(float)
+    ret = pd.concat((ret, pd.DataFrame([[df.shape[0]]], index=['sample_size']).astype(int)), ignore_index = False)
+    ret.rename(columns={list(ret)[0]:'_'}, inplace=True)
+    print(ret)
+    return ret
 
 
 class SummaryStatisticsMetrics:
@@ -628,7 +652,7 @@ class SummaryStatisticsMetrics:
         Create new prometheus metric if it does not already exist.
         """
         metric_key = f"{colname}_{rowname}"
-        metric_description = f"calculated using summary statistics function {self.summary_statistics_function.__doc__}"
+        metric_description = f"calculated using summary statistics function {self.summary_statistics_function.__name__}"
         # create name for metric
         metric_name = (
             convert_metric_name_to_promql(
@@ -797,7 +821,7 @@ class RequestMonitor(DriftMonitor):
         },
         backup_file='processing_fifo.feather',
         metrics_name_prefix="predict_request_",
-        summary_statistics_function=mean_max_sumstat,
+        summary_statistics_function=mean_max_summary_statistics_function,
         maxsize=maxsize)
 
         self.request_counter = Counter("predict_requests", "How many requests have been received in total?")
