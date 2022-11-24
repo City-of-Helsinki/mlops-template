@@ -17,6 +17,7 @@ services:
         # (Dockerfile / compose ENV variables do not support automatic assigning)
         export GIT_BRANCH="$(git symbolic-ref -q --short HEAD)"
         export GIT_HEAD="$(git rev-parse --short HEAD)"
+        export LOG_PREDICTIONS="true"
         # run api
         uvicorn main:app --reload --reload-include *.pickle --host 0.0.0.0
   prometheus:

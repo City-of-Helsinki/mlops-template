@@ -15,10 +15,13 @@ import secrets
 logging.getLogger().addHandler(SQLiteLoggingHandler())
 logging.getLogger().setLevel(logging.INFO)
 
-if 'false' == str(os.environ['LOG_PREDICTIONS']).lower():
+try:
+    if "false" == str(os.environ["LOG_PREDICTIONS"]).lower():
+        setting_log_predictions = False
+    else:
+        setting_log_predictions = True
+except KeyError:
     setting_log_predictions = False
-else:
-    setting_log_predictions = True
 
 # LOCAL IMPORTS
 from model_util import (
@@ -156,7 +159,7 @@ def predict(p_list: List[DynamicApiRequest]):
         prediction = model.predict([parameter_array])
         prediction_values.append(prediction)
         if setting_log_predictions:
-            logging.info({'prediction': prediction, 'request_parameters': p})
+            logging.info({"prediction": str(prediction), "request_parameters": p})
     # Construct response
     response: List[DynamicApiResponse] = []
 
