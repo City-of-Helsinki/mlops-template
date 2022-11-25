@@ -1,18 +1,30 @@
 version: "3.8"
 services:
-  ml-api:
-    build: .
-    container_name: ml-api
+  api:
+    build: api/
+    container_name: mlops-fastapi-api
     restart: always
     volumes:
-      - .:/app
+      - ./api/:/app
+      - .git/:/app/.git/ # needed for build version info
     ports:
       - 8000:8000
-    command: ['uvicorn',
-              'main:app',
-              '--reload',
-              '--reload-include',
-              '*.pickle',
-              "--host",
-              "0.0.0.0"]  
-    
+    command: 
+      - /bin/sh
+      - -c
+      - |
+        # add build version info as environment variables
+        # (Dockerfile / compose ENV variables do not support automatic assigning)
+        export GIT_BRANCH="$(git symbolic-ref -q --short HEAD)"
+        export GIT_HEAD="$(git rev-parse --short HEAD)"
+        export LOG_PREDICTIONS="true"
+        # run api
+        uvicorn main:app --reload --reload-include *.pickle --host 0.0.0.0
+  prometheus:
+    image: prom/prometheus
+    container_name: mlops-fastapi-prometheus
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus/prometheus/:/prometheus # store time series here
+    ports: 
+      - 9090:9090

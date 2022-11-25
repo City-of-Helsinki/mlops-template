@@ -16,5 +16,5 @@ with Session(engine) as session:
     y_str = [e.response for e in result]
     X_json = [json.loads(e.request) for e in result]
     df = pd.DataFrame.from_records(X_json)
-    df['prediction'] = y_str
+    df["prediction"] = y_str
     print(df)

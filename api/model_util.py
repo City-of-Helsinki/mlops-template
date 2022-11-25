@@ -6,14 +6,28 @@ from sklearn.base import BaseEstimator
 
 
 class ModelSchemaContainer:
+    """
+    req & res schema: [{'name': value, 'type': dtype}]
+    """
+
     model: BaseEstimator
     req_schema: str
     res_schema: str
     metrics: str
 
 
+def schema_to_pandas_columns(schema):
+    """
+    Convert ModelSchemaContainer schemas to pandas column definitions
+    """
+    ret = {}
+    for row in schema:
+        ret[row["name"]] = row["type"]
+    return ret
+
+
 def unpickle_bundle(model_id: str) -> ModelSchemaContainer:
-    model_path = '{model_id}.pickle'.format(model_id=model_id)
+    model_path = "{model_id}.pickle".format(model_id=model_id)
     try:
         with open(model_path, "rb") as f:
             container = pickle.load(f)
@@ -25,7 +39,7 @@ def unpickle_bundle(model_id: str) -> ModelSchemaContainer:
 
 
 def pickle_bundle(model: BaseEstimator, model_id: str, schema_x, schema_y, metrics):
-    file_path = '{model_id}.pickle'.format(model_id=model_id)
+    file_path = "{model_id}.pickle".format(model_id=model_id)
     try:
         with open(file_path, "wb") as f:
             container: ModelSchemaContainer = ModelSchemaContainer()
@@ -43,10 +57,10 @@ def pickle_bundle(model: BaseEstimator, model_id: str, schema_x, schema_y, metri
 def build_model_definition_from_dict(column_types: List[dict]):
     fields = {}
     for coltype in column_types:
-        t = coltype['type']
+        t = coltype["type"]
         # convert object types to string
         if t == np.object_ or t == object:
             t = str
-        name = coltype['name']
+        name = coltype["name"]
         fields[name] = (t, ...)
     return fields
