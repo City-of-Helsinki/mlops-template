@@ -2,7 +2,7 @@
 name: Ethical
 about: Report an ethical issue to help us do right
 title: "[ETHICAL]"
-labels: ''
+labels: ethical
 assignees: ''
 
 ---
