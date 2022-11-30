@@ -1,0 +1,10 @@
+{
+  "ml_project_template": {
+    "Overview": "/",
+    "Data": "data.html",
+    "Model": "model.html",
+    "Loss": "loss.html",
+    "Workflow": "workflow.html",
+    "API": "api.html"
+  }
+}

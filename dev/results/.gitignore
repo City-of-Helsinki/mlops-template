@@ -1,0 +1,5 @@
+# ignore everything in this folder
+*
+# except this file
+!.gitignore
+!notebooks/

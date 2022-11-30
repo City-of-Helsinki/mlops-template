@@ -1,0 +1,11 @@
+# EDIT THE external_url ACCORDING TO YOUR PROJECT
+topnav:
+- title: Topnav
+  items:
+    - title: github
+      external_url: https://github.com/City-of-Helsinki/ml_project_template/tree/master/
+
+#Topnav dropdowns
+topnav_dropdowns:
+- title: Topnav dropdowns
+  folders:

@@ -1,0 +1,7 @@
+# ignore everything in this folder
+*
+# except this file
+!.gitignore
+# and .gitignore files in subfolders
+!raw_data/
+!preprocessed_data/
