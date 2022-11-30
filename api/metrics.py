@@ -1,6 +1,6 @@
 from __future__ import annotations
 import functools
-from typing import Iterable, Type, Union
+from typing import Iterable, Type, Union, Callable
 from numbers import Number
 import os
 from prometheus_client import generate_latest, Counter, Gauge, Enum, Info
@@ -663,7 +663,7 @@ class SummaryStatisticsMetrics:
 
     def __init__(
         self,
-        summary_statistics_function: function = default_summary_statistics,
+        summary_statistics_function: Callable = default_summary_statistics,
         convert_names_to_promql: bool = True,
         metrics_name_prefix: str = "",
     ):
@@ -751,7 +751,7 @@ class SummaryStatisticsMetrics:
                 == "category"
             )
         else:
-            self.category_indicator = np.zeros(sumstat_df.shape[1])
+            self.category_indicator = np.zeros(self.sumstat_df.shape[1])
         self.categories_list = []  # store categories for creating enums
         for categorical, colname in zip(self.category_indicator, self.input_df_columns):
             if categorical:
@@ -820,7 +820,7 @@ class DriftMonitor(DriftQueue, SummaryStatisticsMetrics):
         backup_file: str = "",
         clear_at_flush: bool = True,
         only_flush_full: bool = True,
-        summary_statistics_function: function = default_summary_statistics,
+        summary_statistics_function: Callable = default_summary_statistics,
         convert_names_to_promql: bool = True,
         metrics_name_prefix: str = "",
     ):
@@ -927,7 +927,10 @@ def pass_api_version_to_prometheus():
     Return info metric handle.
     """
     m = Info("api_git_version", "The branch and HEAD commit the api was built on.")
-    m.info({"branch": os.environ["GIT_BRANCH"], "head": os.environ["GIT_HEAD"]})
+    try:
+        m.info({"branch": os.environ["GIT_BRANCH"], "head": os.environ["GIT_HEAD"]})
+    except:
+        m.info({"branch": 'unknown', "head": "unknown"})
     return m
 
 
