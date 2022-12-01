@@ -1,4 +1,5 @@
 nbdev
 ipykernel
+pre-commit
 # Uncomment if you want to work in jupyterlab:
 # jupyterlab
