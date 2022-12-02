@@ -1,8 +1,15 @@
 version: "3.8"
 services:
+  dev:
+    build:
+      context: ./
+      dockerfile: ./dev/Dockerfile
+    container_name: mlops-dev
+    command: /bin/sh
+    ports: # add ports for loading data
   api:
     build: api/
-    container_name: mlops-fastapi-api
+    container_name: mlops-api
     restart: always
     volumes:
       - ./api/:/app
@@ -22,7 +29,7 @@ services:
         uvicorn main:app --reload --reload-include *.pickle --host 0.0.0.0
   prometheus:
     image: prom/prometheus
-    container_name: mlops-fastapi-prometheus
+    container_name: mlops-prometheus-local
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
       - ./prometheus/prometheus/:/prometheus # store time series here
