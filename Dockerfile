@@ -24,5 +24,8 @@ RUN pip install -r requirements.txt
 # Install Quarto for Nbdev
 RUN nbdev_install_quarto
 
+# Install pre-commit hooks into Git
+RUN pre-commit install
+
 # for running the workflow
 RUN python -m ipykernel install --user --name python38myenv
