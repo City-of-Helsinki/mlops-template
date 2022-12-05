@@ -1,0 +1,9 @@
+black
+numpy
+matplotlib
+pandas
+papermill
+pip-tools
+sklearn
+scipy
+seaborn
