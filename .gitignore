@@ -186,3 +186,4 @@ _proc/
 /sqlite_logger_db.db
 /structlog.log
 /sqlite_structlog_db.db
+*.sqlite
