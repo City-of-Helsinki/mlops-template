@@ -15,6 +15,9 @@ COPY ./api /app/
 COPY ./requirements/api-requirements.txt /app/
 
 COPY ./dev/model_util.py /app/
+
+# COPY ./dev/model.py /app/ # if you want to import custom modules or wrappers
+
 WORKDIR /app
 
 RUN python -m pip install -r api-requirements.txt
