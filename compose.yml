@@ -1,12 +1,12 @@
 version: "3.8"
 services:
-  dev:
-    build:
-      context: ./
-      dockerfile: ./dev/Dockerfile
-    container_name: mlops-dev
-    command: /bin/sh
-    ports: # add ports for loading data
+  #dev:
+  #  build:
+  #    context: ./dev/
+  #    dockerfile: ./dev/Dockerfile
+  #  container_name: mlops-dev
+  #  command: /bin/sh
+  #  # ports: # add ports for loading data if needed
   api:
     build: api/
     container_name: mlops-api
@@ -21,7 +21,7 @@ services:
       - -c
       - |
         # add build version info as environment variables
-        # (Dockerfile / compose ENV variables do not support automatic assigning)
+        # (Dockerfile / compose ENV variables do not support expressions)
         export GIT_BRANCH="$(git symbolic-ref -q --short HEAD)"
         export GIT_HEAD="$(git rev-parse --short HEAD)"
         export LOG_PREDICTIONS="true"
