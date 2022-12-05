@@ -28,4 +28,4 @@ RUN nbdev_install_quarto
 RUN pre-commit install
 
 # for running the workflow
-RUN python -m ipykernel install --user --name python38myenv
+RUN python -m ipykernel install --user --name $(python3 --version | tr -d '[:space:]')
