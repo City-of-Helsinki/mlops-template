@@ -10,7 +10,9 @@ rm -rf /var/lib/apt/lists/*
 
 RUN mkdir /app
 
-COPY . /app
+ADD ./dev /app/ 
+
+ADD ./requirements/dev-requirements.txt /app/
 
 WORKDIR /app
 
@@ -19,7 +21,7 @@ RUN python -m pip install -U pip
 RUN python -m pip install pip-tools
 
 # Install Python requirements
-RUN pip install -r requirements.txt
+RUN pip install -r dev-requirements.txt
 
 # Install Quarto for Nbdev
 RUN nbdev_install_quarto

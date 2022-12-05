@@ -9,7 +9,8 @@ services:
   #  # ports: # add ports for loading data if needed
   api:
     build:
-      context: api/
+      context: ./
+      dockerfile: api/Dockerfile
       args:
         GIT_BRANCH: ${GIT_BRANCH:-unspecified}
         GIT_HEAD: ${GIT_HEAD:-unspecified}

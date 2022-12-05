@@ -4,7 +4,7 @@
 	"name": "Existing Dockerfile",
 
 	// Sets the run context to one level up instead of the .devcontainer folder.
-	"context": "../dev/",
+	"context": "../",
 
 	// Update the 'dockerFile' property if you aren't using the standard 'Dockerfile' filename.
 	"dockerFile": "../dev/Dockerfile",
