@@ -1,3 +1,5 @@
+# old api requirements.
+# TODO: remove once tested that api works with the new reqs
 anyio==3.6.1
 Brotli==1.0.9
 certifi==2022.9.24
