@@ -15,3 +15,11 @@ COPY . /app
 WORKDIR /app
 
 RUN python -m pip install -r requirements.txt
+
+# version info (tag & pass)
+ARG GIT_BRANCH=unspecified
+LABEL git_branch=$GIT_BRANCH
+ENV GIT_BRANCH $GIT_BRANCH
+ARG GIT_HEAD=unspecified
+LABEL git_head=$GIT_HEAD
+ENV GIT_HEAD $GIT_HEAD

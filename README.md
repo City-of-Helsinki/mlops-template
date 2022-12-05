@@ -16,6 +16,9 @@ or via Docker:
 2.-3. as above
 4. To shut down run `docker-compose down`
 
+To pass git version info to api container, run with `GIT_BRANCH="$(git symbolic-ref -q --short HEAD)" GIT_HEAD="$(git rev-parse --short HEAD)" docker-compose up --build`
+this adds the version to container labels and passes it on to prometheus.
+
 Run tests with 'docker exec mlops-fastapi-api python -m unittest test_metrics.py'
 
 ## Api documentation

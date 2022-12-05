@@ -8,25 +8,20 @@ services:
   #  command: /bin/sh
   #  # ports: # add ports for loading data if needed
   api:
-    build: api/
+    build:
+      context: api/
+      args:
+        GIT_BRANCH: ${GIT_BRANCH:-unspecified}
+        GIT_HEAD: ${GIT_HEAD:-unspecified}
+    environment:
+      LOG_PREDICTIONS: "true"
     container_name: mlops-api
     restart: always
     volumes:
       - ./api/:/app
-      - .git/:/app/.git/ # needed for build version info
     ports:
       - 8000:8000
-    command: 
-      - /bin/sh
-      - -c
-      - |
-        # add build version info as environment variables
-        # (Dockerfile / compose ENV variables do not support expressions)
-        export GIT_BRANCH="$(git symbolic-ref -q --short HEAD)"
-        export GIT_HEAD="$(git rev-parse --short HEAD)"
-        export LOG_PREDICTIONS="true"
-        # run api
-        uvicorn main:app --reload --reload-include *.pickle --host 0.0.0.0
+    command: uvicorn main:app --reload --reload-include *.pickle --host 0.0.0.0
   prometheus:
     image: prom/prometheus
     container_name: mlops-prometheus-local

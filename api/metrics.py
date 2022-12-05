@@ -930,7 +930,7 @@ def pass_api_version_to_prometheus():
     try:
         m.info({"branch": os.environ["GIT_BRANCH"], "head": os.environ["GIT_HEAD"]})
     except:
-        m.info({"branch": 'unknown', "head": "unknown"})
+        m.info({"branch": 'unspecified', "head": "unspecified"})
     return m
 
 
