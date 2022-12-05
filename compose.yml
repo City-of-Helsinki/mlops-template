@@ -9,8 +9,8 @@ services:
   #  # ports: # add ports for loading data if needed
   api:
     build:
-      context: ./
-      dockerfile: api/Dockerfile
+      context: .
+      dockerfile: Dockerfile.api
       args:
         GIT_BRANCH: ${GIT_BRANCH:-unspecified}
         GIT_HEAD: ${GIT_HEAD:-unspecified}
@@ -18,8 +18,6 @@ services:
       LOG_PREDICTIONS: "true"
     container_name: mlops-api
     restart: always
-    volumes:
-      - ./api/:/app
     ports:
       - 8000:8000
     command: uvicorn main:app --reload --reload-include *.pickle --host 0.0.0.0

@@ -10,13 +10,11 @@ rm -rf /var/lib/apt/lists/*
 
 RUN mkdir /app
 
-ADD ./api /app/ 
+COPY ./api /app/ 
 
-ADD ./requirements/api-requirements.txt /app/
+COPY ./requirements/api-requirements.txt /app/
 
-# to add custom ml module, wrapper or util to api:
-# ADD ./dev/module_path /app/module_path
-
+COPY ./dev/model_util.py /app/
 WORKDIR /app
 
 RUN python -m pip install -r api-requirements.txt

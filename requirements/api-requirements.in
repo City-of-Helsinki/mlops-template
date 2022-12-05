@@ -1,5 +1,6 @@
 # requirements for the API excluding ML
 fastapi
+locust
 numpy
 pandas
 prometheus_client

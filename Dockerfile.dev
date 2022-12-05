@@ -10,9 +10,9 @@ rm -rf /var/lib/apt/lists/*
 
 RUN mkdir /app
 
-ADD ./dev /app/ 
+COPY ./dev /app/ 
 
-ADD ./requirements/dev-requirements.txt /app/
+COPY ./requirements/dev-requirements.txt /app/
 
 WORKDIR /app
 
