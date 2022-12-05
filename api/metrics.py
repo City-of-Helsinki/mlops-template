@@ -1,7 +1,6 @@
 from __future__ import annotations
 import functools
 from typing import Iterable, Type, Union, Callable
-from numbers import Number
 import os
 from prometheus_client import generate_latest, Counter, Gauge, Enum, Info
 import pyarrow.feather as feather
