@@ -3,3 +3,4 @@ matplotlib<3.5
 pandas<1.4
 papermill
 sklearn
+scipy
