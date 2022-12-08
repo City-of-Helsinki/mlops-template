@@ -1,31 +1,45 @@
 version: "3.8"
 services:
-  #dev:
-  #  build:
-  #    context: ./dev/
-  #    dockerfile: ./dev/Dockerfile
-  #  container_name: mlops-dev
-  #  command: /bin/sh
-  #  # ports: # add ports for loading data if needed
-  api:
+  mlops:
     build:
       context: .
-      dockerfile: Dockerfile.api
+      dockerfile: Dockerfile
       args:
         GIT_BRANCH: ${GIT_BRANCH:-unspecified}
         GIT_HEAD: ${GIT_HEAD:-unspecified}
+    container_name: mlops
     environment:
       LOG_PREDICTIONS: "true"
-    container_name: mlops-api
+      MODE: ${MODE:-dev}
     restart: always
     ports:
       - 8000:8000
-    command: uvicorn main:app --reload --reload-include *.pickle --host 0.0.0.0
-  prometheus:
+    volumes:
+      - ./:/app
+      # By default, use tmpfs memory for files that may store personal data.
+      # These files only persist for as long as the container runs. 
+      # WARNING: Only edit if you know what you are doing!
+      - type: tmpfs
+        target: /app/api/logs.sqlite
+      - type: tmpfs
+        target: /app/api/input_fifo.feather
+      - type: tmpfs
+        target: /app/api/output_fifo.feather
+      # NOTE: dev/data will be included in the /app volume!
+    tty: true
+    stdin_open: true
+    entrypoint: ["/bin/bash","./entrypoint.sh"]
+  prometheus-local:
     image: prom/prometheus
     container_name: mlops-prometheus-local
     volumes:
+      # By default, only store prometheus time series temporarily as they may contain sensitive data
+      # WARNING: Only edit if you know what you are doing!
+      - type: tmpfs 
+        target: /prometheus
+      # to store prometheus logs locally and persistently, use the following instead:
+      # - ./prometheus/prometheus/:/prometheus
+      # share volume on prometheus config file:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-      - ./prometheus/prometheus/:/prometheus # store time series here
     ports: 
       - 9090:9090

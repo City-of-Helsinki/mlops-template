@@ -10,6 +10,7 @@ from fastapi.responses import HTMLResponse
 from pydantic import create_model
 from starlette.middleware.cors import CORSMiddleware
 import secrets
+import sys
 
 # LOGGING
 logging.getLogger().addHandler(SQLiteLoggingHandler())
@@ -24,12 +25,15 @@ except KeyError:
     setting_log_predictions = False
 
 # LOCAL IMPORTS
-from model_util import (
+sys.path.append("../dev")
+from dev.model_util import (
     unpickle_bundle,
     ModelSchemaContainer,
     build_model_definition_from_dict,
     schema_to_pandas_columns,
 )
+
+# from dev.your_module import ... # to import custom ML model etc.
 
 from metrics import (
     record_metrics_from_dict,
