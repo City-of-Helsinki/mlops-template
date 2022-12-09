@@ -29,17 +29,17 @@ services:
     stdin_open: true
     #command: /bin/sh -c "while sleep 1000; do :; done" 
     
-  #prometheus-local:
-  #  image: prom/prometheus
-  #  container_name: mlops-prometheus-local
-  #  volumes:
-  #    # By default, only store prometheus time series temporarily as they may contain sensitive data
-  #    # WARNING: Only edit if you know what you are doing!
-  #    - type: tmpfs 
-  #      target: /prometheus
-  #    # to store prometheus logs locally and persistently, use the following instead:
-  #    # - ./prometheus/prometheus/:/prometheus
-  #    # share volume on prometheus config file:
-  #    - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-  #  ports: 
-  #    - 9090:9090
+  prometheus-local:
+    image: prom/prometheus
+    container_name: mlops-prometheus-local
+    volumes:
+      # By default, only store prometheus time series temporarily as they may contain sensitive data
+      # WARNING: Only edit if you know what you are doing!
+      - type: tmpfs 
+        target: /prometheus
+      # to store prometheus logs locally and persistently, use the following instead:
+      # - ./prometheus/prometheus/:/prometheus
+      # share volume on prometheus config file:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports: 
+      - 9090:9090
