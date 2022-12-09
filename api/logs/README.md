@@ -1,2 +1,3 @@
-Storing input & prediction logs here.
-By default, only stored in container tmpfs memory and destroyed when container is stopped, to avoid storing sensitive data by accident.
+API logs are stored here.
+By default overridden by a tmpfs memory of container to avoid persisting sensitive data.
+Edit compose.yml to change this. 

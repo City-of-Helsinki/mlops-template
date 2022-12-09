@@ -22,7 +22,7 @@ services:
       - type: tmpfs
         target: /app/api/logs
       - type: tmpfs
-        target: /app/api/tmp
+        target: /app/api/fifo_backups
       # NOTE: dev/data will be included in the /app volume!
     command: ["/bin/bash", "./entrypoint.sh"]
     tty: true
