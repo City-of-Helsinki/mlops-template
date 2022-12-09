@@ -1,13 +1,16 @@
+import pathlib
+
+import mlflow
 import pandas as pd
+from mlflow.models import infer_signature
 from sklearn import metrics
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
 import datetime as dt
 
-from model_util import pickle_bundle
+from ..model.pickle_model_store import PickleModelStore
 
-# Load sample dataset
-df = pd.read_csv("iris_dataset.csv")
+df = pd.read_csv("../../analytics_notebook/iris_dataset.csv")
 y = df.pop("variety")
 X = df
 
@@ -46,5 +49,16 @@ metrics_parsed["model_update_time"] = {
 dtypes_x = [{"name": c, "type": X[c].dtype.type} for c in X.columns]
 dtypes_y = [{"name": y.name, "type": y.dtype.type}]
 
+CONTEXT_PATH = pathlib.Path(__file__).parent.resolve()
+MODEL_PATH = str(CONTEXT_PATH.joinpath(f'local_data/bundle_latest.pickle'))
+
 # Pickle all in single file
-pickle_bundle(classifier, "bundle_latest", dtypes_x, dtypes_y, metrics_parsed)
+model_store = PickleModelStore(bundle_uri=MODEL_PATH)
+model_store.persist(classifier, MODEL_PATH, dtypes_x, dtypes_y, metrics_parsed)
+print(f"Persisted model to {MODEL_PATH}")
+
+# OR use env variable export MLFLOW_TRACKING_URI=sqlite:////mlflow.sqlite
+model_name = "model"
+mlflow.set_tracking_uri('sqlite:///mlflow.sqlite')
+signature = infer_signature(X_train, y_pred)
+mlflow.sklearn.log_model(classifier, model_name, signature=signature, registered_model_name=model_name)

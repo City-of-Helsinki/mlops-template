@@ -11,6 +11,7 @@ services:
     environment:
       LOG_PREDICTIONS: "true"
       MODE: ${MODE:-dev}
+      MODEL_STORE: "mlflow"
     #restart: always
     ports:
       - 8000:8000 # api
