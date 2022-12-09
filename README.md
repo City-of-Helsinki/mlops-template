@@ -3,6 +3,9 @@
 # Prequisites
 
  - Docker desctop 4.15.0 (93002)
+
+If you prefer developing with VSC:
+
  - VSC 1.74.0
  - VSC Dev Containers Extension v0.245.2 (latest version has issues with MacOS & M1)
 
