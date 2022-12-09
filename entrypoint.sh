@@ -8,6 +8,10 @@ then
 elif [[ $MODE = dev ]]
 then
     tail -f /dev/null
+
+elif [[ $MODE = jupyterlab ]]
+then
+    jupyter-lab --ip 0.0.0.0 --port 8888
     
 else
     echo "unknown mode: "$MODE", use 'api', 'dev' or leave empty (defaults to 'dev')"
