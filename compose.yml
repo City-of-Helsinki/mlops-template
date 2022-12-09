@@ -11,7 +11,7 @@ services:
     environment:
       LOG_PREDICTIONS: "true"
       MODE: ${MODE:-dev}
-    restart: always
+    #restart: always
     ports:
       - 8000:8000
     volumes:
@@ -20,26 +20,26 @@ services:
       # These files only persist for as long as the container runs. 
       # WARNING: Only edit if you know what you are doing!
       - type: tmpfs
-        target: /app/api/logs.sqlite
+        target: /app/api/logs
       - type: tmpfs
-        target: /app/api/input_fifo.feather
-      - type: tmpfs
-        target: /app/api/output_fifo.feather
+        target: /app/api/tmp
       # NOTE: dev/data will be included in the /app volume!
+    command: ["/bin/bash", "./entrypoint.sh"]
     tty: true
     stdin_open: true
-    entrypoint: ["/bin/bash","./entrypoint.sh"]
-  prometheus-local:
-    image: prom/prometheus
-    container_name: mlops-prometheus-local
-    volumes:
-      # By default, only store prometheus time series temporarily as they may contain sensitive data
-      # WARNING: Only edit if you know what you are doing!
-      - type: tmpfs 
-        target: /prometheus
-      # to store prometheus logs locally and persistently, use the following instead:
-      # - ./prometheus/prometheus/:/prometheus
-      # share volume on prometheus config file:
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-    ports: 
-      - 9090:9090
+    #command: /bin/sh -c "while sleep 1000; do :; done" 
+    
+  #prometheus-local:
+  #  image: prom/prometheus
+  #  container_name: mlops-prometheus-local
+  #  volumes:
+  #    # By default, only store prometheus time series temporarily as they may contain sensitive data
+  #    # WARNING: Only edit if you know what you are doing!
+  #    - type: tmpfs 
+  #      target: /prometheus
+  #    # to store prometheus logs locally and persistently, use the following instead:
+  #    # - ./prometheus/prometheus/:/prometheus
+  #    # share volume on prometheus config file:
+  #    - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+  #  ports: 
+  #    - 9090:9090

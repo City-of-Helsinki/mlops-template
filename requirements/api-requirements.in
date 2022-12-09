@@ -1,5 +1,5 @@
 # requirements for the API excluding ML
-fastapi
+fastapi[all]
 locust
 numpy
 pandas
@@ -9,4 +9,4 @@ pysqlite3
 sqlmodel
 starlette
 structlog
-uvicorn
+uvicorn[standard]

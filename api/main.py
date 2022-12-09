@@ -13,7 +13,9 @@ import secrets
 import sys
 
 # LOGGING
-logging.getLogger().addHandler(SQLiteLoggingHandler())
+logging.getLogger().addHandler(
+    SQLiteLoggingHandler(sqlite_file="logs/prediction_logs.sqlite")
+)
 logging.getLogger().setLevel(logging.INFO)
 
 try:
@@ -26,7 +28,7 @@ except KeyError:
 
 # LOCAL IMPORTS
 sys.path.append("../dev")
-from dev.model_util import (
+from model_util import (
     unpickle_bundle,
     ModelSchemaContainer,
     build_model_definition_from_dict,
@@ -109,19 +111,19 @@ response_value_type = type(
 # store inputs, outputs & processing data in temporal fifo queues
 input_drift = DriftMonitor(
     columns=schema_to_pandas_columns(model_and_schema.req_schema),
-    backup_file="input_fifo.feather",
+    backup_file="fifo_backups/input_fifo.feather",
     metrics_name_prefix="input_drift_",
     summary_statistics_function=distribution_summary_statistics,
 )
 
 output_drift = DriftMonitor(
     columns=schema_to_pandas_columns(model_and_schema.res_schema),
-    backup_file="output_fifo.feather",
+    backup_file="fifo_backups/output_fifo.feather",
     metrics_name_prefix="output_drift_",
     summary_statistics_function=categorical_summary_statistics,
 )
 
-processing_drift = RequestMonitor()
+processing_drift = RequestMonitor(backup_file="fifo_backups/processing_fifo.feather")
 # NOTE: if live-scoring, add separate DriftMonitor for model drift
 
 

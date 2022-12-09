@@ -37,3 +37,5 @@ ENV GIT_BRANCH $GIT_BRANCH
 ARG GIT_HEAD=unspecified
 LABEL git_head=$GIT_HEAD
 ENV GIT_HEAD $GIT_HEAD
+
+#ENTRYPOINT ["/bin/bash", "./entrypoint.sh"]

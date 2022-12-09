@@ -9,8 +9,10 @@
 	// Update the 'dockerFile' property if you aren't using the standard 'Dockerfile' filename.
 	// "dockerFile": "../Dockerfile",
 	"dockerComposeFile": [
-		"compose.yml"
+		"../compose.yml"
 	],
+
+	"workspaceFolder": "/app",
 
 	"service": "mlops",
 
@@ -18,10 +20,10 @@
 	"settings": {},
 	
 	// Add the IDs of extensions you want installed when the container is created.
-	"extensions": ["ms-python.python","ms-toolsai.jupyter", "ms-azuretools.vscode-docker"]
+	"extensions": ["ms-python.python","ms-toolsai.jupyter", "ms-azuretools.vscode-docker"],
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	// "forwardPorts": [],
+	"forwardPorts": [8000, 9090]
 
 	// Uncomment the next line to run commands after the container is created - for example installing curl.
 	// "postCreateCommand": "apt-get update && apt-get install -y curl",

@@ -873,14 +873,14 @@ class RequestMonitor(DriftMonitor):
     DriftMonitor wrapper for monitoring request & processing times
     """
 
-    def __init__(self, maxsize: int = 1000):
+    def __init__(self, backup_file="", maxsize: int = 1000):
         super().__init__(
             columns={
                 "processing_time_seconds": float,
                 "size_rows": int,
                 "mean_by_row_processing_time_seconds": float,
             },
-            backup_file="processing_fifo.feather",
+            backup_file=backup_file,
             metrics_name_prefix="predict_request_",
             summary_statistics_function=mean_max_summary_statistics,
             maxsize=maxsize,
@@ -929,7 +929,7 @@ def pass_api_version_to_prometheus():
     try:
         m.info({"branch": os.environ["GIT_BRANCH"], "head": os.environ["GIT_HEAD"]})
     except:
-        m.info({"branch": 'unspecified', "head": "unspecified"})
+        m.info({"branch": "unspecified", "head": "unspecified"})
     return m
 
 
