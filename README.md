@@ -1,5 +1,12 @@
-# mlops_fast_api_poc
+# ML Ops template
 
+# Prequisites
+
+ - Docker desctop 4.15.0 (93002)
+ - VSC 1.74.0
+ - VSC Dev Containers Extension v0.245.2 (latest version has issues with MacOS & M1)
+
+# old / edit: 
 This repository presents proof-of-concept for serving a machine learning model trough FastAPI rest api without coding.
 
 ## How to use
