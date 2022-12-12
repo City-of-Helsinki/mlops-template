@@ -1,18 +1,21 @@
 #/bin/bash
-MODE=${MODE:-dev}
+MODE=${MODE:-vsc}
 if [[ $MODE = api ]]
 then
+    # start api
     cd api
     uvicorn main:app --reload --reload-include *.pickle --host 0.0.0.0
 
-elif [[ $MODE = dev ]]
+elif [[ $MODE = vsc ]]
 then
+    # leave container running. default for working with vsc and codespaces.
     tail -f /dev/null
 
 elif [[ $MODE = jupyterlab ]]
 then
+    # work in jupyterlab
     jupyter-lab --allow-root --ip 0.0.0.0 --port 8888
     
 else
-    echo "unknown mode: "$MODE", use 'api', 'dev' or leave empty (defaults to 'dev')"
+    echo "unknown mode: "$MODE", use 'api', 'vsc' or leave empty (defaults to 'vsc')"
 fi
