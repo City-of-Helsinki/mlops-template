@@ -2,12 +2,9 @@
 black
 numpy
 matplotlib
-mlflow
 pandas
 papermill
 pip-tools
-pydantic
 scikit-learn
 scipy
 seaborn
- 
