@@ -17,24 +17,23 @@ services:
       - 8000:8000 # api
       - 8888:8888 # jupyterlab
     volumes:
+      # Mount current directory. NOTE: dev/data will be included in the /app volume!
       - ./:/app
-      # By default, use tmpfs memory for files that may store personal data.
+      # WARNING: By default, use tmpfs memory for files that may store personal data.
       # These files only persist for as long as the container runs. 
-      # WARNING: Only edit if you know what you are doing!
+      # Evaluate risks prior changing storage type!
       - type: tmpfs
         target: /app/local_data
-      # NOTE: dev/data will be included in the /app volume!
   prometheus-local:
     image: prom/prometheus
     container_name: mlops-prometheus-local
     volumes:
-      # By default, only store prometheus time series temporarily as they may contain sensitive data
-      # WARNING: Only edit if you know what you are doing!
-      - type: tmpfs 
-        target: /prometheus
-      # to store prometheus logs locally and persistently, use the following instead:
-      # - ./prometheus/prometheus/:/prometheus
-      # share volume on prometheus config file:
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      # prometheus configuration
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      # WARNING: Prometheus time series may store personal data!
+      # Select the data and aggregations (summary statistics) from api/metrics
+      # to be monitored carefully and handle the time series with care
+      # in order to avoid leaking sensitive information!
+      - ./monitoring/prometheus:/prometheus
     ports:
       - 9090:9090
