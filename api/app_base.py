@@ -68,7 +68,7 @@ DynamicApiResponse = model_store.response_schema_class
 response_value_field = model_store.response_value_field
 response_value_type = model_store.response_value_type
 
-processing_drift = RequestMonitor()
+processing_drift = RequestMonitor(backup_file="../local_data/processing_fifo.feather")
 
 input_drift = DriftMonitor(
     columns=model_store.request_columns,

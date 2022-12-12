@@ -22,11 +22,8 @@ services:
       # These files only persist for as long as the container runs. 
       # WARNING: Only edit if you know what you are doing!
       - type: tmpfs
-        target: /app/api/logs
-      - type: tmpfs
-        target: /app/api/fifo_backups
+        target: /app/local_data
       # NOTE: dev/data will be included in the /app volume!
-      #- ./local_data/:/local_data # TODO: make this tmpfs and use instead of logs & fifo_backups?
   prometheus-local:
     image: prom/prometheus
     container_name: mlops-prometheus-local
