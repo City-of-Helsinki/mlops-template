@@ -26,7 +26,7 @@ services:
       - type: tmpfs
         target: /app/api/fifo_backups
       # NOTE: dev/data will be included in the /app volume!
-    
+      #- ./local_data/:/local_data # TODO: make this tmpfs and use instead of logs & fifo_backups?
   prometheus-local:
     image: prom/prometheus
     container_name: mlops-prometheus-local
