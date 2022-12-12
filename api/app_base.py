@@ -1,10 +1,19 @@
 import logging
 import os
 import pathlib
-from model import ModelStore, MlFlowModelStore, PickleModelStore
 from log.sqlite_logging_handler import SQLiteLoggingHandler
 from metrics.prometheus_metrics import RequestMonitor, DriftMonitor, distribution_summary_statistics, \
     categorical_summary_statistics, pass_api_version_to_prometheus, record_metrics_from_dict
+
+# LOCAL IMPORTS
+sys.path.append("../model_store")
+from model_store.model_store import (
+    ModelStore, MlFlowModelStore, PickleModelStore
+)
+
+# to import custom ML model, wrappers, util etc. from for example ../dev/
+# sys.path.append("path/to/your_module")
+# from your_module import ... # to import custom ML model etc.
 
 
 LOG_DB = "sqlite:///../local_data/logs.sqlite"
