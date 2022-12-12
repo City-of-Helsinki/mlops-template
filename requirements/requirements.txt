@@ -1082,9 +1082,7 @@ mistune==2.0.4 \
 mlflow==2.0.1 \
     --hash=sha256:3c1e2f20f9a556b099d3b50e0cfdc4577e05c60ad11e5d5fae57122bb1dc7c06 \
     --hash=sha256:7ce6caf3c6acb022d6f5ce8a0995a92be1db524ae16aade1f83da661cdf993de
-    # via
-    #   -r model_store-requirements.in
-    #   -r requirements.in
+    # via -r model_store-requirements.in
 msgpack==1.0.4 \
     --hash=sha256:002b5c72b6cd9b4bafd790f364b8480e859b4712e91f43014fe01e4f957b8467 \
     --hash=sha256:0a68d3ac0104e2d3510de90a1091720157c319ceeb90d74f7b5295a6bee51bae \
@@ -1596,7 +1594,6 @@ pydantic==1.10.2 \
     --hash=sha256:e9069e1b01525a96e6ff49e25876d90d5a563bc31c658289a8772ae186552236
     # via
     #   -r model_store-requirements.in
-    #   -r requirements.in
     #   fastapi
     #   sqlmodel
 pygments==2.13.0 \
@@ -1850,6 +1847,7 @@ scikit-learn==1.2.0 \
     --hash=sha256:fc0a72237f0c56780cf550df87201a702d3bdcbbb23c6ef7d54c19326fa23f19 \
     --hash=sha256:fd3480c982b9e616b9f76ad8587804d3f4e91b4e2a6752e7dafb8a2e1f541098
     # via
+    #   -r model_store-requirements.in
     #   -r requirements.in
     #   mlflow
     #   shap

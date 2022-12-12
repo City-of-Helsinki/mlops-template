@@ -1,3 +1,4 @@
 # requirements for model store
 mlflow
 pydantic
+scikit-learn
