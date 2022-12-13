@@ -1,7 +1,6 @@
 *.bak
 .gitattributes
 .last_checked
-.gitconfig
 *.bak
 *.log
 *~
@@ -169,10 +168,6 @@ checklink/cookies.txt
 # workflow config
 workflow_setup.yml
 
-# Snakemake
-Snakefile
-.snakemake/
-
 # any scripts in the notebooks (see 03_workflow.ipynb)
 workflow.sh
 
@@ -181,6 +176,8 @@ workflow.sh
 # intermediate notebooks for Quarto processing
 _proc/
 
+# do not store data, logs or backups in git
+local_data/*
 
 .idea/
 /sqlite_logger_db.db
