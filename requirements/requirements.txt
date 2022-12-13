@@ -262,6 +262,10 @@ cffi==1.15.1 \
     --hash=sha256:fa6693661a4c91757f4412306191b6dc88c1703f780c8234035eac011922bc01 \
     --hash=sha256:fcd131dd944808b5bdb38e6f5b53013c5aa4f334c5cad0c72742f6eba4b73db0
     # via argon2-cffi-bindings
+cfgv==3.3.1 \
+    --hash=sha256:c6a0883f3917a037485059700b9e75da2464e6c27051014ad85ba6aaa5884426 \
+    --hash=sha256:f5a830efb9ce7a445376bb66ec94c638a9787422f96264c98edc6bdeed8ab736
+    # via pre-commit
 charset-normalizer==2.1.1 \
     --hash=sha256:5a3d016c7c547f69d6f81fb0db9449ce888b418b5b9952cc5e6e66843e9dd845 \
     --hash=sha256:83e9a75d1911279afd89352c68b45348559d1fc0506b054b346651b5e7fee29f
@@ -398,6 +402,10 @@ defusedxml==0.7.1 \
     --hash=sha256:1bb3032db185915b62d7c6209c5a8792be6a32ab2fedacc84e01b52c51aa3e69 \
     --hash=sha256:a352e7e428770286cc899e2542b6cdaedb2b4953ff269a210103ec58f6198a61
     # via nbconvert
+distlib==0.3.6 \
+    --hash=sha256:14bad2d9b04d3a36127ac97f30b12a19268f211063d8f8ee4f47108896e11b46 \
+    --hash=sha256:f35c4b692542ca110de7ef0bea44d73981caeb34ca0b9b6b2e6d7790dda8f80e
+    # via virtualenv
 dnspython==2.2.1 \
     --hash=sha256:0f7569a4a6ff151958b64304071d370daa3243d15941a7beedf0c9fe5105603e \
     --hash=sha256:a851e51367fb93e9e1361732c1d60dab63eff98712e503ea7d92e6eccb109b4f
@@ -440,6 +448,10 @@ fastjsonschema==2.16.2 \
     --hash=sha256:01e366f25d9047816fe3d288cbfc3e10541daf0af2044763f3d0ade42476da18 \
     --hash=sha256:21f918e8d9a1a4ba9c22e09574ba72267a6762d47822db9add95f6454e51cc1c
     # via nbformat
+filelock==3.8.2 \
+    --hash=sha256:7565f628ea56bfcd8e54e42bdc55da899c85c1abfe1b5bcfd147e9188cebb3b2 \
+    --hash=sha256:8df285554452285f79c035efb0c861eb33a4bcfa5b7a137016e32e6a90f9792c
+    # via virtualenv
 flask==2.2.2 \
     --hash=sha256:642c450d19c4ad482f96729bd2a8f6d32554aa1e231f4f6b4e7e5264b16cca2b \
     --hash=sha256:b9c46cc36662a7949f34b52d8ec7bb59c0d74ba08ba6cb9ce9adc1d8676d9526
@@ -736,6 +748,10 @@ httpx==0.23.1 \
     --hash=sha256:0b9b1f0ee18b9978d637b0776bfd7f54e2ca278e063e3586d8f01cda89e042a8 \
     --hash=sha256:202ae15319be24efe9a8bd4ed4360e68fde7b38bcc2ce87088d416f026667d19
     # via fastapi
+identify==2.5.9 \
+    --hash=sha256:906036344ca769539610436e40a684e170c3648b552194980bb7b617a8daeb9f \
+    --hash=sha256:a390fb696e164dbddb047a0db26e57972ae52fbd037ae68797e5ae2f4492485d
+    # via pre-commit
 idna==3.4 \
     --hash=sha256:814f528e8dead7d329833b91c5faa87d60bf71824cd12a7530b5526063d02cb4 \
     --hash=sha256:90b77e79eaa3eba6de819a0c442c0b4ceefc341a7a2ab77d7562bf49f425c5c2
@@ -1185,6 +1201,10 @@ nest-asyncio==1.5.6 \
     #   jupyter-client
     #   nbclassic
     #   notebook
+nodeenv==1.7.0 \
+    --hash=sha256:27083a7b96a25f2f5e1d8cb4b6317ee8aeda3bdd121394e5ac54e498028a042e \
+    --hash=sha256:e0e7f7dfb85fc5394c6fe1e8fa98131a2473e04311a45afb6508f7cf1836fa2b
+    # via pre-commit
 notebook==6.5.2 \
     --hash=sha256:c1897e5317e225fc78b45549a6ab4b668e4c996fd03a04e938fe5e7af2bfffd0 \
     --hash=sha256:e04f9018ceb86e4fa841e92ea8fb214f8d23c1cedfde530cc96f92446924f0e4
@@ -1466,6 +1486,11 @@ platformdirs==2.6.0 \
     # via
     #   black
     #   jupyter-core
+    #   virtualenv
+pre-commit==2.20.0 \
+    --hash=sha256:51a5ba7c480ae8072ecdb6933df22d2f812dc897d5fe848778116129a681aac7 \
+    --hash=sha256:a978dac7bc9ec0bcee55c18a277d553b0f419d259dadb4b9418ff2d00eb43959
+    # via -r dev-requirements.in
 prometheus-client==0.15.0 \
     --hash=sha256:be26aa452490cfcf6da953f9436e95a9f2b4d578ca80094b4458930e5f584ab1 \
     --hash=sha256:db7c05cbd13a0f79975592d112320f2605a325969b270a94b71dcabc47b931d2
@@ -1712,6 +1737,7 @@ pyyaml==6.0 \
     #   mlflow
     #   nbdev
     #   papermill
+    #   pre-commit
     #   uvicorn
 pyzmq==24.0.1 \
     --hash=sha256:0108358dab8c6b27ff6b985c2af4b12665c1bc659648284153ee501000f5c107 \
@@ -2050,6 +2076,10 @@ tinycss2==1.2.1 \
     --hash=sha256:2b80a96d41e7c3914b8cda8bc7f705a4d9c49275616e886103dd839dfc847847 \
     --hash=sha256:8cff3a8f066c2ec677c06dbc7b45619804a6938478d9d73c284b29d14ecb0627
     # via nbconvert
+toml==0.10.2 \
+    --hash=sha256:806143ae5bfb6a3c6e736a764057db0e6a0e05e338b5630894a5f779cabb4f9b \
+    --hash=sha256:b3bda1d108d5dd99f4a20d24d9c348e91c4db7ab1b749200bded2f839ccbe68f
+    # via pre-commit
 tomli==2.0.1 \
     --hash=sha256:939de3e7a6161af0c887ef91b7d41a53e7c5a1ca976325f429cb46ea9bc30ecc \
     --hash=sha256:de526c12914f0c550d15924c62d72abc48d6fe7364aa87328337a31007fe8a4f
@@ -2084,9 +2114,9 @@ tqdm==4.64.1 \
     # via
     #   papermill
     #   shap
-traitlets==5.7.0 \
-    --hash=sha256:61832ea7b7f910f5745e27e9bb269a181fd15af76027d99560299209d5b17c94 \
-    --hash=sha256:bd0fca5c890a09bf66b33cce67ca14156b080429bc39c7ef26b075a4bd4f9fc3
+traitlets==5.7.1 \
+    --hash=sha256:57ba2ba951632eeab9388fa45f342a5402060a5cc9f0bb942f760fafb6641581 \
+    --hash=sha256:fde8f62c05204ead43c2c1b9389cfc85befa7f54acb5da28529d671175bb4108
     # via
     #   comm
     #   ipykernel
@@ -2223,6 +2253,10 @@ uvloop==0.17.0 \
     --hash=sha256:f1e507c9ee39c61bfddd79714e4f85900656db1aec4d40c6de55648e85c2799c \
     --hash=sha256:ff3d00b70ce95adce264462c930fbaecb29718ba6563db354608f37e49e09024
     # via uvicorn
+virtualenv==20.17.1 \
+    --hash=sha256:ce3b1684d6e1a20a3e5ed36795a97dfc6af29bc3970ca8dab93e11ac6094b3c4 \
+    --hash=sha256:f8b927684efc6f1cc206c9db297a570ab9ad0e51c16fa9e45487d36d1905c058
+    # via pre-commit
 watchdog==2.2.0 \
     --hash=sha256:1893d425ef4fb4f129ee8ef72226836619c2950dd0559bba022b0818c63a7b60 \
     --hash=sha256:1a410dd4d0adcc86b4c71d1317ba2ea2c92babaf5b83321e4bde2514525544d5 \
@@ -2437,6 +2471,7 @@ setuptools==65.6.3 \
     # via
     #   gevent
     #   gunicorn
+    #   nodeenv
     #   numba
     #   pip-tools
     #   zope-event
