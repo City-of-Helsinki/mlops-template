@@ -172,6 +172,7 @@ workflow_setup.yml
 workflow.sh
 
 /.quarto/
+*.deb
 
 # intermediate notebooks for Quarto processing
 _proc/

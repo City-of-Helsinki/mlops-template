@@ -2,8 +2,15 @@ website:
   sidebar:
     contents:
       - index.ipynb
-      - 00_data.ipynb
-      - 01_model.ipynb
-      - 02_loss.ipynb
+      - 00_data_etl.ipynb
+      - 01_model_class.ipynb
+      - 02_train_test_validate.ipynb
       - 03_workflow.ipynb
-      - 04_api.ipynb
+      - section: docs
+        contents:
+          - docs/index.html
+          - docs/api.html
+          - docs/data.html
+          - docs/loss.html
+          - docs/model.html
+          - docs/workflow.html
