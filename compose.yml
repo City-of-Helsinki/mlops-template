@@ -30,7 +30,7 @@ services:
       - |
         # To avoid git complaining about file being removed because of tmpfs
         # mount: (see https://github.com/moby/moby/issues/27068)
-        echo $'*\n!.gitignore\n' > local_data/.gitignore
+        echo $'*\n' > local_data/.gitignore
         # Run entrypoint script
         ./entrypoint.sh
   prometheus-local:
