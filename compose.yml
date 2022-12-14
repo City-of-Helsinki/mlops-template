@@ -24,6 +24,15 @@ services:
       # Evaluate risks prior changing storage type!
       - type: tmpfs
         target: /app/local_data
+    entrypoint:
+      - /bin/bash
+      - -c
+      - |
+        # To avoid git complaining about file being removed because of tmpfs
+        # mount: (see https://github.com/moby/moby/issues/27068)
+        echo $'*\n!.gitignore\n' > local_data/.gitignore
+        # Run entrypoint script
+        ./entrypoint.sh
   prometheus-local:
     image: prom/prometheus
     container_name: mlops-prometheus-local
