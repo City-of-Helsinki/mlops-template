@@ -1,23 +1,63 @@
 # ML Ops template
 
-# Prequisites
+## Creating a new repo from this template
+
+(add link to github instructions)
+
+## How to work with the template:
+
+The template assumes working within a Docker container. Local install may work but is not recommended.
+
+### Codespaces:
+
+Launch codespaces on your repository. For further configuration, edit `.devcontainer/devcontainer.json`
+
+### Local:
+
+Start by cloning your repository.
+The template has three modes: two for development `vsc` and `jupyterlab` and one for running the `api`. The mode is given to Docker as an environment variable `MODE`.
+
+#### VSC:
+
+Install VSC and Dev Containers Extension. When you open your repository in VSC, it automatically detects `.devcontainer/devcontianer.json` and suggests opening the repository in a container. Alternatively, press `cmd/ctrl shift P`, type `Remote-Container: Rebuild and Reopen in Container` and press enter. VSC builds the container and attaches to it. 
+
+#### Jupyterlab:
+
+The template installs jupyterlab within the container. To work in JupyterLab, run `MODE=jupyterlab docker-compose up`. The container starts JupyterLab. To access jupyterlab, copy the address from the terminal to your browser. 
+
+#### Working offline:
+
+0. Clone your repo on a network connected device or use codespaces.
+1. Add required python packages to `requirements/requirements.in`.
+2. Build the image, and within the `requirements` folder run the script `./update_requirements.sh`. 
+3. Rebuild the image.
+4. Pull the image and transfer it to the offline device. The offline device must have Docker installed. 
+5. Run container in jupyterlab mode for development. 
+
+### Running the API:
+
+To start the api as the container entrypoint, run `MODE=api docker-compose up`. This starts the API and leaves the container running. 
+
+To develop interactively with the API running, you may start the API from within your VSC / jupyterlab terminal by running `uvicorn main:app --reload --reload-include *.pickle --host 0.0.0.0` within the api folder. 
+
+## Prequisites
 
 The template was developed and tested with:
 
  - GitHub Codespaces
 
-and
-
-  with Apple MacBook Pro M1 & macOS Ventura 13.0
+and MacBook Pro M1 & macOS Ventura 13.0 with:
 
  - Docker desctop 4.15.0 (93002)
  - VSC 1.74.0
  - VSC Dev Containers Extension v0.245.2
 
-# Known Issues:
+Additional configuration may be required for other systems.
 
- - nbdev_clean git hook may remove 'parameters' tag from notebook cells, even though it is marked as an allowed key in settings.ini. The tag may need to be re-added manually.
- - nbdev documentation related functions may not work out-of-box with arm64 machines such as M1 macbooks because the container installs amd64 quarto
+## Known issues:
+
+ - nbdev_clean git hook may remove 'parameters' tag from notebook cells, even though it should be an allowed key as it is listed in settings.ini. The tag may need to be re-added manually to allow notebook parameterization with papermill.
+ - nbdev documentation related functions may not work out-of-box with arm64 machines such as M1 macbooks because the container installs amd64 version of Quarto.
 
 # old / edit: 
 This repository presents proof-of-concept for serving a machine learning model trough FastAPI rest api without coding.
