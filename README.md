@@ -2,12 +2,22 @@
 
 # Prequisites
 
+The template was developed and tested with:
+
+ - GitHub Codespaces
+
+and
+
+  with Apple MacBook Pro M1 & macOS Ventura 13.0
+
  - Docker desctop 4.15.0 (93002)
-
-If you prefer developing with VSC:
-
  - VSC 1.74.0
- - VSC Dev Containers Extension v0.245.2 (latest version has issues with MacOS & M1)
+ - VSC Dev Containers Extension v0.245.2
+
+# Known Issues:
+
+ - nbdev_clean git hook may remove 'parameters' tag from notebook cells, even though it is marked as an allowed key in settings.ini. The tag may need to be re-added manually.
+ - nbdev documentation related functions may not work out-of-box with arm64 machines such as M1 macbooks because the container installs amd64 quarto
 
 # old / edit: 
 This repository presents proof-of-concept for serving a machine learning model trough FastAPI rest api without coding.
