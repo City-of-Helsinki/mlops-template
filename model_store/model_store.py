@@ -2,6 +2,9 @@ from abc import abstractmethod
 
 
 class ModelStore:
+    """
+    Base class for model store
+    """
     model = None
     train_metrics = None
     request_schema_class = None

@@ -7,10 +7,13 @@ from metrics.prometheus_metrics import RequestMonitor, DriftMonitor, distributio
 import sys
 
 # LOCAL IMPORTS
-sys.path.append("../model_store")
+current = os.path.dirname(os.path.realpath(__file__))
+parent_directory = os.path.dirname(current)
+sys.path.append(parent_directory)
 from model_store import (
     ModelStore, MlFlowModelStore, PickleModelStore
 )
+
 
 # to import custom ML model, wrappers, util etc. use:
 # sys.path.append("../ml_pipe")
