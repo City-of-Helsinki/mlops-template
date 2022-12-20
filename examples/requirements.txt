@@ -1,5 +1,0 @@
-jupyterlab
-notebook
-pandas
-sklearn
-mlflow
