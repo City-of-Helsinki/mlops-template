@@ -1,5 +1,7 @@
 # ML Ops template
 
+> Generic template for machine learning ETL & model pipelines, model store, API, monitoring & logging.
+
 ## Creating a new repo from this template
 
 (add link to github instructions)
@@ -38,7 +40,19 @@ The template installs jupyterlab within the container. To work in JupyterLab, ru
 
 To start the api as the container entrypoint, run `MODE=api docker-compose up`. This starts the API and leaves the container running. 
 
-To develop interactively with the API running, you may start the API from within your VSC / jupyterlab terminal by running `uvicorn main:app --reload --reload-include *.pickle --host 0.0.0.0` within the api folder. 
+To develop interactively with the API running, you may start the API from within your VSC / jupyterlab terminal by running `uvicorn main:app --reload --reload-include *.pickle --host 0.0.0.0` within the api folder of the container.
+
+## Requirements & dependency management
+
+The template uses [pip-tools](https://pypi.org/project/pip-tools/) for calculating dependencies.
+Requirements are listed in `*.in` files inside the `requirements/` folder. They are separated in four files:
+`api` is for API, `dev` is for developer tools, `model_store` for model store and basic `requirements.in` for everything else. In normal use you should only need to edit `requirements.in`. 
+
+To update requirements, run `./update_requirements.sh` INSIDE the `requirements/` folder.
+
+Install new requirements with `pip install -r requirements/requirements.txt` or by rebuilding the container.
+
+DO NOT edit `requirements.txt` as is. 
 
 ## Prequisites
 
