@@ -1,6 +1,6 @@
 # ML Ops template
 
-> Generic template for machine learning ETL & model pipelines, model store, API, monitoring & logging.
+> Generic template for ETL & machine learning pipelines, model store, API, monitoring & logging.
 
 ## Creating a new repo from this template
 
@@ -8,33 +8,34 @@
 
 ## How to work with the template:
 
-The template assumes working within a Docker container. Local install may work but is not recommended.
+The template assumes working within a Docker container. Non-container install may work but is not recommended.
 
-### Codespaces:
+### Option 1: Codespaces
 
 Launch codespaces on your repository. For further configuration, edit `.devcontainer/devcontainer.json`
 
-### Local:
+### Option 2: Local
 
 Start by cloning your repository.
-The template has three modes: two for development `vsc` and `jupyterlab` and one for running the `api`. The mode is given to Docker as an environment variable `MODE`.
+
+The template has three modes: two for development `vsc` (default) and `jupyterlab` and one for running the `api`. The mode is given to Docker as an environment variable `MODE`.
 
 #### VSC:
 
 Install VSC and Dev Containers Extension. When you open your repository in VSC, it automatically detects `.devcontainer/devcontianer.json` and suggests opening the repository in a container. Alternatively, press `cmd/ctrl shift P`, type `Remote-Container: Rebuild and Reopen in Container` and press enter. VSC builds the container and attaches to it. 
 
-#### Jupyterlab:
+#### JupyterLab:
 
-The template installs jupyterlab within the container. To work in JupyterLab, run `MODE=jupyterlab docker-compose up`. The container starts JupyterLab. To access jupyterlab, copy the address from the terminal to your browser. 
+The template installs JupyterLab within the container. To work in JupyterLab, run `MODE=jupyterlab docker-compose up`. The container starts JupyterLab. To access jupyterlab, copy the address from the terminal to your browser. 
 
-#### Working offline:
+#### Working offline with JupyterLab:
 
 0. Clone your repo on a network connected device or use codespaces.
 1. Add required python packages to `requirements/requirements.in`.
 2. Build the image, and within the `requirements` folder run the script `./update_requirements.sh`. 
 3. Rebuild the image.
 4. Pull the image and transfer it to the offline device. The offline device must have Docker installed. 
-5. Run container in jupyterlab mode for development. 
+5. Start container in the jupyterlab mode (see above).
 
 ### Running the API:
 
@@ -48,11 +49,10 @@ The template uses [pip-tools](https://pypi.org/project/pip-tools/) for calculati
 Requirements are listed in `*.in` files inside the `requirements/` folder. They are separated in four files:
 `api` is for API, `dev` is for developer tools, `model_store` for model store and basic `requirements.in` for everything else. In normal use you should only need to edit `requirements.in`. 
 
-To update requirements, run `./update_requirements.sh` INSIDE the `requirements/` folder.
+To update `requirements.txt`, run `./update_requirements.sh` INSIDE the `requirements/` folder.
 
 Install new requirements with `pip install -r requirements/requirements.txt` or by rebuilding the container.
-
-DO NOT edit `requirements.txt` as is. 
+ 
 
 ## Prequisites
 
