@@ -53,8 +53,10 @@ if "mlflow" == model_store_impl:
         tracking_uri="file:../local_data/mlruns",
         registry_uri="sqlite:///../local_data/mlflow.sqlite",
     )
-else:
+elif "pickle" == model_store_impl:
     model_store: ModelStore = PickleModelStore(bundle_uri=MODEL_PATH)
+else:
+    raise ValueError(f"Unknown MODEL_STORE value: {model_store_impl}")
 
 # ML model
 model = model_store.model
