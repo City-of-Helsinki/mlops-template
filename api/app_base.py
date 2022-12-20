@@ -6,6 +6,8 @@ from metrics.prometheus_metrics import RequestMonitor, DriftMonitor, distributio
     categorical_summary_statistics, pass_api_version_to_prometheus, record_metrics_from_dict
 import sys
 
+
+
 # LOCAL IMPORTS
 current = os.path.dirname(os.path.realpath(__file__))
 parent_directory = os.path.dirname(current)
@@ -14,10 +16,8 @@ from model_store import (
     ModelStore, MlFlowModelStore, PickleModelStore
 )
 
-
-# to import custom ML model, wrappers, util etc. use:
-# sys.path.append("../ml_pipe")
-# from ml_pipe import
+# Do other local imports in similar manner if needed, i.e. 
+# from ml_pipe import your_module
 
 
 LOG_DB = "sqlite:///../local_data/logs.sqlite"
