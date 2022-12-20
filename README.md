@@ -1,6 +1,6 @@
 # ML Ops template
 
-> Generic template for ETL & machine learning pipelines, model store, API, monitoring & logging.
+> Generic template for ETL & machine learning pipelines, model store, API, monitoring & logging - all in one container. 
 
 ## Creating a new repo from this template
 
@@ -18,7 +18,7 @@ Launch codespaces on your repository. For further configuration, edit `.devconta
 
 Start by cloning your repository.
 
-The template has three modes: two for development `vsc` (default) and `jupyterlab` and one for running the `api`. The mode is given to Docker as an environment variable `MODE`.
+The template has three modes: two for development `vsc` (default) and `jupyterlab`, and one for running the `api`. The mode is given to Docker as an environment variable `MODE`.
 
 #### VSC:
 
