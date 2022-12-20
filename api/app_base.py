@@ -2,26 +2,29 @@ import logging
 import os
 import pathlib
 from log.sqlite_logging_handler import SQLiteLoggingHandler
-from metrics.prometheus_metrics import RequestMonitor, DriftMonitor, distribution_summary_statistics, \
-    categorical_summary_statistics, pass_api_version_to_prometheus, record_metrics_from_dict
+from metrics.prometheus_metrics import (
+    RequestMonitor,
+    DriftMonitor,
+    distribution_summary_statistics,
+    categorical_summary_statistics,
+    pass_api_version_to_prometheus,
+    record_metrics_from_dict,
+)
 import sys
-
 
 
 # LOCAL IMPORTS
 current = os.path.dirname(os.path.realpath(__file__))
 parent_directory = os.path.dirname(current)
 sys.path.append(parent_directory)
-from model_store import (
-    ModelStore, MlFlowModelStore, PickleModelStore
-)
+from model_store import ModelStore, MlFlowModelStore, PickleModelStore
 
-# Do other local imports in similar manner if needed, i.e. 
+# Do other local imports in similar manner if needed, i.e.
 # from ml_pipe import your_module
 
 
 LOG_DB = "sqlite:///../local_data/logs.sqlite"
-BUNDLE = os.getenv('BUNDLE', '../local_data/bundle_latest.pickle')
+BUNDLE = os.getenv("BUNDLE", "../local_data/bundle_latest.pickle")
 CONTEXT_PATH = pathlib.Path(__file__).parent.resolve()
 MODEL_PATH = str(CONTEXT_PATH.joinpath(BUNDLE))
 
@@ -43,10 +46,13 @@ except KeyError:
     setting_log_predictions = False
 
 # Load model and schema definitions & train/val workflow metrics from model store
-model_store_impl = str(os.getenv("MODEL_STORE", '').lower())
+model_store_impl = str(os.getenv("MODEL_STORE", "").lower())
 logging.info(f"Configured model store: {model_store_impl}")
 if "mlflow" == model_store_impl:
-    model_store: ModelStore = MlFlowModelStore(tracking_uri='file:../local_data/mlruns', registry_uri='sqlite:///../local_data/mlflow.sqlite')
+    model_store: ModelStore = MlFlowModelStore(
+        tracking_uri="file:../local_data/mlruns",
+        registry_uri="sqlite:///../local_data/mlflow.sqlite",
+    )
 else:
     model_store: ModelStore = PickleModelStore(bundle_uri=MODEL_PATH)
 
@@ -86,5 +92,3 @@ output_drift = DriftMonitor(
     metrics_name_prefix="output_drift_",
     summary_statistics_function=categorical_summary_statistics,
 )
-
-

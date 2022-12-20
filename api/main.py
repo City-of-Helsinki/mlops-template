@@ -8,8 +8,17 @@ from fastapi.params import Depends
 from fastapi.responses import HTMLResponse
 from starlette.middleware.cors import CORSMiddleware
 
-from app_base import input_drift, output_drift, processing_drift, DynamicApiResponse, DynamicApiRequest, model, \
-    setting_log_predictions, response_value_type, response_value_field
+from app_base import (
+    input_drift,
+    output_drift,
+    processing_drift,
+    DynamicApiResponse,
+    DynamicApiRequest,
+    model,
+    setting_log_predictions,
+    response_value_type,
+    response_value_field,
+)
 from metrics.prometheus_metrics import monitor_output, monitor_input, generate_metrics
 from security.http_basic import dummy_http_auth
 
@@ -71,4 +80,3 @@ def predict(p_list: List[DynamicApiRequest]):
 if __name__ == "__main__":
     # logging.info(f"Example post data: {json.dumps(DynamicApiRequest())}")
     uvicorn.run(app, host="0.0.0.0", port=8000)
-

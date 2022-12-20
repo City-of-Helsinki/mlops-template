@@ -50,7 +50,7 @@ dtypes_x = [{"name": c, "type": X[c].dtype.type} for c in X.columns]
 dtypes_y = [{"name": y.name, "type": y.dtype.type}]
 
 CONTEXT_PATH = pathlib.Path(__file__).parent.resolve()
-MODEL_PATH = str(CONTEXT_PATH.joinpath(f'local_data/bundle_latest.pickle'))
+MODEL_PATH = str(CONTEXT_PATH.joinpath(f"local_data/bundle_latest.pickle"))
 
 # Pickle all in single file
 model_store = PickleModelStore(bundle_uri=MODEL_PATH)
@@ -59,6 +59,8 @@ print(f"Persisted model to {MODEL_PATH}")
 
 # OR use env variable export MLFLOW_TRACKING_URI=sqlite:////mlflow.sqlite
 model_name = "model"
-mlflow.set_tracking_uri('sqlite:///mlflow.sqlite')
+mlflow.set_tracking_uri("sqlite:///mlflow.sqlite")
 signature = infer_signature(X_train, y_pred)
-mlflow.sklearn.log_model(classifier, model_name, signature=signature, registered_model_name=model_name)
+mlflow.sklearn.log_model(
+    classifier, model_name, signature=signature, registered_model_name=model_name
+)
