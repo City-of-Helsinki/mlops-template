@@ -54,7 +54,7 @@ if "mlflow" == model_store_impl:
         registry_uri="sqlite:///../local_data/mlflow.sqlite",
     )
 elif "pickle" == model_store_impl:
-    model_store: ModelStore = PickleModelStore(bundle_uri=MODEL_PATH)
+    model_store: ModelStore = PickleModelStore(bundle_uri=MODEL_PATH).load_bundle()
 else:
     raise ValueError(f"Unknown MODEL_STORE value: {model_store_impl}")
 
