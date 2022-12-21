@@ -26,7 +26,7 @@ class PickleModelStore(ModelStore):
         self.bundle_uri = bundle_uri
 
     def persist(self, classifier, param, dtypes_x, dtypes_y, metrics_parsed):
-        self.__pickle_bundle(classifier, param, dtypes_x, dtypes_y, metrics_parsed)
+        return self.__pickle_bundle(classifier, param, dtypes_x, dtypes_y, metrics_parsed)
 
     def get_model(self) -> BaseEstimator:
         if not self.model:
@@ -91,7 +91,6 @@ class PickleModelStore(ModelStore):
             logging.info(f"Persisted model to file  {bundle_uri}")
         except FileNotFoundError as nfe:
             logging.warning(f"Cannot write to file: {bundle_uri}", nfe)
-            return None
 
     @staticmethod
     def __build_model_definition_from_dict(column_types: List[dict]):
