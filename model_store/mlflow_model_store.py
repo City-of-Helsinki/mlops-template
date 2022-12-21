@@ -108,7 +108,7 @@ class MlFlowModelStore(ModelStore):
             class_name, **self.__build_model_definition_from_dict(column_definitions)
         )
 
-    def persist(self, classifier, param, dtypes_x, dtypes_y, metrics_parsed):
+    def persist(self, classifier, dtypes_x, dtypes_y, metrics_parsed):
         pass
 
     @staticmethod

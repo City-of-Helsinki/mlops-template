@@ -25,8 +25,8 @@ class PickleModelStore(ModelStore):
     def __init__(self, bundle_uri="local_data/bundle_latest.pickle"):
         self.bundle_uri = bundle_uri
 
-    def persist(self, classifier, param, dtypes_x, dtypes_y, metrics_parsed):
-        return self.__pickle_bundle(classifier, param, dtypes_x, dtypes_y, metrics_parsed)
+    def persist(self, classifier, dtypes_x, dtypes_y, metrics_parsed):
+        return self.__pickle_bundle(classifier, dtypes_x, dtypes_y, metrics_parsed)
 
     def get_model(self) -> BaseEstimator:
         if not self.model:
@@ -72,25 +72,24 @@ class PickleModelStore(ModelStore):
             logging.warning(f"File not found {bundle_uri}", nfe)
             return None
 
-    @staticmethod
     def __pickle_bundle(
+        self,
         model: BaseEstimator,
-        bundle_uri: str,
         schema_x=None,
         schema_y=None,
         metrics: str = None,
     ):
         try:
-            with open(bundle_uri, "wb") as f:
+            with open(self.bundle_uri, "wb") as f:
                 container: ModelSchemaContainer = ModelSchemaContainer()
                 container.model = model
                 container.req_schema = schema_x
                 container.res_schema = schema_y
                 container.metrics = metrics
                 pickle.dump(container, f, protocol=pickle.HIGHEST_PROTOCOL)
-            logging.info(f"Persisted model to file  {bundle_uri}")
+            logging.info(f"Persisted model to file  {self.bundle_uri}")
         except FileNotFoundError as nfe:
-            logging.warning(f"Cannot write to file: {bundle_uri}", nfe)
+            logging.warning(f"Cannot write to file: {self.bundle_uri}", nfe)
 
     @staticmethod
     def __build_model_definition_from_dict(column_types: List[dict]):

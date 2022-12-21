@@ -16,5 +16,5 @@ class ModelStore:
     response_value_field = None
 
     @abstractmethod
-    def persist(self, classifier, param, dtypes_x, dtypes_y, metrics_parsed):
+    def persist(self, classifier, dtypes_x, dtypes_y, metrics_parsed):
         pass
