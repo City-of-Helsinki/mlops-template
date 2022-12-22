@@ -36,7 +36,7 @@ def http_auth_metrics(credentials: HTTPBasicCredentials = Depends(security)):
 
 
 def http_auth_predict(credentials: HTTPBasicCredentials = Depends(security)):
-    correct_username_bytes = os.getenv("PREDICS_USERNAME", "").encode("utf8")
+    correct_username_bytes = os.getenv("PREDICT_USERNAME", "").encode("utf8")
     correct_password_bytes = os.getenv("PREDICT_PASSWORD", "").encode("utf8")
 
     current_username_bytes = credentials.username.encode("utf8")
