@@ -4,8 +4,7 @@ from http.client import HTTPException
 from fastapi import Depends
 from fastapi.security import (
     HTTPBasic,
-    HTTPBasicCredentials,
-    HTTPAuthorizationCredentials,
+    HTTPBasicCredentials
 )
 from starlette import status
 import os
