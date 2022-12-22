@@ -1,12 +1,14 @@
 # ML Ops template
 
-> Generic template for ETL & machine learning pipelines, model store, API, monitoring & logging - all in one container. 
+> Generic ML Ops template for small scale ML. Create ETL & machine learning pipelines, model store, API, monitoring & logging - all in one container, with minimum setup required! 
 
 ## Creating a new repo from this template
 
-(add link to github instructions)
+For your project, create new repo from this template ([see GitHub instructions](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template)). Commit history will be cleaned and the authors won't have access to your new repository (although sharing your work is encouraged).
 
-## How to work with the template:
+> Note: updates to the template can not be automatically synced to child projects!
+
+## Working with the template:
 
 The template assumes working within a Docker container. Non-container install may work but is not recommended.
 
@@ -43,7 +45,7 @@ To start the api as the container entrypoint, run `MODE=api docker-compose up`. 
 
 To develop interactively with the API running, you may start the API from within your VSC / jupyterlab terminal by running `uvicorn main:app --reload --reload-include *.pickle --host 0.0.0.0` within the api folder of the container.
 
-## Requirements & dependency management
+## Managing requirements & dependencies
 
 The template uses [pip-tools](https://pypi.org/project/pip-tools/) for calculating dependencies.
 Requirements are listed in `*.in` files inside the `requirements/` folder. They are separated in four files:
@@ -53,6 +55,61 @@ To update `requirements.txt`, run `./update_requirements.sh` INSIDE the `require
 
 Install new requirements with `pip install -r requirements/requirements.txt` or by rebuilding the container.
  
+
+## Examples
+
+The `examples/` folder contains simplified examples on how to create, train, evaluate and deploy a ML model to model store. There are two notebooks due to two alternatives for the model store. You can try out the API by first running an example notebook
+
+0. Runnin an example notebook.
+1. Running the API with corresponding model store env. 
+2. Prediction API is available: http://127.0.0.1:8000/predict
+3. Automatically generated online api documentation is available at: http://127.0.0.1:8000/docs
+4. Real time metrics are available at: http://127.0.0.1:8000/metrics and at the built-in example Prometheus server at http://127.0.0.1:9090
+
+To pass git version info to container, run with `GIT_BRANCH="$(git symbolic-ref -q --short HEAD)" GIT_HEAD="$(git rev-parse --short HEAD)" docker-compose up`
+this adds the version to container labels and passes it on to prometheus.
+
+Example of an api predict request:
+
+    curl -X 'POST' \
+      'http://127.0.0.1:8000/predict' \
+      -H 'accept: application/json' \
+      -H 'Content-Type: application/json' \
+      -c ':' \
+      -d '[
+      {
+        "sepal_length": 6.7,
+        "sepal_width": 3.5,
+        "petal_length": 5.2,
+        "petal_width": 2.3
+      },
+      {
+        "sepal_length": 6.6,
+        "sepal_width": 3,
+        "petal_length": 4.4,
+        "petal_width": 1.4
+      }
+    ]'
+
+
+### Locust load testing
+
+Run:
+
+    locust -f locustfile.py -H http://127.0.0.1:8000
+
+Then open http://127.0.0.1:8000 in browser
+
+Change log_mode in main.py to test how logging method affects to troughput.
+
+Locust settings:  Users 1000 spawn rate: 100
+
+
+### About logging
+
+Copies of the ml pipe notebooks are saved in `local_data/` automatically when executed through the workflow notebook. In addition to versioning of individual pipeline runs, these act as log. However, if you use ML Flow, more options for experiment tracking are available.
+
+For the API, there are now two different ways to log structured data introduced. Standard logger provides easy way to transfer structured data to sqlite. From structured format it is easy to load data back to dataframe from log database. Structlog offers nice way to persist structured data as json.
 
 ## Prequisites
 
@@ -72,75 +129,3 @@ Additional configuration may be required for other systems.
 
  - nbdev_clean git hook may remove 'parameters' tag from notebook cells, even though it should be an allowed key as it is listed in settings.ini. The tag may need to be re-added manually to allow notebook parameterization with papermill.
  - nbdev documentation related functions may not work out-of-box with arm64 machines such as M1 macbooks because the container installs amd64 version of Quarto.
-
-# old / edit: 
-This repository presents proof-of-concept for serving a machine learning model trough FastAPI rest api without coding.
-
-## How to use
-
-0. Run `example_build_model.py`
-1. Run server: `uvicorn main:app --reload   --reload-include *.pickle` 
-2. Prediction api is available: http://127.0.0.1:8000/predict
-3. Automatically generated online api documentation is available at: http://127.0.0.1:8000/docs
-
-or via Docker:
-
-0. Run `docker-compose build`
-1. Run `docker-compose up`
-2.-3. as above
-4. To shut down run `docker-compose down`
-
-To pass git version info to api container, run with `GIT_BRANCH="$(git symbolic-ref -q --short HEAD)" GIT_HEAD="$(git rev-parse --short HEAD)" docker-compose up --build`
-this adds the version to container labels and passes it on to prometheus.
-
-Run tests with 'docker exec mlops-fastapi-api python -m unittest test_metrics.py'
-
-## Api documentation
-
-Swagger online documentation is available at: http://127.0.0.1:8000/docs
-
-Test request using example model:
-
-    curl -X 'POST' \
-      'http://127.0.0.1:8000/predict' \
-      -H 'accept: application/json' \
-      -H 'Content-Type: application/json' \
-      -d '[
-      {
-        "sepal_length": 6.7,
-        "sepal_width": 3.5,
-        "petal_length": 5.2,
-        "petal_width": 2.3
-      },
-      {
-        "sepal_length": 6.6,
-        "sepal_width": 3,
-        "petal_length": 4.4,
-        "petal_width": 1.4
-      }
-    ]'
-
-### Startup development api server
-
-     uvicorn main:app --reload   --reload-include *.pickle  
-
-
-### Locust load testing
-
-Run:
-
-    locust -f locustfile.py -H http://127.0.0.1:8000
-
-Then open http://127.0.0.1:8000 in browser
-
-Change log_mode in main.py to test how logging method affects to troughput.
-
-Locust settings:  Users 1000 spawn rate: 100
-
-
-## About logging
-
-There are now two different ways to log structured data introduced.
-Standard logger provides easy way to transfer structured data to sqlite. 
-From structured format it is easy to load data back to dataframe from log database.
-Structlog offers nice way to persist structured data as json.
