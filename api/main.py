@@ -20,7 +20,7 @@ from app_base import (
     response_value_field,
 )
 from metrics.prometheus_metrics import monitor_output, monitor_input, generate_metrics
-from security.http_basic import dummy_http_auth
+from security.http_basic import http_auth_metrics
 
 # Start up API
 app = FastAPI(
@@ -38,12 +38,11 @@ app.add_middleware(
 )
 
 
-# metrics endpoint for prometheus
 @app.get("/metrics", response_model=dict)
 @input_drift.update_metrics_decorator()  # calculate drift metrics & pass to prometheus
 @output_drift.update_metrics_decorator()
 @processing_drift.update_metrics_decorator()
-def get_metrics(username: str = Depends(dummy_http_auth)):
+def get_metrics(username: str = Depends(http_auth_metrics)):
     return HTMLResponse(generate_metrics())
 
 
@@ -51,7 +50,9 @@ def get_metrics(username: str = Depends(dummy_http_auth)):
 @monitor_output(output_drift)  # add new data to fifos
 @monitor_input(input_drift)
 @processing_drift.monitor()
-def predict(p_list: List[DynamicApiRequest]):
+def predict(
+    p_list: List[DynamicApiRequest],
+):  # , username: str = Depends(auth_predict.auth)):
     # loop trough parameter list
     prediction_values = []
     for p in p_list:

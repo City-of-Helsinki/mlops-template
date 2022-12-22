@@ -12,6 +12,11 @@ services:
       LOG_PREDICTIONS: "true"
       MODE: ${MODE:-vsc}
       MODEL_STORE: "mlflow"
+      # WARNING: This is only to make the examples work with ease.
+      # DO NOT: keep secrets in a compose or dockerfile.
+      # TODO: use proper secret management!
+      METRICS_USERNAME: "stanleyjobson"
+      METRICS_PASSWORD: "swordfish"
     #restart: always
     ports:
       - 8000:8000 # api
