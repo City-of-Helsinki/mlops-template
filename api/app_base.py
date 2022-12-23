@@ -24,9 +24,11 @@ from model_store import ModelStore, MlFlowModelStore, PickleModelStore
 
 
 LOG_DB = "sqlite:///../local_data/logs.sqlite"
-BUNDLE = os.getenv("BUNDLE", "../local_data/bundle_latest.pickle")
+PICKLE_STORE_PATH = os.getenv("PICKLE_STORE_PATH", "../local_data/pickle_store/")
+API_LOAD_PICKLE = os.getenv("API_LOAD_PICKLE", "bundle_latest.pickle")
+BUNDLE_PATH = PICKLE_STORE_PATH + API_LOAD_PICKLE
 CONTEXT_PATH = pathlib.Path(__file__).parent.resolve()
-MODEL_PATH = str(CONTEXT_PATH.joinpath(BUNDLE))
+MODEL_PATH = str(CONTEXT_PATH.joinpath(BUNDLE_PATH))
 
 
 # Introduce SQL logging after init

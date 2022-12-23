@@ -11,7 +11,9 @@ services:
     environment:
       LOG_PREDICTIONS: "true"
       MODE: ${MODE:-vsc}
-      MODEL_STORE: "mlflow"
+      MODEL_STORE: "pickle"
+      PICKLE_STORE_PATH: /local_data/pickle_store/
+      API_LOAD_PICKLE: ${API_LOAD_PICKLE:-bundle_latest.pickle}
       # WARNING: This is only to make the examples work with ease.
       # DO NOT: keep secrets in a compose or dockerfile.
       # TODO: use proper secret management!
