@@ -6,9 +6,12 @@
 
 Create ETL & machine learning pipelines, model store, API, monitoring & logging - all in single container, with minimum setup required! 
 
-![architecture](mlops_template.png)
-*Template architecture*
+![mlops process chart & architecture](mlops_template.png)
+*ML Ops template example generic architecture & process chart.*
 
+The generic ML Ops process and structure of the template is described in the figure above. The core structure of the template is built on three elements: a notebook-based ML pipeline (`ml_pipe/`), a model store with two alternatives (`model_store/`), and and API with logging and monitoring properties (`api/`)).
+
+In addition the repository contains `requirements/` folder for managing requirements, `Dockerfile` and `compose.yml` for building and running the container, and `examples/` showing two simple examples on how to create a ML model and save it into a model store. The api template is created so that it works with the examples as-is, but may need to be adjusted for your model.
 
 ## Creating a new repo from this template
 
@@ -24,19 +27,21 @@ Checklist for creating the repository:
 
 ## Working with the template:
 
-The template assumes working within a Docker container. Non-container install may work but is not recommended.
+The template assumes working within a Docker container. Non-container use is possible but not recommended.
 
 ### Option 1: Codespaces
 
-Launch codespaces on your repository. For further configuration, edit `.devcontainer/devcontainer.json`
+Launch codespaces on your repository.
+
+Codespaces builds a container according to `.devcontainer/devcontainer.json`.
 
 ### Option 2: Local
 
-Clone the repository. 
+Clone the repository.
 
 ## Running the container
 
-The template container has three modes: two for development `vsc` (default) and `jupyterlab`, and one for running the `api`. The mode is given to Docker as an environment variable `MODE`.
+The template container has three modes: two for development `vsc` (default) and `jupyterlab`, and `api` for running the API. The mode is given to Docker as an environment variable `MODE`.
 
 ### VSC:
 
@@ -61,9 +66,11 @@ The API works offline, too, but may require routing the ports for clients.
 
 ### Running the API:
 
-To start the api as the container entrypoint, run `MODE=api docker-compose up`. This starts the API and leaves the container running. 
+To start the API as the container entrypoint, run `MODE=api docker-compose up`. This loads the latest trained model from model store, starts the API and leaves the container running. The API requires an existing model store and a stored model to function. 
 
-To develop interactively with the API running, you may start the API from within your VSC / jupyterlab terminal by running `uvicorn main:app --reload --reload-include *.pickle --host 0.0.0.0` within the api folder of the container.
+To develop interactively with the API running, you may start the API from within your VSC / jupyterlab terminal by running `uvicorn main:app --reload --reload-include *.pickle --host 0.0.0.0` within the API folder of the container.
+
+To to specify model store and model version to load, use environment variables as specified in `app_base.py`. The default option loads latest model from pickle store.
 
 ## Examples
 
@@ -72,13 +79,13 @@ The `examples/` folder contains simplified single-notebook examples on how to cr
 0. Runnin an example notebook.
 1. Running the API with corresponding model store env. 
 2. Prediction API is available: http://127.0.0.1:8000/predict
-3. Automatically generated online api documentation is available at: http://127.0.0.1:8000/docs
+3. Automatically generated online API documentation is available at: http://127.0.0.1:8000/docs
 4. Real time metrics are available at: http://127.0.0.1:8000/metrics and at the built-in example Prometheus server at http://127.0.0.1:9090
 
-To pass git version info to container, run with `GIT_BRANCH="$(git symbolic-ref -q --short HEAD)" GIT_HEAD="$(git rev-parse --short HEAD)" docker-compose up`
+To pass git version info to container, run with `GIT_BRANCH="$(git symbolic-ref -q --short HEAD)" GIT_HEAD="$(git rev-parse --short HEAD)" MODE=api docker-compose up`
 this adds the version to container labels and passes it on to prometheus.
 
-Api predict request sample for the example model:
+API predict request sample for the example model:
 
     curl -X 'POST' \
       'http://127.0.0.1:8000/predict' \
@@ -162,12 +169,12 @@ For the API, there are now two different ways to log structured data introduced.
 - localdata
 - tmpfs
 - ports
-- passwords for api endpoints
+- passwords for API endpoints
 - security handling
 
 Recommendations if working with personal data:
 
-- run api and dev as two separate instances of the same image, i.e. run api so that it does not have access to training data.
+- run API and dev as two separate instances of the same image, i.e. run API so that it does not have access to training data.
 - if you want to share source code publicly, manually recreate a new repository. This repository must not 'touch' the real data to avoid contamination - it is just copy of the code. This i laboursome, but a way to to avoid accidentally storing and leaking data through git.
 - you may not want to openly share all of your source code
 
