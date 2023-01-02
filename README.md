@@ -17,7 +17,7 @@ In addition the repository contains `requirements/` folder for managing requirem
 
 For your project, create new repo from this template ([see GitHub instructions](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template)). Commit history will be cleaned and the authors won't have access to your new repository (although sharing your work is encouraged).
 
-> Note: updates to the template can not be automatically synced to child projects!
+> NOTE: updates to the template can not be automatically synchronized to child projects!
 
 Checklist for creating the repository:
 1. Use dashes '-' instead of underscores '_' for the repository name. This is a nbdev convention.
@@ -179,7 +179,7 @@ Setting up a specialized tool (e.g. Grafana) is highly recommended for viewing t
 
 ## Security & data protection
 
-> Warning: Consult a cybersecurity and data protection professionals before touching personal data or exposing anything.
+> WARNING: Consult a cybersecurity and data protection professionals before touching personal data or exposing anything.
 
 The template is especially designed for working with personal and sensitive data.
 
