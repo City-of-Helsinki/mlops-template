@@ -1,6 +1,6 @@
 # ML Ops template
 
-> Generic ML Ops template for small scale ML.
+> Generic template for small scale MLOps.
 
 ## About
 
@@ -122,14 +122,19 @@ To use the template with a specific version do TODO!
 
 ## ML Pipeline
 
-The data processing, model creation and evaluation are to be written in jupyter notebooks, for which there are template notebooks in `ml_pipe` folder.
+The data processing, model creation and evaluation are to be written in jupyter notebooks, for which there are template notebooks in `ml_pipe/` folder.
+
+- `00_data_etl.ipynb` is for loading and cleaning data or defining functions for doing so. 
+- `01_model_class.ipynb` is for defining a ML model class or custom wrappers for existing models. Not needed if you use existing implementations such as sklearn models & simple pipes.
+- `02_train_test_validate.ipynb` is for training, testing and validating your ML model. 
+- `03_workflow.ipynb` is for the other notebooks automatically. *Ultimately you should be able to load data, train, test, validate and update a model to model store only by running this notebook inside the container.* For complete automation, you can set up this worflow to be triggered by a change in the ML metrics.
 
 To enhance working with notebooks, two tools are included: nbdev and papermill.
 
 Nbdev allows developing clean code straight from notebooks, with no copy-pasting involved.
 The template is planned for taking use of the following two nbdev functions:
  - nbdev_clean  - Clean all notebooks in `fname` to avoid merge conflicts
- - nbdev_export - Export notebooks in `path` to Python modules
+ - nbdev_export - Export notebooks in `path` to Python module (`ml_pipe/your_module`, set the module name in `settings.ini`)
 
 Other features may be useful but are not quaranteed to work out-of-box with the template. See list of commands with `nbdev_help`.
 
