@@ -4,7 +4,10 @@
 
 ## About
 
-Create ETL & machine learning pipelines, model store, API, monitoring & logging - all in one container, with minimum setup required! 
+Create ETL & machine learning pipelines, model store, API, monitoring & logging - all in single container, with minimum setup required! 
+
+![architecture](mlops_template.png)
+*Template architecture*
 
 
 ## Creating a new repo from this template
