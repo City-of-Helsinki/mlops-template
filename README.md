@@ -163,6 +163,15 @@ For the API, there are now two different ways to log structured data introduced.
 
 ## Monitoring
 
+The `compose.yml` and `monitoring/` folder contain a simple example configuration for prometheus. The container will launch a local prometheus instance by default. 
+
+Generic functions for monitoring ML algorithms live are presented in `api/metrics/` and demonstrated in the api template. Instead of prometheus histograms, most of the ML metrics are calculated from a fixed-size fifo queues. This is because the primary function of the ML metrics is to detect drift in data, models and performance, and thus must be comparable throughout the monitoring timeframe. Generic health status metrics are also provided.
+
+Adjust both metrics and monitoring for your needs. 
+For centralized view over multiple algorithms, it is recommended to scrape the local prometheus instances instead of the API directly. This way you can still view the local time series in case of network issues.
+
+Setting up a specialized tool (e.g. Grafana) is highly recommended for viewing the metrics. For development, the prometheus UI should be enough. 
+
 ## Security & data protection
 
 - data
