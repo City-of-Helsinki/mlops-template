@@ -24,41 +24,48 @@ from model_store import ModelStore, MlFlowModelStore, PickleModelStore
 
 
 LOG_DB = "sqlite:///../local_data/logs.sqlite"
+# model store path and version if using pickle store
 PICKLE_STORE_PATH = os.getenv("PICKLE_STORE_PATH", "../local_data/pickle_store/")
-API_LOAD_PICKLE = os.getenv("API_LOAD_PICKLE", "bundle_latest.pickle")
-BUNDLE_PATH = PICKLE_STORE_PATH + API_LOAD_PICKLE
+PICKLE_FILENAME = os.getenv("PICKLE_FILENAME", "bundle_latest.pickle")
+BUNDLE_PATH = PICKLE_STORE_PATH + PICKLE_FILENAME
 CONTEXT_PATH = pathlib.Path(__file__).parent.resolve()
 MODEL_PATH = str(CONTEXT_PATH.joinpath(BUNDLE_PATH))
 
+# model store uri, model name and version if using mlflow model store
+MLFLOW_TRACKING_URI = os.getenv("MLFLOW_TRACKING_URI", "file:../local_data/mlruns")
+MLFLOW_REGISTRY_URI = os.getenv("MLFLOW_REGISTRY_URI", "sqlite:///../local_data/mlflow.sqlite")
+MLFLOW_MODEL_NAME = os.getenv("MLFLOW_MODEL_NAME", "model")
+MLFLOW_MODEL_VERSION = os.getenv("MLFLOW_MODEL_VERSION", "latest")
 
 # Introduce SQL logging after init
 logging.getLogger().addHandler(SQLiteLoggingHandler(db_uri=LOG_DB))
 logging.getLogger().setLevel(logging.INFO)
 logging.info("Initialize API application...")
 
-
-logging.info(f"Loading model bundle: {MODEL_PATH}")
-
-try:
-    if "false" == str(os.environ["LOG_PREDICTIONS"]).lower():
-        setting_log_predictions = False
-    else:
-        setting_log_predictions = True
-except KeyError:
+LOG_PREDICTIONS = os.getenv("LOG_PREDICTIONS").lower()
+if "false" == LOG_PREDICTIONS:
     setting_log_predictions = False
+elif "true" == LOG_PREDICTIONS:
+    setting_log_predictions = True
+else:
+    raise ValueError(f"Invalid value for LOG_PREDICTIONS: {LOG_PREDICTIONS}")
 
 # Load model and schema definitions & train/val workflow metrics from model store
 model_store_impl = str(os.getenv("MODEL_STORE", "").lower())
 logging.info(f"Configured model store: {model_store_impl}")
 if "mlflow" == model_store_impl:
+    logging.info(f"Loading model from mlflow store: model_name={MLFLOW_MODEL_NAME}, model_version={MLFLOW_MODEL_VERSION}, tracking_uri={MLFLOW_TRACKING_URI}, registry_uri={MLFLOW_REGISTRY_URI}")
     model_store: ModelStore = MlFlowModelStore(
-        tracking_uri="file:../local_data/mlruns",
-        registry_uri="sqlite:///../local_data/mlflow.sqlite",
+        model_name=MLFLOW_MODEL_NAME,
+        model_version=MLFLOW_MODEL_VERSION,
+        tracking_uri=MLFLOW_TRACKING_URI,
+        registry_uri=MLFLOW_REGISTRY_URI,
     )
 elif "pickle" == model_store_impl:
+    logging.info(f"Loading model from pickle store: {MODEL_PATH}")
     model_store: ModelStore = PickleModelStore(bundle_uri=MODEL_PATH).load_bundle()
 else:
-    raise ValueError(f"Unknown MODEL_STORE value: {model_store_impl}")
+    raise ValueError(f"Invalid value for MODEL_STORE: {model_store_impl}")
 
 # ML model
 model = model_store.model
