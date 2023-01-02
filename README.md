@@ -174,32 +174,29 @@ Setting up a specialized tool (e.g. Grafana) is highly recommended for viewing t
 
 ## Security & data protection
 
-- data
-- localdata
-- tmpfs
-- ports
-- passwords for API endpoints
-- security handling
+> Warning: Consult a cybersecurity and data protection professionals before touching personal data or exposing anything.
 
-Recommendations if working with personal data:
+The template is especially designed for working with personal and sensitive data.
 
-- run API and dev as two separate instances of the same image, i.e. run API so that it does not have access to training data.
-- if you want to share source code publicly, manually recreate a new repository. This repository must not 'touch' the real data to avoid contamination - it is just copy of the code. This i laboursome, but a way to to avoid accidentally storing and leaking data through git.
-- you may not want to openly share all of your source code
+Here is a couple of things that we've considered:
+
+- Ports & network: the template is set up for development. The api and monitoring endpoints are set up for localhost. Check out the configuration before exposing any endpoints to networks.
+- Data: Avoid making copies of data. If possible, load data straight from the source at runtime. If you must copy data locally, store it under `ml_pipe/data/` - this folder is ignored by git. However, it is included in a volume. Begin development with anonymized or generated data. Utilize [tabular_anonymizer](https://github.com/Datahel/tabular-anonymizer) and  [presidio-text-anonymizer](https://github.com/Datahel/presidio-text-anonymizer).
+- Data generated and collected by API is stored under `localdata/` by default. This folder is ignored by git. It is also set up as a `tmpfs` storage in `config.yml` - this means that the contents of the folder only exist in runtime memory of the container and are cleared when the container stops. You may want to change this to a volume or a bind mount - but evaluate the effects on data protection before doing so.
+- Protect API endpoints authentication. Currently the template comes with examples on basic http authentication defined in `api/security/`.
+- Use a proper security handling for setting and storing passwords, keys, database access tokens etc.
+- You can run API and dev as two separate instances of the same image, i.e. run API so that it does not have direct access to training data.
+- If you want to share source code publicly, but you utilize personal or sensitive data, manually recreate a new, public repository based on your private one. This repository must not 'touch' the real data or secrets to avoid contamination - it is just copy of the code. This is laboursome, but a way to to avoid accidentally storing and leaking data through git.
+- Consider if opening your source code will risk data protection or allow malicious or unintended use of the model. Source code can not always be shared openly.
 
 ## Ethical aspects
 
-Please involve ethical consideration in the documentation ML
-application.
+> NOTE: Data can only show us what is, not what should be.
 
-For example: \* Can you recognize ethical issues with your ML project?
-\* Is there a risk for bias, discrimination, violation of privacy or
-conflict with the local or global laws? \* Could your results or
-algorithms be misused for malicious acts? \* Can data or model updates
-include bias in your model? \* How have you tackled these issues in your
-implementation? \* You most certainly make ethical choises in your code.
-Do you document & highlight them? \* If you build an actual application,
-how can contribute if they notice an unresolved ethical issue?
+Include ethical evaluation in your development and testing routines. All data and any models that uses data from, interacts withor otherwise affects people should be tested for representativeness, bias and discrimination. Consider accessibility when improving digital services with ML.
+
+
+The template comes with an 'ethical issue template' found in `.github/ISSUE_TEMPLATE/ethical.md` which enlists the city of Helsinki ethical principles for data and AI - continuously check out your work for compliance. It is also important to recognize potential ethical issues, even though they could not be verified or solved right away.
 
 ## Prequisites
 
