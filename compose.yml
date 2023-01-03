@@ -36,7 +36,7 @@ services:
       - -c
       - |
         # To avoid git complaining about files being removed because of tmpfs mount:
-        echo $'*\n' > local_data/.gitignore
+        echo $$'*\n' > local_data/.gitignore
         # Run entrypoint script
         ./entrypoint.sh
   prometheus-local:
