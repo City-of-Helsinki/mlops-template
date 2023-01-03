@@ -927,7 +927,12 @@ def pass_api_version_to_prometheus():
     """
     m = Info("api_git_version", "The branch and HEAD commit the api was built on.")
     try:
-        m.info({"branch": os.environ["GIT_BRANCH"], "head": os.environ["GIT_HEAD"]})
+        m.info(
+            {
+                "branch": os.popen("git symbolic-ref -q --short HEAD").read().strip(),
+                "head": os.popen("git rev-parse --short HEAD").read().strip(),
+            }
+        )
     except:
         m.info({"branch": "unspecified", "head": "unspecified"})
     return m
