@@ -30,12 +30,4 @@ RUN pre-commit install
 # for running the workflow
 RUN python -m ipykernel install --user --name $(python3 --version | tr -d '[:space:]')
 
-# version info (label image & pass to prometheus)
-ARG GIT_BRANCH=unspecified
-LABEL git_branch=$GIT_BRANCH
-ENV GIT_BRANCH $GIT_BRANCH
-ARG GIT_HEAD=unspecified
-LABEL git_head=$GIT_HEAD
-ENV GIT_HEAD $GIT_HEAD
-
 ENTRYPOINT ["/bin/bash", "./entrypoint.sh"]

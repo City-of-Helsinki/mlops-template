@@ -4,9 +4,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      args:
-        GIT_BRANCH: ${GIT_BRANCH:-unspecified}
-        GIT_HEAD: ${GIT_HEAD:-unspecified}
     container_name: mlops
     environment:
       LOG_PREDICTIONS: "true"
