@@ -12,9 +12,9 @@ from log.log_event import LogEvent
 
 
 class SQLiteLoggingHandler(logging.Handler):
-    def __init__(self, sqlite_file: str = "log.sqlite"):
+    def __init__(self, db_uri: str):
         logging.Handler.__init__(self)
-        self.engine = create_engine(f"sqlite:///{sqlite_file}")
+        self.engine = create_engine(db_uri)
         SQLModel.metadata.create_all(self.engine)
 
     def emit(self, record: logging.LogRecord):

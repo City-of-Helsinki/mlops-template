@@ -14,7 +14,9 @@ class WebsiteUser(HttpUser):
 
 
 if __name__ == "__main__":
-    print("Use this file with locust, eg: locust -f locust_load_test.py -H http://127.0.0.1:8000")
+    print(
+        "Use this file with locust, eg: locust -f locust_load_test.py -H http://127.0.0.1:8000"
+    )
     print("How to perform load testing:")
     print("1. Run main.py or start api app as server")
     print("2. Run load testing and open browser at http://127.0.0.1:8000")

@@ -2,50 +2,70 @@ import logging
 import os
 import pathlib
 from log.sqlite_logging_handler import SQLiteLoggingHandler
-from metrics.prometheus_metrics import RequestMonitor, DriftMonitor, distribution_summary_statistics, \
-    categorical_summary_statistics, pass_api_version_to_prometheus, record_metrics_from_dict
+from metrics.prometheus_metrics import (
+    RequestMonitor,
+    DriftMonitor,
+    distribution_summary_statistics,
+    categorical_summary_statistics,
+    pass_api_version_to_prometheus,
+    record_metrics_from_dict,
+)
 import sys
 
-# LOCAL IMPORTS
-sys.path.append("../model_store")
-from model_store import (
-    ModelStore, MlFlowModelStore, PickleModelStore
-)
 
-# to import custom ML model, wrappers, util etc. use:
-# sys.path.append("../ml_pipe")
-# from ml_pipe import
+# LOCAL IMPORTS
+current = os.path.dirname(os.path.realpath(__file__))
+parent_directory = os.path.dirname(current)
+sys.path.append(parent_directory)
+from model_store import ModelStore, MlFlowModelStore, PickleModelStore
+
+# Do other local imports in similar manner if needed, i.e.
+# from ml_pipe import your_module
 
 
 LOG_DB = "sqlite:///../local_data/logs.sqlite"
-BUNDLE = os.getenv('BUNDLE', '../local_data/bundle_latest.pickle')
+# model store path and version if using pickle store
+PICKLE_STORE_PATH = os.getenv("PICKLE_STORE_PATH", "../local_data/pickle_store/")
+PICKLE_FILENAME = os.getenv("PICKLE_FILENAME", "bundle_latest.pickle")
+BUNDLE_PATH = PICKLE_STORE_PATH + PICKLE_FILENAME
 CONTEXT_PATH = pathlib.Path(__file__).parent.resolve()
-MODEL_PATH = str(CONTEXT_PATH.joinpath(BUNDLE))
+MODEL_PATH = str(CONTEXT_PATH.joinpath(BUNDLE_PATH))
 
+# model store uri, model name and version if using mlflow model store
+MLFLOW_TRACKING_URI = os.getenv("MLFLOW_TRACKING_URI", "file:../local_data/mlruns")
+MLFLOW_REGISTRY_URI = os.getenv("MLFLOW_REGISTRY_URI", "sqlite:///../local_data/mlflow.sqlite")
+MLFLOW_MODEL_NAME = os.getenv("MLFLOW_MODEL_NAME", "model")
+MLFLOW_MODEL_VERSION = os.getenv("MLFLOW_MODEL_VERSION", "latest")
 
 # Introduce SQL logging after init
 logging.getLogger().addHandler(SQLiteLoggingHandler(db_uri=LOG_DB))
 logging.getLogger().setLevel(logging.INFO)
 logging.info("Initialize API application...")
 
-
-logging.info(f"Loading model bundle: {MODEL_PATH}")
-
-try:
-    if "false" == str(os.environ["LOG_PREDICTIONS"]).lower():
-        setting_log_predictions = False
-    else:
-        setting_log_predictions = True
-except KeyError:
+LOG_PREDICTIONS = os.getenv("LOG_PREDICTIONS").lower()
+if "false" == LOG_PREDICTIONS:
     setting_log_predictions = False
+elif "true" == LOG_PREDICTIONS:
+    setting_log_predictions = True
+else:
+    raise ValueError(f"Invalid value for LOG_PREDICTIONS: {LOG_PREDICTIONS}")
 
 # Load model and schema definitions & train/val workflow metrics from model store
-model_store_impl = str(os.getenv("MODEL_STORE", '').lower())
+model_store_impl = str(os.getenv("MODEL_STORE", "").lower())
 logging.info(f"Configured model store: {model_store_impl}")
 if "mlflow" == model_store_impl:
-    model_store: ModelStore = MlFlowModelStore(tracking_uri='file:../local_data/mlruns', registry_uri='sqlite:///../local_data/mlflow.sqlite')
+    logging.info(f"Loading model from mlflow store: model_name={MLFLOW_MODEL_NAME}, model_version={MLFLOW_MODEL_VERSION}, tracking_uri={MLFLOW_TRACKING_URI}, registry_uri={MLFLOW_REGISTRY_URI}")
+    model_store: ModelStore = MlFlowModelStore(
+        model_name=MLFLOW_MODEL_NAME,
+        model_version=MLFLOW_MODEL_VERSION,
+        tracking_uri=MLFLOW_TRACKING_URI,
+        registry_uri=MLFLOW_REGISTRY_URI,
+    )
+elif "pickle" == model_store_impl:
+    logging.info(f"Loading model from pickle store: {MODEL_PATH}")
+    model_store: ModelStore = PickleModelStore(bundle_uri=MODEL_PATH).load_bundle()
 else:
-    model_store: ModelStore = PickleModelStore(bundle_uri=MODEL_PATH)
+    raise ValueError(f"Invalid value for MODEL_STORE: {model_store_impl}")
 
 # ML model
 model = model_store.model
@@ -83,5 +103,3 @@ output_drift = DriftMonitor(
     metrics_name_prefix="output_drift_",
     summary_statistics_function=categorical_summary_statistics,
 )
-
-

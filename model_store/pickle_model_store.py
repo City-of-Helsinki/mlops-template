@@ -16,20 +16,17 @@ class ModelSchemaContainer:
     """
 
     model: BaseEstimator
-    req_schema: str
-    res_schema: str
-    metrics: str
+    req_schema: List[dict]
+    res_schema: List[dict]
+    metrics: dict
 
 
 class PickleModelStore(ModelStore):
-    model_uri = None
-
-    def __init__(self, bundle_uri='local_data/bundle_latest.pickle'):
+    def __init__(self, bundle_uri="local_data/bundle_latest.pickle"):
         self.bundle_uri = bundle_uri
-        self.load_bundle()
 
-    def persist(self, classifier, param, dtypes_x, dtypes_y, metrics_parsed):
-        self.__pickle_bundle(classifier, param, dtypes_x, dtypes_y, metrics_parsed)
+    def persist(self, classifier, dtypes_x, dtypes_y, metrics_parsed):
+        return self.__pickle_bundle(classifier, dtypes_x, dtypes_y, metrics_parsed)
 
     def get_model(self) -> BaseEstimator:
         if not self.model:
@@ -38,26 +35,32 @@ class PickleModelStore(ModelStore):
 
     def load_bundle(self):
         # try:
-        logging.info(f"Open {self.bundle_uri}", )
+        logging.info(
+            f"Open {self.bundle_uri}",
+        )
         bundle = self.__load_pickled_bundle(self.bundle_uri)
-        if bundle:
-            self.model = bundle.model
-            self.train_metrics = bundle.metrics
-            # Schema for request (X)
-            self.request_schema_class = self.__create_pydantic_model("DynamicApiRequest", bundle.req_schema)
-            # Schema for response (y)
-            self.response_schema_class = self.__create_pydantic_model("DynamicApiResponse", bundle.res_schema)
+        self.model = bundle.model
+        self.train_metrics = bundle.metrics
+        # Schema for request (X)
+        self.request_schema_class = self.__create_pydantic_model(
+            "DynamicApiRequest", bundle.req_schema
+        )
+        # Schema for response (y)
+        self.response_schema_class = self.__create_pydantic_model(
+            "DynamicApiResponse", bundle.res_schema
+        )
+        self.response_value_field = list(
+            self.response_schema_class.schema()["properties"]
+        )[0]
 
-            self.response_value_field = list(self.response_schema_class.schema()["properties"])[0]
-
-            self.response_value_type = type(
-                self.response_schema_class.schema()["properties"][self.response_value_field]["type"]
-            )
-            self.request_columns = self.__schema_to_pandas_columns(bundle.req_schema)
-            self.response_columns = self.__schema_to_pandas_columns(bundle.res_schema)
-        # except:
-        #     print("Bundle not found", self.b)
-        #     logging.warning(f"Bundle not found: {self.bundle_uri}")
+        self.response_value_type = type(
+            self.response_schema_class.schema()["properties"][
+                self.response_value_field
+            ]["type"]
+        )
+        self.request_columns = self.__schema_to_pandas_columns(bundle.req_schema)
+        self.response_columns = self.__schema_to_pandas_columns(bundle.res_schema)
+        return self
 
     @staticmethod
     def __load_pickled_bundle(bundle_uri: str) -> ModelSchemaContainer:
@@ -69,20 +72,24 @@ class PickleModelStore(ModelStore):
             logging.warning(f"File not found {bundle_uri}", nfe)
             return None
 
-    @staticmethod
-    def __pickle_bundle(model: BaseEstimator, bundle_uri: str, schema_x=None, schema_y=None, metrics: str = None):
+    def __pickle_bundle(
+        self,
+        model: BaseEstimator,
+        schema_x=None,
+        schema_y=None,
+        metrics: str = None,
+    ):
         try:
-            with open(bundle_uri, "wb") as f:
+            with open(self.bundle_uri, "wb") as f:
                 container: ModelSchemaContainer = ModelSchemaContainer()
                 container.model = model
                 container.req_schema = schema_x
                 container.res_schema = schema_y
                 container.metrics = metrics
                 pickle.dump(container, f, protocol=pickle.HIGHEST_PROTOCOL)
-            logging.info(f"Persisted model to file  {bundle_uri}")
+            logging.info(f"Persisted model to file  {self.bundle_uri}")
         except FileNotFoundError as nfe:
-            logging.warning(f"Cannot write to file: {bundle_uri}", nfe)
-            return None
+            logging.warning(f"Cannot write to file: {self.bundle_uri}", nfe)
 
     @staticmethod
     def __build_model_definition_from_dict(column_types: List[dict]):

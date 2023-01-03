@@ -8,10 +8,19 @@ from fastapi.params import Depends
 from fastapi.responses import HTMLResponse
 from starlette.middleware.cors import CORSMiddleware
 
-from app_base import input_drift, output_drift, processing_drift, DynamicApiResponse, DynamicApiRequest, model, \
-    setting_log_predictions, response_value_type, response_value_field
+from app_base import (
+    input_drift,
+    output_drift,
+    processing_drift,
+    DynamicApiResponse,
+    DynamicApiRequest,
+    model,
+    setting_log_predictions,
+    response_value_type,
+    response_value_field,
+)
 from metrics.prometheus_metrics import monitor_output, monitor_input, generate_metrics
-from security.http_basic import dummy_http_auth
+from security.http_basic import http_auth_metrics
 
 # Start up API
 app = FastAPI(
@@ -29,12 +38,11 @@ app.add_middleware(
 )
 
 
-# metrics endpoint for prometheus
 @app.get("/metrics", response_model=dict)
 @input_drift.update_metrics_decorator()  # calculate drift metrics & pass to prometheus
 @output_drift.update_metrics_decorator()
 @processing_drift.update_metrics_decorator()
-def get_metrics(username: str = Depends(dummy_http_auth)):
+def get_metrics(username: str = Depends(http_auth_metrics)):
     return HTMLResponse(generate_metrics())
 
 
@@ -42,7 +50,9 @@ def get_metrics(username: str = Depends(dummy_http_auth)):
 @monitor_output(output_drift)  # add new data to fifos
 @monitor_input(input_drift)
 @processing_drift.monitor()
-def predict(p_list: List[DynamicApiRequest]):
+def predict(
+    p_list: List[DynamicApiRequest],
+):  # , username: str = Depends(auth_predict.auth)):
     # loop trough parameter list
     prediction_values = []
     for p in p_list:
@@ -71,4 +81,3 @@ def predict(p_list: List[DynamicApiRequest]):
 if __name__ == "__main__":
     # logging.info(f"Example post data: {json.dumps(DynamicApiRequest())}")
     uvicorn.run(app, host="0.0.0.0", port=8000)
-
