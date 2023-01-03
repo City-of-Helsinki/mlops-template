@@ -227,7 +227,7 @@ and MacBook Pro M1 & macOS Ventura 13.0 with:
 
 Additional configuration may be required for other systems.
 
-## Known issues:
+## Known issues
 
  - nbdev_clean git hook may remove 'parameters' tag from notebook cells, even though it should be an allowed key as it is listed in settings.ini. The tag may need to be re-added manually to allow notebook parameterization with papermill.
  - nbdev documentation related functions may not work out-of-box with arm64 machines such as M1 macbooks because the container installs amd64 version of Quarto.
