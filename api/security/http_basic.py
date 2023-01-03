@@ -2,10 +2,7 @@ import secrets
 from http.client import HTTPException
 
 from fastapi import Depends
-from fastapi.security import (
-    HTTPBasic,
-    HTTPBasicCredentials
-)
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from starlette import status
 import os
 

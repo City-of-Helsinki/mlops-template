@@ -33,7 +33,9 @@ MODEL_PATH = str(CONTEXT_PATH.joinpath(BUNDLE_PATH))
 
 # model store uri, model name and version if using mlflow model store
 MLFLOW_TRACKING_URI = os.getenv("MLFLOW_TRACKING_URI", "file:../local_data/mlruns")
-MLFLOW_REGISTRY_URI = os.getenv("MLFLOW_REGISTRY_URI", "sqlite:///../local_data/mlflow.sqlite")
+MLFLOW_REGISTRY_URI = os.getenv(
+    "MLFLOW_REGISTRY_URI", "sqlite:///../local_data/mlflow.sqlite"
+)
 MLFLOW_MODEL_NAME = os.getenv("MLFLOW_MODEL_NAME", "model")
 MLFLOW_MODEL_VERSION = os.getenv("MLFLOW_MODEL_VERSION", "latest")
 
@@ -54,7 +56,9 @@ else:
 model_store_impl = str(os.getenv("MODEL_STORE", "").lower())
 logging.info(f"Configured model store: {model_store_impl}")
 if "mlflow" == model_store_impl:
-    logging.info(f"Loading model from mlflow store: model_name={MLFLOW_MODEL_NAME}, model_version={MLFLOW_MODEL_VERSION}, tracking_uri={MLFLOW_TRACKING_URI}, registry_uri={MLFLOW_REGISTRY_URI}")
+    logging.info(
+        f"Loading model from mlflow store: model_name={MLFLOW_MODEL_NAME}, model_version={MLFLOW_MODEL_VERSION}, tracking_uri={MLFLOW_TRACKING_URI}, registry_uri={MLFLOW_REGISTRY_URI}"
+    )
     model_store: ModelStore = MlFlowModelStore(
         model_name=MLFLOW_MODEL_NAME,
         model_version=MLFLOW_MODEL_VERSION,
