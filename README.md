@@ -148,6 +148,17 @@ Check out [nbdev tutorial](https://nbdev.fast.ai/tutorials/tutorial.html) for mo
 [Papermill](https://papermill.readthedocs.io/en/latest/) allows running notebooks from python, parameterized. 
 
 
+## Model Store
+
+The template includes two alternatives for a model store.
+
+First is a simple pickle store, that stores ML model, input and output schemas and training metrics to a pickle and allows unwrapping these with ease. The pickle store is developed to work with all `scikit-learn` models, and requires additional configuration for other types of models, including non-inheriting custom wrappers for sklearn models. A `date - branch - head - setup` versioning is used for naming the model instances. For each model instance, a versioned pickle is saved, but additionally a `latest`-tagged version is created and loaded by default for convenience of use. This way, you can always revert to a specific version of the model later on, but the default assumes using the latest version. Desired model version can be specified to API with an environment variable.
+
+> NOTE: Because default model versioning depends on git head, commit all changes before running the model workflow, to be able to match model version to source code!
+
+Other option is `mlflow` model store. We do not yet take full advantage of mlflows capabilities, but decided to add the option for further exploration and promising features of the tool. The mlflow model store creates a passive mlflow model store that the user can configure for what is stored in there in addition to the model. You can easily store results, graphs, notebooks, data, metrics. In addition, the mlflow model store can be combined with the mlflow server and UI to compare different model runs in a convenient way. The mlflow store has built in support for most common ml model types, and allows lot of configuration. However, if you are not already familiar with the tool, starting with the pickle store is recommended for simplicity.
+
+
 ## Testing
 
 For the ML pipe you can write assertion tests in the ml_pipe notebooks. However, a passing notebook run is already a great starting point for a test. Use of automatic acceptance tests before deploying trained models to model store is encouraged.
