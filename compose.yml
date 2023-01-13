@@ -5,6 +5,8 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: mlops
+    # force platform if required (WARNING: will make container build super slow!)
+    # platform: linux/amd64
     environment:
       LOG_PREDICTIONS: "true"
       MODE: ${MODE:-vsc}
