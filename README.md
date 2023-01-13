@@ -72,6 +72,8 @@ The API works offline, too, but requires network access for external clients.
 
 To start the API as the container entrypoint, run `MODE=api docker-compose up`. This loads the latest trained model from model store, starts the API and leaves the container running. The API requires an existing model store and a stored model to function. 
 
+> NOTE: To launch container in `api` mode, you must first train a model and save it to model store on a persistent volume or mapping, i.e. change the `local_data` volume type in compose and rebuild the container. To avoid accidentaly leaking sensitive data, model stores are by default saved to `tmpfs` storage that is removed every time the container is stopped.
+
 To develop interactively with the API running, you may start the API from within your VSC / jupyterlab terminal by running `uvicorn main:app --reload --reload-include *.pickle --host 0.0.0.0` within the API folder of the container.
 
 To specify model store and model version to load, use environment variables as specified in `app_base.py`. The default option loads latest model from pickle store.
