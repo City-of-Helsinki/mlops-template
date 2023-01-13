@@ -241,3 +241,4 @@ Additional configuration may be required for other systems.
 
  - nbdev_clean git hook may remove 'parameters' tag from notebook cells, even though it should be an allowed key as it is listed in settings.ini. The tag may need to be re-added manually to allow notebook parameterization with papermill.
  - nbdev documentation related functions may not work out-of-box with arm64 machines such as M1 macbooks because the container installs amd64 version of Quarto. You can bypass this by setting `platform` option for docker. However, this makes container build SUPER slow and is thus not a default setting.
+ - Source code and model instance version may mismatch if code changes are not committed before updating a model to the model store.
