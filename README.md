@@ -78,16 +78,13 @@ To specify model store and model version to load, use environment variables as s
 
 ## Examples
 
-The `examples/` folder contains simplified single-notebook examples on how to create, train, evaluate and deploy a ML model to model store. There are two notebooks due to two alternatives for the model store. You can try out the API by first running an example notebook
+The `examples/` folder contains simplified single-notebook examples on how to create, train, evaluate and deploy a ML model to model store. There are two notebooks due to two alternatives for the model store. You can try out the API by:
 
 0. Running an example notebook.
 1. Running the API with corresponding model store env. 
 2. Prediction API is available: http://127.0.0.1:8000/predict
 3. Automatically generated online API documentation is available at: http://127.0.0.1:8000/docs
 4. Real time metrics are available at: http://127.0.0.1:8000/metrics and at the built-in example Prometheus server at http://127.0.0.1:9090
-
-To pass git version info to container, run with `GIT_BRANCH="$(git symbolic-ref -q --short HEAD)" GIT_HEAD="$(git rev-parse --short HEAD)" MODE=api docker-compose up`
-this adds the version to container labels and passes it on to prometheus.
 
 The following API request calls for the example model to make a prediction on two new data points:
 
