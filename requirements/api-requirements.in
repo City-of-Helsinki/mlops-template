@@ -1,0 +1,12 @@
+# requirements for the API excluding ML
+fastapi[all]
+locust
+numpy
+pandas
+prometheus_client
+pyarrow
+pysqlite3
+sqlmodel
+starlette
+structlog
+uvicorn[standard]

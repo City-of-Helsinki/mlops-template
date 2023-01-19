@@ -1,0 +1,9 @@
+project:
+  output-dir: _docs
+
+website:
+  title: "ml_project_template"
+  site-url: "https://Datahel.github.io/ml_project_template"
+  description: "Helsinki machine learning project template for open source ML research and development"
+  repo-branch: master
+  repo-url: "https://github.com/Datahel/ml_project_template"

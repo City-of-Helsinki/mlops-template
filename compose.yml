@@ -1,0 +1,53 @@
+version: "3.8"
+services:
+  mlops:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mlops
+    # force platform if required (WARNING: will make container build super slow!)
+    # platform: linux/amd64
+    environment:
+      LOG_PREDICTIONS: "true"
+      MODE: ${MODE:-vsc}
+      MODEL_STORE: "pickle"
+      PICKLE_STORE_PATH: /app/local_data/pickle_store/
+      PICKLE_FILENAME: ${API_LOAD_PICKLE:-bundle_latest.pickle}
+      # WARNING: This is only to make the examples work with ease.
+      # DO NOT: keep secrets in a compose or dockerfile.
+      # TODO: use proper secret management!
+      METRICS_USERNAME: "stanleyjobson"
+      METRICS_PASSWORD: "swordfish"
+    #restart: always
+    ports:
+      - 8000:8000 # api
+      - 8888:8888 # jupyterlab
+    volumes:
+      # Mount current directory. NOTE: dev/data will be included in the /app volume!
+      - ./:/app
+      # WARNING: By default, use tmpfs memory for files that may store personal data.
+      # These files only persist for as long as the container runs. 
+      # Evaluate risks prior changing storage type!
+      - type: tmpfs
+        target: /app/local_data
+    entrypoint:
+      - /bin/bash
+      - -c
+      - |
+        # To avoid git complaining about files being removed because of tmpfs mount:
+        echo $$'*\n' > local_data/.gitignore
+        # Run entrypoint script
+        ./entrypoint.sh
+  prometheus-local:
+    image: prom/prometheus
+    container_name: mlops-prometheus-local
+    volumes:
+      # prometheus configuration
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      # WARNING: Prometheus time series may store personal data!
+      # Select the data and aggregations (summary statistics) from api/metrics
+      # to be monitored carefully and handle the time series with care
+      # in order to avoid leaking sensitive information!
+      - ./monitoring/prometheus:/prometheus
+    ports:
+      - 9090:9090

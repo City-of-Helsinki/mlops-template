@@ -1,0 +1,12 @@
+global:
+  scrape_interval:     15s
+
+scrape_configs:
+    - job_name: 'mlops-fastapi-api'
+    basic_auth:
+        # WARNING: this is not secure way to handle secrets!
+        username: 'stanleyjobson'
+        password: 'swordfish'
+
+    static_configs:
+      - targets: ['mlops-api:8000']

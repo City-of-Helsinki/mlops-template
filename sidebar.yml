@@ -1,9 +1,0 @@
-website:
-  sidebar:
-    contents:
-      - index.ipynb
-      - 00_data.ipynb
-      - 01_model.ipynb
-      - 02_loss.ipynb
-      - 03_workflow.ipynb
-      - 04_api.ipynb
