@@ -1,7 +1,10 @@
 # requirements for the dev environment excluding ML
 nbdev
-ipykernel
 pre-commit
+black
 nb-black
+ipykernel
 jupyterlab
+papermill
+pip-tools
 
