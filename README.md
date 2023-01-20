@@ -1,5 +1,14 @@
 # ML Ops template
 
+![Python version](https://img.shields.io/badge/python-3.10-blue)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![GitHub version](https://badge.fury.io/gh/City-of-Helsinki%2Fmlops_template.svg)](https://badge.fury.io/gh/City-of-Helsinki%2Fmlops_template)
+![GitHub issues](https://img.shields.io/github/issues/City-of-Helsinki/mlops_template)
+![GitHub issues](https://img.shields.io/github/issues-closed-raw/City-of-Helsinki/mlops_template)
+![GitHub forks](https://img.shields.io/github/forks/City-of-Helsinki/mlops_template)
+![GitHub stars](https://img.shields.io/github/stars/City-of-Helsinki/mlops_template)
+![GitHub license](https://img.shields.io/github/license/City-of-Helsinki/mlops_template)
+
 > Generic repository template for small scale MLOps.
 
 ## About
