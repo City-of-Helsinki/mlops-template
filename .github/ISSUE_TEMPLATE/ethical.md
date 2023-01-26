@@ -13,23 +13,24 @@ THE ISSUE IS PUBLIC, DO NOT WRITE ANY PERSONAL DATA HERE!
 
 The City of Helsinki has eight ethical principles for data & AI. Please describe which principles are or may be violated and how.
 
-The Helsinki ethical principles for data & AI are:
- - Human centric approach
-    - We use Data and AI to serve people and their needs.
+The ethical principles for data & AI are:
+
+ - People-orientedness
+    - We develop services based on data and AI for the benefit of people and with people in mind.
  - Transparency
-    - We communicate in an understandable way, how and where we use data and AI.
-- Explainability
-    - We are able to explain any output or the general operating logic of an algorithm in an understandable way.
-- Justice and equality
-    - We use data and AI in a way that supports and respects human rights and dignity.
-- Accountability and trust
-    - We assign an accountable party for all our services that utilise data and AI, who the customers can contact if they have any questions or concerns.
-- Privacy
-    - We handle personal data carefully and cyber-securely throughout its whole lifecycle.
-- Security
-    - We protect and govern our data and AI solutions with care.
-- Human in control
-    - Our data and AI services have an assigned responsible person who can monitor and intervene in the process.
+    - We communicate as transparently as possible how and where we use data and AI.
+ - Explainability
+    - We can explain the general operating logic of a single result or algorithm in an understandable way. 
+ - Fairness and equality 
+    - The basis for the use of data and AI solutions is respect for everyone’s dignity and rights. 
+ - Responsibility and maintaining trust
+    - For each service that uses AI, we assign a responsible party that our customers can contact.
+ - Privacy 
+    - We handle personal data carefully and securely throughout the life cycle of the system.
+ - Security 
+    - Systems using data and AI are well protected and controlled.
+ - Under human control
+    - The person responsible is able to monitor and control the operations of the system and intervene, if necessary.
 
 **Describe the issue**
 A clear and concise description of what the ethical issue is or may be. 
