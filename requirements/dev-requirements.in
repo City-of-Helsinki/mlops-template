@@ -2,7 +2,8 @@
 nbdev
 pre-commit
 black
-nb-black
+# nb-black (outdated install requirements, can not be installed)
+# https://github.com/dnanhkhoa/nb_black/issues/40
 ipykernel
 jupyterlab
 papermill
