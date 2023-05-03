@@ -19,7 +19,7 @@ RUN python -m pip install -U pip
 RUN python -m pip install pip-tools
 
 # Install Python requirements
-RUN pip install -r requirements/requirements.txt
+RUN pip install --ignore-installed -r requirements/requirements.txt
 
 # Install Quarto for Nbdev
 RUN nbdev_install_quarto
