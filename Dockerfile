@@ -8,6 +8,10 @@ DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends sudo c
 apt-get clean && \
 rm -rf /var/lib/apt/lists/*
 
+# blinker distutil install breaks dependencies, so remove it
+# it will be re-installed later from requirements
+RUN DEBIAN_FRONTEND=noninteractive sudo apt-get -y purge --auto-remove python3-blinker 
+
 RUN mkdir /app
 
 COPY . /app
@@ -18,8 +22,14 @@ RUN python -m pip install -U pip
 
 RUN python -m pip install pip-tools
 
+# For debugging: if you break requirements, uncomment the following commands,
+# rebuild container and comment them again to clean requirements:
+# WORKDIR requirements/
+# RUN ./update_requirements.sh
+# WORKDIR /app
+
 # Install Python requirements
-RUN pip install --ignore-installed -r requirements/requirements.txt
+RUN pip install -r requirements/requirements.txt
 
 # Install Quarto for Nbdev
 RUN nbdev_install_quarto
