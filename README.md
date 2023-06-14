@@ -50,6 +50,35 @@ Just launch your repository in a Codespace and start working.
 
 Clone the repository, and run the container (see 'Running the container' below).
 
+## Minikube + Podman (default)
+
+Minikube is an open source tool for container orchestration. Podman is an open source container runtime tool.
+
+    # On MacOS
+
+    # To install minikube & podman
+    brew install hyperkit 
+    brew install minikube
+    brew install docker docker-compose
+    brew install podman podman-compose
+    
+    # init podman machine
+    podman machine init --cpus=2
+
+    # To start podman
+    podman machine start
+
+    # To start minikube
+    minikube start --driver=podman --container-runtime=containerd
+
+For more information and help with setting up the tools for your workload, checkout the documentation of [minikube](https://minikube.sigs.k8s.io/docs/) and [Podman](https://docs.podman.io/en/latest/index.html).
+
+## Docker Desktop
+
+Docker Desktop is an open core tool for managing Docker containers. Please note that most non-personal use of Docker Desktop now requires paid license subscription.
+
+To use the template with docker desktop, install and start docker desktop according to the instructions.
+
 ## Running the container
 
 The template container has three modes: two for development `vsc` (default) and `jupyterlab`, and `api` for running the API. The mode is given to Docker as an environment variable `MODE`.
@@ -240,7 +269,7 @@ The template was developed and tested with:
 
  - GitHub Codespaces
 
-and MacBook Pro M1 & macOS Ventura 13.0 with:
+and MacBook Pro M1 & macOS Ventura 13.2.1 with:
 
  - Docker desktop 4.15.0 (93002)
  - VSC 1.74.0
