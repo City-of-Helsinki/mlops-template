@@ -71,6 +71,10 @@ Minikube is an open source tool for container orchestration. Podman is an open s
     # To start minikube
     minikube start --driver=podman --container-runtime=containerd
 
+    # To stop minikube & podman
+    minikube stop
+    podman machine stop
+
 For more information and help with setting up the tools for your workload, checkout the documentation of [minikube](https://minikube.sigs.k8s.io/docs/) and [Podman](https://docs.podman.io/en/latest/index.html).
 
 ## Docker Desktop
