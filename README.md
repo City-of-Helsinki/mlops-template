@@ -70,9 +70,10 @@ $ brew install docker docker-compose
 $ brew install podman podman-compose
 $ brew install podman-desktop
     
-# Init podman machine
-# (you can configure resources allocated to podman with params)
-$ podman machine init --cpus=2
+# Init podman machine and allocate resources
+# NOTE: edit the allocation according to your needs.
+# You may well run out of memory with this default setup.
+$ podman machine init --cpus=2 --memory=4096
 
 # Start podman machine
 $ podman machine start
@@ -306,3 +307,4 @@ Additional configuration may be required for other systems.
  - nbdev_clean git hook may remove 'parameters' tag from notebook cells, even though it should be an allowed key as it is listed in settings.ini. The tag may need to be re-added manually to allow notebook parameterization with papermill.
  - nbdev documentation related functions may not work out-of-box with arm64 machines such as M1 macbooks because the container installs amd64 version of Quarto. You can bypass this by setting `platform` option for Docker. However, this makes container build SUPER slow and is thus not a default setting.
  - Source code (git) and model instance version may mismatch if code changes are not committed before updating a model to the model store.
+ - Is podman not responding? See [this discussion](https://github.com/containers/podman/issues/16054) for possible solutions.
