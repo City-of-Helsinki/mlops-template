@@ -36,66 +36,85 @@ Checklist for creating the repository:
 
 ## Working with the template:
 
-The template assumes working within a Docker container. Non-container use is possible but not recommended.
+The template assumes working within containers. Non-container development is possible but not recommended. 
 
 ### Option 1: Codespaces
 
 Repositories generated from the template are development-ready with [GitHub Codespaces](https://docs.github.com/en/codespaces/overview).
 
-Codespaces builds a container according to `.devcontainer/devcontainer.json` and attaches to it in `vsc` mode (see 'Running the container' below).
+Codespaces builds a container according to settings in `.devcontainer/devcontainer.json` and attaches to it in `vsc` mode (see 'Running the container' below).
 
 Just launch your repository in a Codespace and start working.
 
 ### Option 2: Local
 
-Clone the repository, and run the container (see 'Running the container' below).
 
-## Minikube + Podman (default)
+Begin by selecting your tools. Here are two examples for local development: Podman + JupyterLab (recommended), and Docker + VSC (*Visual Studio Code*).
 
-Minikube is an open source tool for container orchestration. Podman is an open source container runtime tool.
+The template container has three modes: two for development `vsc` (default) and `jupyterlab`, and `api` for running the API. The mode is given an environment variable `MODE` when running the container.
 
-    # On MacOS
+*Podman + JupyterLab*
 
-    # To install minikube & podman
-    brew install hyperkit 
-    brew install minikube
-    brew install docker docker-compose
-    brew install podman podman-compose
+Podman is an open source container runtime tool, that can also operate Docker containers, and shares most of the syntax with Docker. While it is possible to configure VSC Dev Container or VSC Remote Container to use Podman or other open source container framework (see instructions with [minikube](https://benmatselby.dev/post/vscode-dev-containers-minikube/) or [Podman desktop](https://developers.redhat.com/articles/2023/02/14/remote-container-development-vs-code-and-podman#)), this requires some effort compared to Docker with Docker Desktop. In addition, third party Docker extensions may not work. Therefore, it is recommended to develop locally with Jupyterlab, which comes installed within the template container.
+
+```bash
+# On MacOS
+
+# Install podman, docker and hyperkit
+# These are the only requirements for your system - 
+# everything else, including python and it's packages 
+# are installed within the container!
+
+$ brew install hyperkit
+$ brew install docker docker-compose
+$ brew install podman podman-compose
+$ brew install podman-desktop
     
-    # init podman machine
-    podman machine init --cpus=2
+# Init podman machine
+# (you can configure resources allocated to podman with params)
+$ podman machine init --cpus=2
 
-    # To start podman
-    podman machine start
+# Start podman machine
+$ podman machine start
 
-    # To start minikube
-    minikube start --driver=podman --container-runtime=containerd
+# Build container
+$ cd your_repo
+$ podman-compose build
 
-    # To stop minikube & podman
-    minikube stop
-    podman machine stop
+# Start dev container with JupyterLab
+$ MODE=jupyterlab podman-compose up
 
-For more information and help with setting up the tools for your workload, checkout the documentation of [minikube](https://minikube.sigs.k8s.io/docs/) and [Podman](https://docs.podman.io/en/latest/index.html).
+# To stop the dev container
+# (in another terminal window or tab)
+$ cd your_repo
+$ podman-compose down
 
-## Docker Desktop
+# To stop podman
+$ podman machine stop
+```
 
-Docker Desktop is an open core tool for managing Docker containers. Please note that most non-personal use of Docker Desktop now requires paid license subscription.
+Check out [Podman docs](https://docs.podman.io/en/latest/index.html) for more information and instructions. 
 
-To use the template with docker desktop, install and start docker desktop according to the instructions.
+*Docker Desktop + Visual Studio Code*
 
-## Running the container
+[Docker Desktop](https://www.docker.com/) is an open core tool for managing Docker containers. Please note that most non-personal use of Docker Desktop now requires paid license subscription.
 
-The template container has three modes: two for development `vsc` (default) and `jupyterlab`, and `api` for running the API. The mode is given to Docker as an environment variable `MODE`.
+To use the template with docker desktop, install and start docker desktop according to the instructions. VSC Extensions work with Docker Desctop with default settings.
 
-### Visual Studio Code (VSC):
+Visual Studio Code is an IDE that supports container development. Install VSC and Dev Containers Extension. When you open your repository in VSC, it automatically detects `.devcontainer/devcontianer.json` and suggests opening the repository in a container. Alternatively, press `cmd/ctrl shift P`, type `Remote-Container: Rebuild and Reopen in Container` and press enter. VSC builds the container and attaches to it. 
 
-Install VSC and Dev Containers Extension. When you open your repository in VSC, it automatically detects `.devcontainer/devcontianer.json` and suggests opening the repository in a container. Alternatively, press `cmd/ctrl shift P`, type `Remote-Container: Rebuild and Reopen in Container` and press enter. VSC builds the container and attaches to it. 
+### Running the API:
 
-### JupyterLab:
+To start the API as the container entrypoint, run 
+`MODE=api podman-compose up` or `MODE=api docker-compose up This loads the latest trained model from model store, starts the API and leaves the container running. The API requires an existing model store and a stored model to function. 
 
-The template installs JupyterLab within the container. To work in JupyterLab, run the container with `MODE=jupyterlab docker-compose up`. The container starts JupyterLab. To access jupyterlab, copy the address from the terminal to your browser. 
+> NOTE: To launch container in `api` mode, you must first train a model and save it to model store on a persistent volume or mapping, i.e. change the `local_data` volume type in compose and rebuild the container. To avoid accidentaly leaking sensitive data, model stores are by default saved to `tmpfs` storage that is removed every time the container is stopped. The `api` mode will not work without changing this setup.
 
-### Working offline with JupyterLab:
+To develop interactively with the API running, you may start the API from within your VSC / jupyterlab terminal by running `uvicorn main:app --reload --reload-include *.pickle --host 0.0.0.0` within the API folder of the container. This does not require changing the volume types.
+
+To specify model store and model version to load, use environment variables as specified in `api/app_base.py`. The default option loads latest model from pickle store.
+
+### Working offline:
 
 The repository allows developing and running ML models completely offline.
 
@@ -106,19 +125,9 @@ Steps to offline install:
 2. Build the image, and within the `requirements` folder run the script `./update_requirements.sh`. 
 3. Rebuild the image.
 4. Pull the image and transfer it to the offline device. The offline device must have Docker installed. 
-5. Start container in the `jupyterlab` mode (see above).
+5. Start container in the `jupyterlab` mode with your choice of container tools.
 
 The API works offline, too, but requires network access for external clients.
-
-### Running the API:
-
-To start the API as the container entrypoint, run `MODE=api docker-compose up`. This loads the latest trained model from model store, starts the API and leaves the container running. The API requires an existing model store and a stored model to function. 
-
-> NOTE: To launch container in `api` mode, you must first train a model and save it to model store on a persistent volume or mapping, i.e. change the `local_data` volume type in compose and rebuild the container. To avoid accidentaly leaking sensitive data, model stores are by default saved to `tmpfs` storage that is removed every time the container is stopped. The `api` mode will not work without changing this setup.
-
-To develop interactively with the API running, you may start the API from within your VSC / jupyterlab terminal by running `uvicorn main:app --reload --reload-include *.pickle --host 0.0.0.0` within the API folder of the container. This does not require changing the volume types.
-
-To specify model store and model version to load, use environment variables as specified in `api/app_base.py`. The default option loads latest model from pickle store.
 
 ## Examples
 
@@ -129,6 +138,8 @@ The `examples/` folder contains simplified single-notebook examples on how to cr
 2. Prediction API is available: http://127.0.0.1:8000/predict
 3. Automatically generated online API documentation is available at: http://127.0.0.1:8000/docs
 4. Real time metrics are available at: http://127.0.0.1:8000/metrics and at the built-in example Prometheus server at http://127.0.0.1:9090
+
+> NOTE: if working in Codespaces, right-click the links from README to access the port-forwarded endpoints!
 
 The following API request calls for the example model to make a prediction on two new data points:
 
@@ -271,13 +282,22 @@ The template comes with an 'ethical issue template' found in `.github/ISSUE_TEMP
 
 The template was developed and tested with:
 
- - GitHub Codespaces
+    GitHub Codespaces
 
 and MacBook Pro M1 & macOS Ventura 13.2.1 with:
 
- - Docker desktop 4.15.0 (93002)
- - VSC 1.74.0
- - VSC Dev Containers Extension v0.245.2
+    Docker desktop 4.15.0 (93002)
+    VSC 1.74.0
+    VSC Dev Containers Extension v0.245.2
+
+and MacBook Pro M1 & macOS Ventura 13.2.1 with:
+
+    podman-desktop 1.1.0
+    hyperkit 0.20210107
+    podman 4.5.1
+    podman-compose 1.0.6
+    docker 24.0.2
+    docker-compose 2.18.1
 
 Additional configuration may be required for other systems.
 
