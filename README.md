@@ -106,7 +106,7 @@ Visual Studio Code is an IDE that supports container development. Install VSC an
 ### Running the API:
 
 To start the API as the container entrypoint, run 
-`MODE=api podman-compose up` or `MODE=api docker-compose up This loads the latest trained model from model store, starts the API and leaves the container running. The API requires an existing model store and a stored model to function. 
+`MODE=api podman-compose up` or `MODE=api docker-compose up` This loads the latest trained model from model store, starts the API and leaves the container running. The API requires an existing model store and a stored model to function. 
 
 > NOTE: To launch container in `api` mode, you must first train a model and save it to model store on a persistent volume or mapping, i.e. change the `local_data` volume type in compose and rebuild the container. To avoid accidentaly leaking sensitive data, model stores are by default saved to `tmpfs` storage that is removed every time the container is stopped. The `api` mode will not work without changing this setup.
 
@@ -124,7 +124,7 @@ Steps to offline install:
 1. Add required python packages to `requirements/requirements.in`. Try to include all packages you might require, because adding them later without internet access is rather difficult.
 2. Build the image, and within the `requirements` folder run the script `./update_requirements.sh`. 
 3. Rebuild the image.
-4. Pull the image and transfer it to the offline device. The offline device must have Docker installed. 
+4. Pull the image and transfer it to the offline device with Podman requirements installed.
 5. Start container in the `jupyterlab` mode with your choice of container tools.
 
 The API works offline, too, but requires network access for external clients.
@@ -175,7 +175,7 @@ To update `requirements.txt`, run script `./update_requirements.sh` INSIDE the `
 Install new requirements with `pip install -r requirements/requirements.txt` or by rebuilding the container.
 
 The template installs python 3.10 (Ubuntu default).
-To specify another python version, edit the dockerfile to set up a virtual environment. The template is tested with python 3.10, but is expected to work with 3.8 and newer. However, other versions may require additional configuration.
+To specify another python version, edit Dockerfile to set up a virtual environment. The template is tested with python 3.10, but is expected to work with 3.8 and newer. However, other versions may require additional configuration.
 
 ## ML Pipeline
 
@@ -304,5 +304,5 @@ Additional configuration may be required for other systems.
 ## Known issues
 
  - nbdev_clean git hook may remove 'parameters' tag from notebook cells, even though it should be an allowed key as it is listed in settings.ini. The tag may need to be re-added manually to allow notebook parameterization with papermill.
- - nbdev documentation related functions may not work out-of-box with arm64 machines such as M1 macbooks because the container installs amd64 version of Quarto. You can bypass this by setting `platform` option for docker. However, this makes container build SUPER slow and is thus not a default setting.
+ - nbdev documentation related functions may not work out-of-box with arm64 machines such as M1 macbooks because the container installs amd64 version of Quarto. You can bypass this by setting `platform` option for Docker. However, this makes container build SUPER slow and is thus not a default setting.
  - Source code (git) and model instance version may mismatch if code changes are not committed before updating a model to the model store.
