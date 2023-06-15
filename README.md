@@ -140,7 +140,7 @@ The `examples/` folder contains simplified single-notebook examples on how to cr
 3. Automatically generated online API documentation is available at: http://127.0.0.1:8000/docs
 4. Real time metrics are available at: http://127.0.0.1:8000/metrics and at the built-in example Prometheus server at http://127.0.0.1:9090
 
-> NOTE: if working in Codespaces, right-click the links from README to access the port-forwarded endpoints!
+> NOTE: if working in Codespaces, right-click the localhost links from README to access the port-forwarded endpoints!
 
 The following API request calls for the example model to make a prediction on two new data points:
 
