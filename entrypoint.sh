@@ -17,5 +17,5 @@ then
     jupyter-lab --allow-root --ip 0.0.0.0 --port 8888
     
 else
-    echo "unknown mode: "$MODE", use 'api', 'vsc' or leave empty (defaults to 'vsc')"
+    echo "unknown mode: "$MODE", use 'api', 'vsc', 'jupyterlab' or leave empty (defaults to 'vsc')"
 fi

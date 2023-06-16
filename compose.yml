@@ -40,6 +40,7 @@ services:
         ./entrypoint.sh
   prometheus-local:
     image: prom/prometheus
+    user: "65534:65534"
     container_name: mlops-prometheus-local
     volumes:
       # prometheus configuration
@@ -48,6 +49,8 @@ services:
       # Select the data and aggregations (summary statistics) from api/metrics
       # to be monitored carefully and handle the time series with care
       # in order to avoid leaking sensitive information!
-      - ./monitoring/prometheus:/prometheus
+      # With this example configuration, metrics time series are stored
+      # in /prometheus volume:
+      - /prometheus
     ports:
       - 9090:9090
